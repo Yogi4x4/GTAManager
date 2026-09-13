@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GTA V Job Manager</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #e8e8e8;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    #toolbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      background: #2c2c2c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+    #toolbar h1 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+    .btn {
+      background: #444;
+      border: none;
+      color: #fff;
+      padding: 7px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: #5a5a5a; }
+    .btn.primary { background: #e67e22; }
+    .btn.primary:hover { background: #d35400; }
+    .btn.danger { background: #c0392b; }
+    .btn.danger:hover { background: #a93226; }
+
+    .size-select {
+      background: #444;
+      color: #fff;
+      border: none;
+      padding: 7px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .spacer { flex: 1; }
+
+    .color-btn-wrap { position: relative; }
+    #color-btn {
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      border: 2px solid #fff;
+      cursor: pointer;
+      background: #fff59d;
+    }
+    #color-panel {
+      display: none;
+      position: absolute;
+      top: 42px; left: 0;
+      background: #333;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      z-index: 1100;
+      width: 280px;
+    }
+    #color-panel.show { display: block; }
+    #color-panel h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin: 8px 0 6px;
+      letter-spacing: .5px;
+    }
+    #color-panel h4:first-child { margin-top: 0; }
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 5px;
+    }
+    .swatch {
+      width: 26px; height: 26px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform .1s;
+    }
+    .swatch:hover { transform: scale(1.15); }
+    .swatch.active { border-color: #fff; box-shadow: 0 0 0 1px #000; }
+    .custom-color-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .custom-color-row input[type="color"] {
+      width: 36px; height: 28px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: none;
+    }
+    .custom-color-row span { font-size: 12px; color: #ccc; }
+
+    #board {
+      position: absolute;
+      top: 56px; left: 0; right: 0; bottom: 0;
+      background-color: #fafafa;
+      background-image:
+        linear-gradient(90deg, #f0f0f0 1px, transparent 1px),
+        linear-gradient(#f0f0f0 1px, transparent 1px);
+      background-size: 40px 40px;
+      overflow: auto;
+      cursor: grab;
+    }
+    #board.panning { cursor: grabbing; }
+
+    .sticky {
+      position: absolute;
+      border-radius: 4px;
+      box-shadow: 3px 3px 10px rgba(0,0,0,.25);
+      padding: 10px 12px 14px;
+      cursor: grab;
+      min-width: 120px;
+      min-height: 80px;
+      transition: box-shadow .15s;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      background-color: #fff59d;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .sticky:hover { box-shadow: 5px 5px 16px rgba(0,0,0,.35); }
+    .sticky.selected {
+      box-shadow: 0 0 0 3px #e67e22, 5px 5px 16px rgba(0,0,0,.35);
+    }
+    .sticky.dragging {
+      cursor: grabbing;
+      z-index: 999;
+      box-shadow: 8px 8px 24px rgba(0,0,0,.4);
+      opacity: .95;
+    }
+    .sticky .header {
+      position: relative;
+      margin-bottom: 6px;
+      z-index: 2;
+      /* spațiu pe dreapta ca textul să nu treacă sub butoane */
+      padding-right: 54px;
+    }
+    .sticky .title {
+      font-weight: 700;
+      outline: none;
+      border: none;
+      background: transparent;
+      width: 100%;
+      resize: none;
+      overflow: hidden;
+      line-height: 1.3;
+      display: block;
+    }
+    .sticky .body {
+      outline: none;
+      border: none;
+      background: transparent;
+      width: 100%;
+      flex: 1;
+      resize: none;
+      min-height: 40px;
+      white-space: pre-wrap;
+      line-height: 1.45;
+      position: relative;
+      z-index: 2;
+    }
+    .sticky .controls {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      gap: 3px;
+      opacity: 0;
+      transition: opacity .15s;
+      z-index: 4;
+    }
+    .sticky:hover .controls,
+    .sticky.selected .controls { opacity: 1; }
+    .sticky .ctrl-btn {
+      background: rgba(0,0,0,.18);
+      border: none;
+      width: 24px; height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #111;
+      font-weight: bold;
+    }
+    .sticky .ctrl-btn:hover { background: rgba(0,0,0,.35); color: #000; }
+
+    .sticky .resize-handle {
+      position: absolute;
+      right: 0; bottom: 0;
+      width: 16px; height: 16px;
+      cursor: se-resize;
+      z-index: 5;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    .sticky:hover .resize-handle,
+    .sticky.selected .resize-handle { opacity: 1; }
+    .sticky .resize-handle::after {
+      content: '';
+      position: absolute;
+      right: 3px; bottom: 3px;
+      width: 8px; height: 8px;
+      border-right: 2px solid rgba(0,0,0,.45);
+      border-bottom: 2px solid rgba(0,0,0,.45);
+    }
+
+    .sticky::before {
+      content: '';
+      position: absolute;
+      top: -6px; left: 50%;
+      transform: translateX(-50%);
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #888);
+      box-shadow: 0 1px 3px rgba(0,0,0,.4);
+      z-index: 3;
+    }
+
+    #empty-hint {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #aaa;
+      pointer-events: none;
+      font-size: 18px;
+    }
+    #empty-hint strong { color: #888; }
+
+    #fmt-bar {
+      display: none;
+      position: fixed;
+      background: #1e1e1e;
+      color: #fff;
+      border-radius: 12px;
+      padding: 0;
+      box-shadow: 0 12px 40px rgba(0,0,0,.5);
+      z-index: 1500;
+      width: 460px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid #444;
+    }
+    #fmt-bar.show { display: block; }
+
+    #fmt-bar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #2a2a2a;
+      cursor: grab;
+      border-bottom: 1px solid #444;
+      user-select: none;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    #fmt-bar-header:active { cursor: grabbing; }
+    #fmt-bar-header span { font-size: 13px; font-weight: 600; color: #ddd; }
+    #fmt-close {
+      background: #c0392b;
+      border: none;
+      color: #fff;
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #fmt-close:hover { background: #e74c3c; }
+
+    #fmt-body { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+    .fmt-section {
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 10px;
+      background: #252525;
+    }
+    .fmt-section h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #e67e22;
+      margin-bottom: 8px;
+      letter-spacing: .5px;
+    }
+    .fmt-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .fmt-row:last-child { margin-bottom: 0; }
+    .fmt-row label {
+      font-size: 12px;
+      color: #aaa;
+      min-width: 55px;
+    }
+    #fmt-bar select, #fmt-bar button.fmt-btn {
+      background: #3a3a3a;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 5px 9px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    #fmt-bar select:hover, #fmt-bar button.fmt-btn:hover { background: #4a4a4a; }
+    #fmt-bar .align-group { display: flex; gap: 3px; }
+    #fmt-bar .align-group button {
+      background: #3a3a3a;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      min-width: 34px;
+    }
+    #fmt-bar .align-group button.active {
+      background: #e67e22;
+      border-color: #e67e22;
+    }
+    #fmt-bar .align-group button:hover { background: #4a4a4a; }
+    #fmt-bar .align-group button.active:hover { background: #d35400; }
+
+    .text-color-swatches { display: flex; gap: 5px; flex-wrap: wrap; }
+    .text-color-swatch {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .text-color-swatch.active { border-color: #e67e22; box-shadow: 0 0 0 1px #fff; }
+    .text-color-swatch:hover { transform: scale(1.1); }
+
+    #board-bg-panel {
+      display: none;
+      position: fixed;
+      top: 64px; right: 16px;
+      background: #1e1e1e;
+      color: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.5);
+      z-index: 1400;
+      width: 300px;
+      border: 1px solid #444;
+    }
+    #board-bg-panel.show { display: block; }
+    #board-bg-panel h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #e67e22;
+    }
+    .bg-presets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .bg-preset {
+      height: 48px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #fff;
+      text-shadow: 0 1px 2px #000;
+    }
+    .bg-preset:hover, .bg-preset.active { border-color: #e67e22; }
+    #board-bg-panel .fmt-btn { width: 100%; margin-top: 6px; }
+
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-overlay.show { display: flex; }
+    #modal {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      width: 90%;
+      max-width: 540px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    }
+    #modal h2 { margin-bottom: 16px; font-size: 18px; }
+    .template-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .template-card {
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .template-card:hover { background: #e8e8e8; }
+    .template-card strong { display: block; margin-bottom: 4px; }
+    .template-card small { color: #666; font-size: 12px; }
+    .modal-close { margin-top: 16px; text-align: right; }
+  </style>
+</head>
+<body>
+
+<div id="toolbar">
+  <h1>📋 GTA Online Plansă</h1>
+
+  <button class="btn primary" id="btn-add">+ Sticker</button>
+  <button class="btn" id="btn-templates">Șabloane</button>
+
+  <div class="color-btn-wrap">
+    <div id="color-btn" title="Culoare sticker"></div>
+    <div id="color-panel">
+      <h4>Pastel</h4>
+      <div class="swatch-grid" id="swatches-pastel"></div>
+      <h4>Vibrant</h4>
+      <div class="swatch-grid" id="swatches-vibrant"></div>
+      <h4>Neutre & închise</h4>
+      <div class="swatch-grid" id="swatches-neutral"></div>
+      <div class="custom-color-row">
+        <input type="color" id="custom-color" value="#fff59d">
+        <span>Culoare personalizată</span>
+      </div>
+    </div>
+  </div>
+
+  <select class="size-select" id="size-select" title="Mărime inițială">
+    <option value="s">Mic</option>
+    <option value="m" selected>Mediu</option>
+    <option value="l">Mare</option>
+    <option value="xl">XL</option>
+  </select>
+
+  <button class="btn" id="btn-board-bg" title="Fundal plansă">🖼️ Fundal</button>
+
+  <div class="spacer"></div>
+
+  <button class="btn" id="btn-export">Export</button>
+  <button class="btn" id="btn-import">Import</button>
+  <button class="btn danger" id="btn-clear">Șterge tot</button>
+</div>
+
+<div id="board">
+  <div id="empty-hint">
+    <div>Niciun sticker încă.</div>
+    <div style="margin-top:8px;font-size:14px">Apasă <strong>+ Sticker</strong> sau <strong>Șabloane</strong></div>
+  </div>
+</div>
+
+<div id="board-bg-panel">
+  <h3>Fundal plansă</h3>
+  <div class="bg-presets" id="bg-presets"></div>
+  <button class="fmt-btn" id="btn-board-img">📷 Încarcă poză</button>
+  <button class="fmt-btn" id="btn-board-clear" style="margin-top:6px;background:#c0392b;border-color:#c0392b">Elimină poza</button>
+  <input type="file" id="board-img-input" accept="image/*" style="display:none">
+</div>
+
+<div id="fmt-bar">
+  <div id="fmt-bar-header">
+    <span>✎ Formatare sticker</span>
+    <button id="fmt-close" title="Închide">×</button>
+  </div>
+  <div id="fmt-body">
+
+    <div class="fmt-section">
+      <h3>Titlu</h3>
+      <div class="fmt-row">
+        <label>Aliniere</label>
+        <div class="align-group" data-target="title">
+          <button data-align="left">⬅</button>
+          <button data-align="center">⬌</button>
+          <button data-align="right">➡</button>
+        </div>
+      </div>
+      <div class="fmt-row">
+        <label>Font</label>
+        <select class="fmt-font" data-target="title">
+          <option value="'Segoe UI', system-ui, sans-serif">Segoe UI</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="'Comic Sans MS', cursive">Comic Sans</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Courier New', monospace">Courier</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+          <option value="Tahoma, sans-serif">Tahoma</option>
+          <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+          <option value="'Times New Roman', serif">Times</option>
+        </select>
+        <select class="fmt-size" data-target="title">
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="16" selected>16</option>
+          <option value="18">18</option>
+          <option value="20">20</option>
+          <option value="22">22</option>
+          <option value="24">24</option>
+          <option value="28">28</option>
+        </select>
+      </div>
+      <div class="fmt-row">
+        <label>Culoare</label>
+        <div class="text-color-swatches" data-target="title">
+          <div class="text-color-swatch" data-color="auto" title="Automat" style="background: linear-gradient(135deg,#111 50%,#eee 50%)"></div>
+          <div class="text-color-swatch" data-color="#111111" style="background:#111"></div>
+          <div class="text-color-swatch" data-color="#222222" style="background:#222"></div>
+          <div class="text-color-swatch" data-color="#ffffff" style="background:#fff;border:1px solid #666"></div>
+          <div class="text-color-swatch" data-color="#f5f5f5" style="background:#f5f5f5;border:1px solid #666"></div>
+          <div class="text-color-swatch" data-color="#1a237e" style="background:#1a237e"></div>
+          <div class="text-color-swatch" data-color="#b71c1c" style="background:#b71c1c"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fmt-section">
+      <h3>Conținut</h3>
+      <div class="fmt-row">
+        <label>Aliniere</label>
+        <div class="align-group" data-target="body">
+          <button data-align="left">⬅</button>
+          <button data-align="center">⬌</button>
+          <button data-align="right">➡</button>
+        </div>
+      </div>
+      <div class="fmt-row">
+        <label>Font</label>
+        <select class="fmt-font" data-target="body">
+          <option value="'Segoe UI', system-ui, sans-serif">Segoe UI</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="'Comic Sans MS', cursive">Comic Sans</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Courier New', monospace">Courier</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+          <option value="Tahoma, sans-serif">Tahoma</option>
+          <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+          <option value="'Times New Roman', serif">Times</option>
+        </select>
+        <select class="fmt-size" data-target="body">
+          <option value="12">12</option>
+          <option value="13" selected>13</option>
+          <option value="14">14</option>
+          <option value="16">16</option>
+          <option value="18">18</option>
+          <option value="20">20</option>
+          <option value="22">22</option>
+          <option value="24">24</option>
+        </select>
+      </div>
+      <div class="fmt-row">
+        <label>Culoare</label>
+        <div class="text-color-swatches" data-target="body">
+          <div class="text-color-swatch" data-color="auto" title="Automat" style="background: linear-gradient(135deg,#111 50%,#eee 50%)"></div>
+          <div class="text-color-swatch" data-color="#111111" style="background:#111"></div>
+          <div class="text-color-swatch" data-color="#222222" style="background:#222"></div>
+          <div class="text-color-swatch" data-color="#ffffff" style="background:#fff;border:1px solid #666"></div>
+          <div class="text-color-swatch" data-color="#f5f5f5" style="background:#f5f5f5;border:1px solid #666"></div>
+          <div class="text-color-swatch" data-color="#1a237e" style="background:#1a237e"></div>
+          <div class="text-color-swatch" data-color="#b71c1c" style="background:#b71c1c"></div>
+        </div>
+      </div>
+      <div class="fmt-row">
+        <label>Inserare</label>
+        <button class="fmt-btn" id="btn-bullet">• Bullet</button>
+        <button class="fmt-btn" id="btn-checklist">☐ Check</button>
+        <button class="fmt-btn" id="btn-checked">☑ Bifată</button>
+      </div>
+    </div>
+
+    <div class="fmt-section">
+      <h3>Fundal sticker</h3>
+      <div class="fmt-row">
+        <button class="fmt-btn" id="btn-sticky-bg">📷 Adaugă poză</button>
+        <button class="fmt-btn" id="btn-sticky-bg-clear" style="background:#c0392b;border-color:#c0392b">Elimină</button>
+        <input type="file" id="sticky-bg-input" accept="image/*" style="display:none">
+      </div>
+    </div>
+
+    <div class="fmt-section">
+      <h3>Ordine (strat)</h3>
+      <div class="fmt-row">
+        <button class="fmt-btn" id="btn-z-front" title="Cel mai în față">⬆ În față</button>
+        <button class="fmt-btn" id="btn-z-forward" title="Un pas înainte">↑ Înainte</button>
+        <button class="fmt-btn" id="btn-z-backward" title="Un pas înapoi">↓ Înapoi</button>
+        <button class="fmt-btn" id="btn-z-back" title="Cel mai în spate">⬇ În spate</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="modal-overlay">
+  <div id="modal">
+    <h2>Șabloane rapide GTA Online</h2>
+    <div class="template-grid" id="template-grid"></div>
+    <div class="modal-close">
+      <button class="btn" id="modal-close-btn">Închide</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="import-file" accept=".json" style="display:none">
+
+<script>
+  const COLORS = {
+    pastel: [
+      '#fff59d','#ffcc80','#f8bbd0','#c8e6c9','#bbdefb','#e1bee7','#b2ebf2','#d7ccc8',
+      '#ffecb3','#ffab91','#f48fb1','#a5d6a7','#90caf9','#ce93d8','#80deea','#bcaaa4',
+      '#ffe082','#ffb74d','#f06292','#81c784','#64b5f6','#ba68c8','#4dd0e1','#a1887f'
+    ],
+    vibrant: [
+      '#ffeb3b','#ff9800','#e91e63','#4caf50','#2196f3','#9c27b0','#00bcd4','#795548',
+      '#f44336','#ff5722','#8bc34a','#03a9f4','#673ab7','#009688','#cddc39','#ffc107',
+      '#e53935','#fb8c00','#43a047','#1e88e5','#8e24aa','#00897b','#c0ca33','#ffb300'
+    ],
+    neutral: [
+      '#ffffff','#f5f5f5','#eeeeee','#e0e0e0','#bdbdbd','#9e9e9e','#757575','#616161',
+      '#424242','#212121','#263238','#37474f','#455a64','#546e7a','#607d8b','#78909c',
+      '#cfd8dc','#b0bec5','#90a4ae','#eceff1','#fafafa','#fff8e1','#e8f5e9','#e3f2fd'
+    ]
+  };
+
+  const SIZE_MAP = { s: {w:160,h:110}, m: {w:220,h:150}, l: {w:300,h:190}, xl: {w:380,h:240} };
+
+  const BOARD_PRESETS = [
+    { id: 'grid', name: 'Grilă', style: { bg: '#fafafa', image: 'linear-gradient(90deg,#f0f0f0 1px,transparent 1px),linear-gradient(#f0f0f0 1px,transparent 1px)', size: '40px 40px' } },
+    { id: 'plain', name: 'Alb', style: { bg: '#ffffff', image: 'none', size: 'auto' } },
+    { id: 'cork', name: 'Plută', style: { bg: '#c4a574', image: 'radial-gradient(ellipse at 20% 30%,#b8956a 0%,transparent 50%),radial-gradient(ellipse at 70% 60%,#a8885e 0%,transparent 40%)', size: 'auto' } },
+    { id: 'dark', name: 'Întunecat', style: { bg: '#1a1a1a', image: 'linear-gradient(90deg,#222 1px,transparent 1px),linear-gradient(#222 1px,transparent 1px)', size: '40px 40px' } },
+    { id: 'blue', name: 'Albastru', style: { bg: '#e3f2fd', image: 'linear-gradient(90deg,#bbdefb 1px,transparent 1px),linear-gradient(#bbdefb 1px,transparent 1px)', size: '40px 40px' } },
+    { id: 'green', name: 'Verde', style: { bg: '#e8f5e9', image: 'linear-gradient(90deg,#c8e6c9 1px,transparent 1px),linear-gradient(#c8e6c9 1px,transparent 1px)', size: '40px 40px' } },
+  ];
+
+  let stickies = [];
+  let selectedColor = '#fff59d';
+  let selectedSize = 'm';
+  let nextId = 1;
+  let dragState = null;
+  let resizeState = null;
+  let panState = null;
+  let selectedStickyId = null;
+  let fmtDrag = null;
+  let boardBg = { type: 'preset', id: 'grid', custom: null };
+
+  const board = document.getElementById('board');
+  const emptyHint = document.getElementById('empty-hint');
+  const fmtBar = document.getElementById('fmt-bar');
+  const colorBtn = document.getElementById('color-btn');
+  const colorPanel = document.getElementById('color-panel');
+  const boardBgPanel = document.getElementById('board-bg-panel');
+
+  const templates = [
+    { title: 'Bunker', body: '• Resupply\n• Sell missions\n• Research\n• Steal Supplies\n• Bunker Raids', color: '#c8e6c9', size: 'm' },
+    { title: 'Nightclub', body: '• Popularity\n• Sell goods\n• Management\n• VIP work\n• Security upgrade', color: '#e1bee7', size: 'm' },
+    { title: 'Arcade (Casino Heist)', body: '• Scope Out\n• Prep missions\n• Final Heist\n• Vault contents\n• Approach', color: '#bbdefb', size: 'l' },
+    { title: 'Auto Shop', body: '• Customer cars\n• Contracts\n• Union Depository\n• The Superdollar Deal\n• The Bank Contract', color: '#ffcc80', size: 'm' },
+    { title: 'Agency (Franklin)', body: '• Security Contracts\n• Payphone Hits\n• VIP Contract\n• Dr. Dre\n• Nightlife Leak', color: '#b2ebf2', size: 'm' },
+    { title: 'MC Clubhouse', body: '• Club Work\n• Sell missions\n• Resupply\n• Rivalries\n• Clubhouse upgrades', color: '#f8bbd0', size: 'm' },
+    { title: 'CEO Office', body: '• Special Cargo\n• Vehicle Cargo\n• VIP Work\n• Headhunter\n• Sightseer', color: '#90caf9', size: 'm' },
+    { title: 'Facility (Doomsday)', body: '• Prep: Act I / II / III\n• Finals\n• Orbital Cannon\n• Avenger\n• Research', color: '#a5d6a7', size: 'l' },
+    { title: 'Kosatka (Cayo Perico)', body: '• Scope Out\n• Prep missions\n• Secondary targets\n• Final Heist\n• Elite Challenge', color: '#80deea', size: 'l' },
+    { title: 'Salvage Yard', body: '• Towing\n• Salvage missions\n• Robbery contracts\n• The Cargo Ship\n• The Duggan Robbery', color: '#ffab91', size: 'm' },
+    { title: 'Hangar', body: '• Source Cargo\n• Sell missions\n• Air Freight\n• Hangar upgrades', color: '#64b5f6', size: 'm' },
+    { title: 'Apartment Heists', body: '• Fleeca\n• Prison Break\n• Humane Labs\n• Series A\n• Pacific Standard', color: '#fff59d', size: 'm' }
+  ];
+
+  function getLuminance(hex) {
+    if (!hex || hex[0] !== '#') return 0.5;
+    let c = hex.substring(1);
+    if (c.length === 3) c = c[0]+c[0]+c[1]+c[1]+c[2]+c[2];
+    const r = parseInt(c.substr(0,2),16)/255;
+    const g = parseInt(c.substr(2,2),16)/255;
+    const b = parseInt(c.substr(4,2),16)/255;
+    const [R,G,B] = [r,g,b].map(v => v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4));
+    return 0.2126*R + 0.7152*G + 0.0722*B;
+  }
+  function getContrastText(bgHex, preferred) {
+    if (preferred && preferred !== 'auto') return preferred;
+    return getLuminance(bgHex) > 0.45 ? '#111111' : '#ffffff';
+  }
+
+  async function init() {
+    buildColorPanel();
+    buildBoardPresets();
+    await loadFromStorage();
+    applyBoardBg();
+    renderAll();
+    setupToolbar();
+    setupBoardPanning();
+    setupModal();
+    setupFmtBar();
+    updateColorBtn();
+  }
+
+  function buildColorPanel() {
+    ['pastel','vibrant','neutral'].forEach(group => {
+      const container = document.getElementById('swatches-' + group);
+      COLORS[group].forEach(hex => {
+        const sw = document.createElement('div');
+        sw.className = 'swatch';
+        sw.style.background = hex;
+        sw.dataset.color = hex;
+        if (hex === selectedColor) sw.classList.add('active');
+        sw.addEventListener('click', () => {
+          selectedColor = hex;
+          document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+          sw.classList.add('active');
+          updateColorBtn();
+          colorPanel.classList.remove('show');
+          if (selectedStickyId) {
+            const s = stickies.find(x => x.id === selectedStickyId);
+            if (s) {
+              s.color = hex;
+              const el = document.querySelector(`.sticky[data-id="${s.id}"]`);
+              if (el) {
+                el.style.backgroundColor = hex;
+                applyFormatting(el, s);
+              }
+              saveToStorage();
+            }
+          }
+        });
+        container.appendChild(sw);
+      });
+    });
+    document.getElementById('custom-color').addEventListener('input', (e) => {
+      selectedColor = e.target.value;
+      document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      updateColorBtn();
+      if (selectedStickyId) {
+        const s = stickies.find(x => x.id === selectedStickyId);
+        if (s) {
+          s.color = selectedColor;
+          const el = document.querySelector(`.sticky[data-id="${s.id}"]`);
+          if (el) {
+            el.style.backgroundColor = selectedColor;
+            applyFormatting(el, s);
+          }
+          saveToStorage();
+        }
+      }
+    });
+  }
+
+  function updateColorBtn() { colorBtn.style.background = selectedColor; }
+
+  function buildBoardPresets() {
+    const container = document.getElementById('bg-presets');
+    BOARD_PRESETS.forEach(p => {
+      const el = document.createElement('div');
+      el.className = 'bg-preset' + (boardBg.id === p.id ? ' active' : '');
+      el.dataset.id = p.id;
+      el.textContent = p.name;
+      el.style.background = p.style.bg;
+      if (p.style.image !== 'none') el.style.backgroundImage = p.style.image;
+      el.addEventListener('click', () => {
+        boardBg = { type: 'preset', id: p.id, custom: null };
+        document.querySelectorAll('.bg-preset').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        applyBoardBg();
+        saveToStorage();
+      });
+      container.appendChild(el);
+    });
+  }
+
+  function applyBoardBg() {
+    if (boardBg.type === 'custom' && boardBg.custom) {
+      board.style.backgroundColor = '#333';
+      board.style.backgroundImage = `url(${boardBg.custom})`;
+      board.style.backgroundSize = 'cover';
+      board.style.backgroundPosition = 'center';
+      board.style.backgroundAttachment = 'local';
+    } else {
+      const p = BOARD_PRESETS.find(x => x.id === boardBg.id) || BOARD_PRESETS[0];
+      board.style.backgroundColor = p.style.bg;
+      board.style.backgroundImage = p.style.image;
+      board.style.backgroundSize = p.style.size;
+      board.style.backgroundPosition = '0 0';
+      board.style.backgroundAttachment = 'local';
+    }
+  }
+
+  function renderAll() {
+    document.querySelectorAll('.sticky').forEach(el => el.remove());
+    stickies.forEach(s => createStickyElement(s));
+    emptyHint.style.display = stickies.length ? 'none' : 'block';
+    hideFmtBar();
+  }
+
+  function createStickyElement(data) {
+    data.titleAlign = data.titleAlign || 'left';
+    data.bodyAlign = data.bodyAlign || 'left';
+    data.titleFont = data.titleFont || "'Segoe UI', system-ui, sans-serif";
+    data.bodyFont = data.bodyFont || "'Segoe UI', system-ui, sans-serif";
+    data.titleSize = data.titleSize || 16;
+    data.bodySize = data.bodySize || 13;
+    data.titleColor = data.titleColor || 'auto';
+    data.bodyColor = data.bodyColor || 'auto';
+    data.bgImage = data.bgImage || null;
+    if (data.z == null) data.z = data.id || 1;
+    if (!data.w) {
+      const sz = SIZE_MAP[data.size] || SIZE_MAP.m;
+      data.w = sz.w; data.h = sz.h;
+    }
+
+    const el = document.createElement('div');
+    el.className = 'sticky';
+    el.dataset.id = data.id;
+    el.style.left = data.x + 'px';
+    el.style.top = data.y + 'px';
+    el.style.width = data.w + 'px';
+    el.style.height = data.h + 'px';
+    el.style.zIndex = data.z;
+    el.style.backgroundColor = data.color || '#fff59d';
+    if (data.bgImage) {
+      el.style.backgroundImage = `url(${data.bgImage})`;
+    }
+
+    el.innerHTML = `
+      <div class="header">
+        <textarea class="title" rows="1" placeholder="Titlu...">${escapeHtml(data.title)}</textarea>
+        <div class="controls">
+          <button class="ctrl-btn" title="Formatare" data-action="fmt">✎</button>
+          <button class="ctrl-btn" title="Șterge" data-action="delete">✕</button>
+        </div>
+      </div>
+      <textarea class="body" placeholder="Note, misiuni, resupply...">${escapeHtml(data.body)}</textarea>
+      <div class="resize-handle" title="Redimensionează"></div>
+    `;
+
+    applyFormatting(el, data);
+
+    el.querySelector('[data-action="delete"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteSticky(data.id);
+    });
+    el.querySelector('[data-action="fmt"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectSticky(data.id, el);
+    });
+
+    const titleTA = el.querySelector('.title');
+    const bodyTA = el.querySelector('.body');
+    titleTA.addEventListener('input', () => { data.title = titleTA.value; autoResize(titleTA); saveToStorage(); });
+    bodyTA.addEventListener('input', () => { data.body = bodyTA.value; autoResize(bodyTA); saveToStorage(); });
+    titleTA.addEventListener('mousedown', e => e.stopPropagation());
+    bodyTA.addEventListener('mousedown', e => e.stopPropagation());
+
+    el.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.ctrl-btn') || e.target.closest('.resize-handle') || e.target.tagName === 'TEXTAREA') return;
+      startDrag(e, data, el);
+    });
+
+    el.querySelector('.resize-handle').addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      startResize(e, data, el);
+    });
+
+    board.appendChild(el);
+    autoResize(titleTA);
+    autoResize(bodyTA);
+  }
+
+  function applyFormatting(el, data) {
+    const titleTA = el.querySelector('.title');
+    const bodyTA = el.querySelector('.body');
+    const bgForContrast = data.color || '#fff59d';
+
+    titleTA.style.textAlign = data.titleAlign;
+    bodyTA.style.textAlign = data.bodyAlign;
+    titleTA.style.fontFamily = data.titleFont;
+    bodyTA.style.fontFamily = data.bodyFont;
+    titleTA.style.fontSize = data.titleSize + 'px';
+    bodyTA.style.fontSize = data.bodySize + 'px';
+
+    const tCol = getContrastText(bgForContrast, data.titleColor);
+    const bCol = getContrastText(bgForContrast, data.bodyColor);
+    titleTA.style.color = tCol;
+    bodyTA.style.color = bCol;
+
+    if (data.bgImage) {
+      const shadow = (tCol === '#ffffff' || tCol === '#f5f5f5')
+        ? '0 1px 3px rgba(0,0,0,.85), 0 0 8px rgba(0,0,0,.5)'
+        : '0 1px 2px rgba(255,255,255,.7)';
+      titleTA.style.textShadow = shadow;
+      bodyTA.style.textShadow = shadow;
+    } else {
+      titleTA.style.textShadow = 'none';
+      bodyTA.style.textShadow = 'none';
+    }
+
+    const ctrls = el.querySelectorAll('.ctrl-btn');
+    const dark = getLuminance(bgForContrast) < 0.4 || !!data.bgImage;
+    ctrls.forEach(b => {
+      if (dark) {
+        b.style.background = 'rgba(255,255,255,.3)';
+        b.style.color = '#fff';
+      } else {
+        b.style.background = 'rgba(0,0,0,.18)';
+        b.style.color = '#111';
+      }
+    });
+  }
+
+  function autoResize(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  }
+
+  function escapeHtml(str) {
+    return (str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function loadImageAsDataURL(file, maxW = 600) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.75));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function selectSticky(id, el) {
+    // restore z of previously selected
+    document.querySelectorAll('.sticky.selected').forEach(s => {
+      s.classList.remove('selected');
+      const prev = stickies.find(x => String(x.id) === s.dataset.id);
+      if (prev) s.style.zIndex = prev.z || 1;
+    });
+    selectedStickyId = id;
+    if (el) {
+      el.classList.add('selected');
+      const dataTmp = stickies.find(s => s.id === id);
+      if (dataTmp) el.style.zIndex = (dataTmp.z || 1) + 10000;
+    }
+
+    const data = stickies.find(s => s.id === id);
+    if (!data) return;
+
+    if (!fmtBar.classList.contains('show')) {
+      const rect = el.getBoundingClientRect();
+      let left = Math.min(window.innerWidth - 480, Math.max(8, rect.left));
+      let top = Math.max(64, rect.top);
+      if (top + 400 > window.innerHeight) top = Math.max(64, window.innerHeight - 420);
+      fmtBar.style.left = left + 'px';
+      fmtBar.style.top = top + 'px';
+    }
+    fmtBar.classList.add('show');
+
+    document.querySelectorAll('.fmt-font[data-target="title"]').forEach(s => s.value = data.titleFont);
+    document.querySelectorAll('.fmt-size[data-target="title"]').forEach(s => s.value = String(data.titleSize));
+    document.querySelectorAll('.align-group[data-target="title"] button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.align === data.titleAlign);
+    });
+    document.querySelectorAll('.text-color-swatches[data-target="title"] .text-color-swatch').forEach(sw => {
+      sw.classList.toggle('active', sw.dataset.color === (data.titleColor || 'auto'));
+    });
+
+    document.querySelectorAll('.fmt-font[data-target="body"]').forEach(s => s.value = data.bodyFont);
+    document.querySelectorAll('.fmt-size[data-target="body"]').forEach(s => s.value = String(data.bodySize));
+    document.querySelectorAll('.align-group[data-target="body"] button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.align === data.bodyAlign);
+    });
+    document.querySelectorAll('.text-color-swatches[data-target="body"] .text-color-swatch').forEach(sw => {
+      sw.classList.toggle('active', sw.dataset.color === (data.bodyColor || 'auto'));
+    });
+  }
+
+  function hideFmtBar() {
+    fmtBar.classList.remove('show');
+    document.querySelectorAll('.sticky.selected').forEach(s => {
+      s.classList.remove('selected');
+      const prev = stickies.find(x => String(x.id) === s.dataset.id);
+      if (prev) s.style.zIndex = prev.z || 1;
+    });
+    selectedStickyId = null;
+  }
+
+  function setupFmtBar() {
+    document.getElementById('fmt-close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      hideFmtBar();
+    });
+
+    const header = document.getElementById('fmt-bar-header');
+    header.addEventListener('mousedown', (e) => {
+      if (e.target.id === 'fmt-close') return;
+      e.preventDefault();
+      const rect = fmtBar.getBoundingClientRect();
+      fmtDrag = { startX: e.clientX, startY: e.clientY, origLeft: rect.left, origTop: rect.top };
+      document.addEventListener('mousemove', onFmtDrag);
+      document.addEventListener('mouseup', endFmtDrag);
+    });
+
+    document.querySelectorAll('#fmt-bar .align-group button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!selectedStickyId) return;
+        const data = stickies.find(s => s.id === selectedStickyId);
+        if (!data) return;
+        const target = btn.parentElement.dataset.target;
+        data[target + 'Align'] = btn.dataset.align;
+        const el = document.querySelector(`.sticky[data-id="${data.id}"]`);
+        if (el) applyFormatting(el, data);
+        btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        saveToStorage();
+      });
+    });
+
+    document.querySelectorAll('.fmt-font').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        if (!selectedStickyId) return;
+        const data = stickies.find(s => s.id === selectedStickyId);
+        if (!data) return;
+        const target = sel.dataset.target;
+        data[target + 'Font'] = e.target.value;
+        const el = document.querySelector(`.sticky[data-id="${data.id}"]`);
+        if (el) applyFormatting(el, data);
+        saveToStorage();
+      });
+    });
+
+    document.querySelectorAll('.fmt-size').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        if (!selectedStickyId) return;
+        const data = stickies.find(s => s.id === selectedStickyId);
+        if (!data) return;
+        const target = sel.dataset.target;
+        data[target + 'Size'] = parseInt(e.target.value, 10);
+        const el = document.querySelector(`.sticky[data-id="${data.id}"]`);
+        if (el) {
+          applyFormatting(el, data);
+          autoResize(el.querySelector('.title'));
+          autoResize(el.querySelector('.body'));
+        }
+        saveToStorage();
+      });
+    });
+
+    document.querySelectorAll('.text-color-swatch').forEach(sw => {
+      sw.addEventListener('click', () => {
+        if (!selectedStickyId) return;
+        const data = stickies.find(s => s.id === selectedStickyId);
+        if (!data) return;
+        const target = sw.parentElement.dataset.target;
+        data[target + 'Color'] = sw.dataset.color;
+        sw.parentElement.querySelectorAll('.text-color-swatch').forEach(s => s.classList.remove('active'));
+        sw.classList.add('active');
+        const el = document.querySelector(`.sticky[data-id="${data.id}"]`);
+        if (el) applyFormatting(el, data);
+        saveToStorage();
+      });
+    });
+
+    document.getElementById('btn-bullet').addEventListener('click', () => insertAtCursor('• '));
+    document.getElementById('btn-checklist').addEventListener('click', () => insertAtCursor('☐ '));
+    document.getElementById('btn-checked').addEventListener('click', () => insertAtCursor('☑ '));
+
+    document.getElementById('btn-sticky-bg').addEventListener('click', () => {
+      document.getElementById('sticky-bg-input').click();
+    });
+    document.getElementById('sticky-bg-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file || !selectedStickyId) return;
+      try {
+        const dataUrl = await loadImageAsDataURL(file, 500);
+        const data = stickies.find(s => s.id === selectedStickyId);
+        if (!data) return;
+        data.bgImage = dataUrl;
+        const el = document.querySelector(`.sticky[data-id="${data.id}"]`);
+        if (el) {
+          el.style.backgroundImage = `url(${dataUrl})`;
+          applyFormatting(el, data);
+        }
+        saveToStorage();
+      } catch (err) {
+        alert('Nu am putut încărca imaginea.');
+      }
+      e.target.value = '';
+    });
+    document.getElementById('btn-sticky-bg-clear').addEventListener('click', () => {
+      if (!selectedStickyId) return;
+      const data = stickies.find(s => s.id === selectedStickyId);
+      if (!data) return;
+      data.bgImage = null;
+      const el = document.querySelector(`.sticky[data-id="${data.id}"]`);
+      if (el) {
+        el.style.backgroundImage = 'none';
+        applyFormatting(el, data);
+      }
+      saveToStorage();
+    });
+
+    // z-order
+    document.getElementById('btn-z-front').addEventListener('click', () => changeZOrder('front'));
+    document.getElementById('btn-z-forward').addEventListener('click', () => changeZOrder('forward'));
+    document.getElementById('btn-z-backward').addEventListener('click', () => changeZOrder('backward'));
+    document.getElementById('btn-z-back').addEventListener('click', () => changeZOrder('back'));
+  }
+
+  function changeZOrder(action) {
+    if (!selectedStickyId) return;
+    const data = stickies.find(s => s.id === selectedStickyId);
+    if (!data) return;
+
+    const sorted = [...stickies].sort((a, b) => (a.z || 0) - (b.z || 0));
+    const idx = sorted.findIndex(s => s.id === data.id);
+    if (idx < 0) return;
+
+    if (action === 'front') {
+      const maxZ = Math.max(0, ...stickies.map(s => s.z || 0));
+      data.z = maxZ + 1;
+    } else if (action === 'back') {
+      const minZ = Math.min(0, ...stickies.map(s => s.z || 0));
+      data.z = minZ - 1;
+    } else if (action === 'forward') {
+      if (idx >= sorted.length - 1) return;
+      const above = sorted[idx + 1];
+      const tmp = data.z;
+      data.z = above.z;
+      above.z = tmp;
+      const elAbove = document.querySelector(`.sticky[data-id="${above.id}"]`);
+      if (elAbove) elAbove.style.zIndex = above.z;
+    } else if (action === 'backward') {
+      if (idx <= 0) return;
+      const below = sorted[idx - 1];
+      const tmp = data.z;
+      data.z = below.z;
+      below.z = tmp;
+      const elBelow = document.querySelector(`.sticky[data-id="${below.id}"]`);
+      if (elBelow) elBelow.style.zIndex = below.z;
+    }
+
+    const el = document.querySelector(`.sticky[data-id="${data.id}"]`);
+    if (el) el.style.zIndex = data.z;
+    // keep selected on top of its layer visually while selected
+    if (el && el.classList.contains('selected')) el.style.zIndex = (data.z || 0) + 1000;
+    saveToStorage();
+  }
+
+  function onFmtDrag(e) {
+    if (!fmtDrag) return;
+    fmtBar.style.left = Math.max(0, fmtDrag.origLeft + (e.clientX - fmtDrag.startX)) + 'px';
+    fmtBar.style.top = Math.max(0, fmtDrag.origTop + (e.clientY - fmtDrag.startY)) + 'px';
+  }
+  function endFmtDrag() {
+    fmtDrag = null;
+    document.removeEventListener('mousemove', onFmtDrag);
+    document.removeEventListener('mouseup', endFmtDrag);
+  }
+
+  function insertAtCursor(text) {
+    if (!selectedStickyId) return;
+    const el = document.querySelector(`.sticky[data-id="${selectedStickyId}"]`);
+    if (!el) return;
+    let ta = document.activeElement;
+    if (!ta || (!ta.classList.contains('body') && !ta.classList.contains('title'))) {
+      ta = el.querySelector('.body');
+    }
+    const start = ta.selectionStart ?? ta.value.length;
+    const end = ta.selectionEnd ?? ta.value.length;
+    ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
+    ta.selectionStart = ta.selectionEnd = start + text.length;
+    ta.focus();
+    const data = stickies.find(s => s.id === selectedStickyId);
+    if (ta.classList.contains('title')) data.title = ta.value;
+    else data.body = ta.value;
+    autoResize(ta);
+    saveToStorage();
+  }
+
+  function addSticky(overrides = {}) {
+    const sz = SIZE_MAP[overrides.size || selectedSize] || SIZE_MAP.m;
+    const sticky = {
+      id: nextId++,
+      title: overrides.title || '',
+      body: overrides.body || '',
+      color: overrides.color || selectedColor,
+      size: overrides.size || selectedSize,
+      w: sz.w, h: sz.h,
+      x: overrides.x ?? (board.scrollLeft + 80 + Math.random() * 120),
+      y: overrides.y ?? (board.scrollTop + 80 + Math.random() * 80),
+      titleAlign: 'left', bodyAlign: 'left',
+      titleFont: "'Segoe UI', system-ui, sans-serif",
+      bodyFont: "'Segoe UI', system-ui, sans-serif",
+      titleSize: 16, bodySize: 13,
+      titleColor: 'auto', bodyColor: 'auto',
+      bgImage: null,
+      z: 0
+    };
+    sticky.z = sticky.id;
+    stickies.push(sticky);
+    createStickyElement(sticky);
+    emptyHint.style.display = 'none';
+    saveToStorage();
+  }
+
+  function deleteSticky(id) {
+    stickies = stickies.filter(s => s.id !== id);
+    const el = document.querySelector(`.sticky[data-id="${id}"]`);
+    if (el) el.remove();
+    if (selectedStickyId === id) hideFmtBar();
+    emptyHint.style.display = stickies.length ? 'none' : 'block';
+    saveToStorage();
+  }
+
+  function startDrag(e, data, el) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    dragState = {
+      data, el,
+      startX: e.clientX, startY: e.clientY,
+      origX: data.x, origY: data.y,
+      prevZ: el.style.zIndex
+    };
+    el.classList.add('dragging');
+    // temporary bring to front while holding / dragging
+    el.style.zIndex = 999999;
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', endDrag);
+  }
+  function onDrag(e) {
+    if (!dragState) return;
+    dragState.data.x = Math.max(0, dragState.origX + (e.clientX - dragState.startX));
+    dragState.data.y = Math.max(0, dragState.origY + (e.clientY - dragState.startY));
+    dragState.el.style.left = dragState.data.x + 'px';
+    dragState.el.style.top = dragState.data.y + 'px';
+  }
+  function endDrag() {
+    if (dragState) {
+      dragState.el.classList.remove('dragging');
+      // restore original layer (or selected boost if still selected)
+      if (selectedStickyId === dragState.data.id) {
+        dragState.el.style.zIndex = (dragState.data.z || 1) + 10000;
+      } else {
+        dragState.el.style.zIndex = dragState.data.z || 1;
+      }
+      saveToStorage();
+    }
+    dragState = null;
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', endDrag);
+  }
+
+  function startResize(e, data, el) {
+    resizeState = {
+      data, el,
+      startX: e.clientX, startY: e.clientY,
+      origW: data.w, origH: data.h
+    };
+    document.addEventListener('mousemove', onResize);
+    document.addEventListener('mouseup', endResize);
+  }
+  function onResize(e) {
+    if (!resizeState) return;
+    const dw = e.clientX - resizeState.startX;
+    const dh = e.clientY - resizeState.startY;
+    resizeState.data.w = Math.max(120, resizeState.origW + dw);
+    resizeState.data.h = Math.max(80, resizeState.origH + dh);
+    resizeState.el.style.width = resizeState.data.w + 'px';
+    resizeState.el.style.height = resizeState.data.h + 'px';
+  }
+  function endResize() {
+    if (resizeState) saveToStorage();
+    resizeState = null;
+    document.removeEventListener('mousemove', onResize);
+    document.removeEventListener('mouseup', endResize);
+  }
+
+  function setupBoardPanning() {
+    let isSpace = false;
+    window.addEventListener('keydown', e => {
+      if (e.code === 'Space' && e.target.tagName !== 'TEXTAREA') { isSpace = true; e.preventDefault(); }
+    });
+    window.addEventListener('keyup', e => { if (e.code === 'Space') isSpace = false; });
+    board.addEventListener('mousedown', (e) => {
+      if (e.button === 1 || (e.button === 0 && isSpace)) {
+        e.preventDefault();
+        panState = { startX: e.clientX, startY: e.clientY, scrollL: board.scrollLeft, scrollT: board.scrollTop };
+        board.classList.add('panning');
+        document.addEventListener('mousemove', onPan);
+        document.addEventListener('mouseup', endPan);
+      }
+    });
+  }
+  function onPan(e) {
+    if (!panState) return;
+    board.scrollLeft = panState.scrollL - (e.clientX - panState.startX);
+    board.scrollTop = panState.scrollT - (e.clientY - panState.startY);
+  }
+  function endPan() {
+    panState = null;
+    board.classList.remove('panning');
+    document.removeEventListener('mousemove', onPan);
+    document.removeEventListener('mouseup', endPan);
+  }
+
+  function setupToolbar() {
+    document.getElementById('btn-add').addEventListener('click', () => addSticky());
+
+    colorBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      colorPanel.classList.toggle('show');
+      boardBgPanel.classList.remove('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.color-btn-wrap')) colorPanel.classList.remove('show');
+      if (!e.target.closest('#board-bg-panel') && !e.target.closest('#btn-board-bg')) {
+        boardBgPanel.classList.remove('show');
+      }
+    });
+
+    document.getElementById('size-select').addEventListener('change', (e) => {
+      selectedSize = e.target.value;
+    });
+
+    document.getElementById('btn-board-bg').addEventListener('click', (e) => {
+      e.stopPropagation();
+      boardBgPanel.classList.toggle('show');
+      colorPanel.classList.remove('show');
+    });
+    document.getElementById('btn-board-img').addEventListener('click', () => {
+      document.getElementById('board-img-input').click();
+    });
+    document.getElementById('board-img-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const dataUrl = await loadImageAsDataURL(file, 1600);
+        boardBg = { type: 'custom', id: null, custom: dataUrl };
+        document.querySelectorAll('.bg-preset').forEach(b => b.classList.remove('active'));
+        applyBoardBg();
+        saveToStorage();
+      } catch (err) {
+        alert('Nu am putut încărca imaginea.');
+      }
+      e.target.value = '';
+    });
+    document.getElementById('btn-board-clear').addEventListener('click', () => {
+      boardBg = { type: 'preset', id: 'grid', custom: null };
+      document.querySelectorAll('.bg-preset').forEach(b => {
+        b.classList.toggle('active', b.dataset.id === 'grid');
+      });
+      applyBoardBg();
+      saveToStorage();
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      if (confirm('Ștergi toate stickerele? Acțiunea nu poate fi anulată.')) {
+        stickies = [];
+        renderAll();
+        saveToStorage();
+      }
+    });
+
+    document.getElementById('btn-export').addEventListener('click', () => {
+      const data = JSON.stringify({ stickies, nextId, boardBg }, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'gta-online-plansa.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('btn-import').addEventListener('click', () => {
+      document.getElementById('import-file').click();
+    });
+    document.getElementById('import-file').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (Array.isArray(data.stickies)) {
+            stickies = data.stickies;
+            nextId = data.nextId || (Math.max(0, ...stickies.map(s => s.id)) + 1);
+            if (data.boardBg) boardBg = data.boardBg;
+            applyBoardBg();
+            renderAll();
+            saveToStorage();
+          }
+        } catch (err) {
+          alert('Fișier JSON invalid.');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
+  }
+
+  function setupModal() {
+    const grid = document.getElementById('template-grid');
+    templates.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'template-card';
+      card.innerHTML = `<strong>${t.title}</strong><small>${t.body.split('\n')[0]}...</small>`;
+      card.addEventListener('click', () => {
+        addSticky({ ...t });
+        closeModal();
+      });
+      grid.appendChild(card);
+    });
+    document.getElementById('btn-templates').addEventListener('click', () => {
+      document.getElementById('modal-overlay').classList.add('show');
+    });
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+      if (e.target.id === 'modal-overlay') closeModal();
+    });
+  }
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('show');
+  }
+
+  // ===== INDEXEDDB STORAGE =====
+  const DB_NAME = 'GTAOnlineWhiteboard';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'state';
+  let dbPromise = null;
+
+  function openDB() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    return dbPromise;
+  }
+
+  async function saveToStorage() {
+    try {
+      const db = await openDB();
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      store.put({ stickies, nextId, boardBg }, 'main');
+      await new Promise((resolve, reject) => {
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (e) {
+      console.error('IndexedDB save error:', e);
+      // fallback silent – user can still Export
+    }
+  }
+
+  async function loadFromStorage() {
+    try {
+      // migrate from old localStorage if exists
+      const old = localStorage.getItem('gta-online-whiteboard');
+      if (old) {
+        try {
+          const data = JSON.parse(old);
+          if (Array.isArray(data.stickies)) {
+            stickies = data.stickies;
+            nextId = data.nextId || 1;
+            if (data.boardBg) boardBg = data.boardBg;
+            await saveToStorage(); // write to IndexedDB
+            localStorage.removeItem('gta-online-whiteboard'); // clean old
+            return;
+          }
+        } catch (_) {}
+      }
+
+      const db = await openDB();
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const data = await new Promise((resolve, reject) => {
+        const req = store.get('main');
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+      if (data) {
+        stickies = data.stickies || [];
+        nextId = data.nextId || 1;
+        if (data.boardBg) boardBg = data.boardBg;
+      }
+    } catch (e) {
+      console.error('IndexedDB load error:', e);
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
+

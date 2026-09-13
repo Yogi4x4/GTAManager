@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTA Online – Joburi & Timer-e</title>
+<style>
+:root {
+  --bg: #0b0c10;
+  --surface: #15171c;
+  --surface2: #1c1f26;
+  --border: #2a2e38;
+  --text: #e6e8ee;
+  --muted: #8b90a0;
+  --accent: #00e676;
+  --accent-dim: #00c85333;
+  --danger: #ff5252;
+  --warn: #ffab40;
+  --blue: #448aff;
+  --purple: #b388ff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.45;
+}
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+header h1 { font-size: 1.25rem; font-weight: 700; }
+header h1 span { color: var(--accent); }
+.header-actions { margin-left: auto; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+button {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+button:hover { border-color: var(--accent); background: var(--accent-dim); }
+button.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+button.primary:hover { filter: brightness(1.1); }
+button.danger { border-color: var(--danger); color: var(--danger); }
+button.danger:hover { background: #ff525222; }
+.container { max-width: 1200px; margin: 0 auto; padding: 1.2rem; }
+.toolbar {
+  display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.2rem; align-items: center;
+}
+.search {
+  flex: 1; min-width: 180px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+.search:focus { outline: none; border-color: var(--accent); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: #3a3f4c; }
+.card-top {
+  padding: 1rem 1.1rem 0.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  flex: 1;
+  min-width: 0;
+}
+.card-actions { display: flex; gap: 0.3rem; flex-shrink: 0; align-items: center; }
+.icon-btn {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: 0.15s;
+  padding: 0;
+}
+.icon-btn:hover { background: var(--surface2); border-color: var(--border); }
+.safe-btn {
+  width: auto;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 2px solid;
+  letter-spacing: 0.3px;
+}
+.safe-btn.ok {
+  color: #000;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px #00e67655;
+}
+.safe-btn.full {
+  color: #fff;
+  background: var(--danger);
+  border-color: var(--danger);
+  box-shadow: 0 0 10px #ff525255;
+}
+.safe-btn.none {
+  color: var(--muted);
+  background: transparent;
+  border-color: var(--border);
+  opacity: 0.5;
+  cursor: default;
+  font-size: 0.7rem;
+}
+.card-body { padding: 0 1.1rem 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.65rem; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.tag {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.tag.heist { color: var(--danger); border-color: #ff525244; }
+.tag.contracts { color: var(--blue); border-color: #448aff44; }
+.tag.passive { color: var(--accent); border-color: #00e67644; }
+.tag.missions { color: var(--purple); border-color: #b388ff44; }
+.info-row {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  align-items: baseline;
+}
+.info-row .lbl {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  min-width: 70px;
+  flex-shrink: 0;
+}
+.info-row .val { flex: 1; }
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.88rem;
+}
+.benefits-list li {
+  padding: 0.2rem 0 0.2rem 1.1rem;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.benefits-list li:last-child { border-bottom: none; }
+.benefits-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0.2rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+.notes-text {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.missions-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 0.2rem;
+}
+.missions-header h3 { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.mission-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.mission {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem;
+  align-items: center;
+}
+.mission-name { font-size: 0.88rem; font-weight: 500; }
+.mission-meta {
+  display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center;
+  grid-column: 1 / -1;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.cooldown-badge {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.15rem 0.4rem;
+  font-variant-numeric: tabular-nums;
+}
+.timer-display {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  font-weight: 600;
+  min-width: 48px;
+  text-align: center;
+}
+.timer-display.running { color: var(--warn); }
+.timer-display.done { color: var(--accent); }
+.mission-btns { display: flex; gap: 0.2rem; }
+.mission-btns button {
+  padding: 0.22rem 0.4rem;
+  font-size: 0.75rem;
+  border-radius: 5px;
+}
+.timers-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1.2rem;
+  display: none;
+}
+.timers-bar.visible { display: block; }
+.timers-bar h3 { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; }
+.active-timers { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.active-timer {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.85rem;
+}
+.active-timer .time { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--warn); }
+.active-timer.done .time { color: var(--accent); }
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: #000000bb;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.3rem;
+}
+.modal h2 { font-size: 1.15rem; margin-bottom: 1rem; }
+.modal .field { margin-bottom: 0.8rem; }
+.field { display: flex; flex-direction: column; gap: 0.25rem; }
+.field label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.field input, .field textarea, .field select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  padding: 0.5rem 0.7rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  width: 100%;
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none; border-color: var(--accent);
+}
+.field textarea { min-height: 80px; resize: vertical; }
+.field .hint { font-size: 0.72rem; color: var(--muted); }
+.modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.1rem; }
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  z-index: 200;
+  opacity: 0;
+  transition: 0.3s;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.alert { border-color: var(--danger); background: #2a1515; }
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  header { flex-direction: column; align-items: stretch; }
+  .header-actions { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>GTA Online <span>Joburi</span></h1>
+  <div class="header-actions">
+    <button onclick="exportJSON()" title="Export JSON">📥 Export</button>
+    <button onclick="document.getElementById('importFile').click()" title="Import JSON">📤 Import</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+    <button class="primary" onclick="openAddModal()">+ Locație</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="toolbar">
+    <input type="text" class="search" id="search" placeholder="Caută locație, misiune..." oninput="render()">
+    <button onclick="resetAllSafes()" title="Resetează toate seifurile pe OK">🔄 Seifuri OK</button>
+  </div>
+
+  <div class="timers-bar" id="timersBar">
+    <h3>⏱ Timer-e active</h3>
+    <div class="active-timers" id="activeTimers"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">Nicio locație. Adaugă una cu butonul „+ Locație”.</div>
+</div>
+
+<div class="modal-overlay" id="locModal">
+  <div class="modal">
+    <h2 id="modalTitle">Adaugă locație</h2>
+    <div class="field">
+      <label>Nume</label>
+      <input type="text" id="mName" placeholder="ex: Auto Shop">
+    </div>
+    <div class="field">
+      <label>Tipuri (separate prin virgulă)</label>
+      <input type="text" id="mTags" placeholder="heist, contracts, passive, missions">
+    </div>
+    <div class="field">
+      <label>Locuri parcare</label>
+      <input type="text" id="mParking" placeholder="ex: 10">
+    </div>
+    <div class="field">
+      <label>Are seif?</label>
+      <select id="mHasSafe">
+        <option value="false">Nu</option>
+        <option value="true">Da</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Cooldown implicit (minute)</label>
+      <input type="number" id="mDefaultCd" min="0" step="0.5" placeholder="ex: 48">
+    </div>
+    <div class="field">
+      <label>Beneficii (unul pe linie = bullet)</label>
+      <textarea id="mBenefits" placeholder="Modificări la discount&#10;Exotic Exports&#10;Contracte 170k+"></textarea>
+      <span class="hint">Fiecare linie devine un bullet pe card</span>
+    </div>
+    <div class="field">
+      <label>Note</label>
+      <textarea id="mNotes" placeholder="Note personale..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeModal()">Anulează</button>
+      <button class="primary" onclick="saveLocation()">Salvează</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="misModal">
+  <div class="modal">
+    <h2 id="misModalTitle">Adaugă misiune</h2>
+    <div class="field">
+      <label>Nume misiune</label>
+      <input type="text" id="misName" placeholder="ex: Security Contract">
+    </div>
+    <div class="field">
+      <label>Cooldown (minute)</label>
+      <input type="number" id="misCd" min="0" step="0.5" placeholder="ex: 5">
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeMisModal()">Anulează</button>
+      <button class="primary" onclick="saveMission()">Salvează</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_DATA = [
+  {
+    id: 'auto-shop',
+    name: 'Auto Shop',
+    tags: ['contracts', 'missions'],
+    parking: '10',
+    hasSafe: false,
+    safeFull: false,
+    defaultCd: 60,
+    benefits: [
+      '10 locuri de parcare',
+      'Modificări mașini la discount + toate unlock-urile',
+      'Contracte Robbery: 170k–300k (Union Depository cel mai bun)',
+      'Cooldown contract ~60 min (roteste 3 pe board)',
+      'Exotic Exports: 10 mașini/zi → ~$300k total',
+      'Customer Car Jobs ($20k–$30k)'
+    ],
+    notes: 'Strawberry e locația recomandată. Contractele revin după ~1h.',
+    missions: [
+      { id: 'as1', name: 'Union Depository Contract', cd: 60 },
+      { id: 'as2', name: 'The Superdollar Deal', cd: 60 },
+      { id: 'as3', name: 'The Agency Deal', cd: 60 },
+      { id: 'as4', name: 'The Lost Contract', cd: 60 },
+      { id: 'as5', name: 'The Bank Contract', cd: 60 },
+      { id: 'as6', name: 'The Prison Contract', cd: 60 },
+      { id: 'as7', name: 'The ECU Job', cd: 60 },
+      { id: 'as8', name: 'The Data Contract', cd: 60 },
+      { id: 'as9', name: 'Exotic Exports (full list)', cd: 1440 }
+    ]
+  },
+  {
+    id: 'arcade',
+    name: 'Arcade',
+    tags: ['heist', 'passive'],
+    parking: '10',
+    hasSafe: true,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      '10 locuri de parcare',
+      'Obligatoriu pentru Diamond Casino Heist',
+      'Passive safe până la $5.000 / zi (toate mașinile pe podea)',
+      'Cap seif $100.000',
+      'Master Control Terminal (gestionează alte business-uri)',
+      'Jocuri arcade (inclusiv QUB3D)',
+      'Drone Station opțional'
+    ],
+    notes: 'Videogeddon (La Mesa) e cel mai aproape de Casino.',
+    missions: [
+      { id: 'ar1', name: 'Casino Heist – Scope Out', cd: 0 },
+      { id: 'ar2', name: 'Casino Heist – Prep', cd: 0 },
+      { id: 'ar3', name: 'Casino Heist – Finale', cd: 0 }
+    ]
+  },
+  {
+    id: 'agency',
+    name: 'Agency',
+    tags: ['contracts', 'passive', 'missions'],
+    parking: '20',
+    hasSafe: true,
+    safeFull: false,
+    defaultCd: 5,
+    benefits: [
+      '20 locuri de parcare',
+      'Security Contracts $30k–$70k+ (cooldown 5 min)',
+      'Payphone Hits ~$45k cu bonus (cooldown 10 min)',
+      'Dr. Dre VIP Contract ~$900k–$1.1M',
+      'Passive safe până la $20.000 / zi (după ~201 Security Contracts)',
+      'Cap seif $250.000',
+      'Imani Tech + Armory (Mk2 discount)'
+    ],
+    notes: 'Little Seoul e cel mai ieftin. După Security Contract → 5 min delay.',
+    missions: [
+      { id: 'ag1', name: 'Security Contract', cd: 5 },
+      { id: 'ag2', name: 'Payphone Hit', cd: 10 },
+      { id: 'ag3', name: 'Dr. Dre VIP Contract', cd: 0 }
+    ]
+  },
+  {
+    id: 'nightclub',
+    name: 'Nightclub',
+    tags: ['passive', 'missions'],
+    parking: 'până la 40 (cu upgrade-uri)',
+    hasSafe: true,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      'Până la 40 locuri de parcare',
+      'Passive safe până la $50.000 / zi (popularitate max)',
+      'Cap seif $250.000',
+      'Warehouse goods (passive din alte business-uri)',
+      'Client Jobs via Terrorbyte',
+      'Promote Club / DJ pentru popularitate'
+    ],
+    notes: 'Cel mai bun passive din joc. Păstrează popularitatea >95%.',
+    missions: [
+      { id: 'nc1', name: 'Promote Club', cd: 0 },
+      { id: 'nc2', name: 'Sell Goods', cd: 0 },
+      { id: 'nc3', name: 'Client Job (Terrorbyte)', cd: 0 }
+    ]
+  },
+  {
+    id: 'facility',
+    name: 'Facility',
+    tags: ['heist'],
+    parking: 'limitat + Avenger / Thruster',
+    hasSafe: false,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      'Doomsday Heist – 3 acte',
+      'Orbital Cannon',
+      'Bază pentru Avenger, Khanjali, Thruster',
+      'Setup cost per act ~$65k–$120k'
+    ],
+    notes: 'Paleto Bay e cel mai ieftin. Minim 2 jucători pe finale.',
+    missions: [
+      { id: 'fc1', name: 'Doomsday Act 1 – Data Breaches', cd: 0 },
+      { id: 'fc2', name: 'Doomsday Act 2 – Bogdan Problem', cd: 0 },
+      { id: 'fc3', name: 'Doomsday Act 3 – Doomsday Scenario', cd: 0 }
+    ]
+  },
+  {
+    id: 'kosatka',
+    name: 'Kosatka',
+    tags: ['heist'],
+    parking: '— (submarin mobil)',
+    hasSafe: false,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      'Cayo Perico Heist – complet solo',
+      'Primary target $400k–$910k+ (Pink Diamond)',
+      'Secondary loot (cocaină, aur, weed...)',
+      'Cel mai bun heist solo din joc',
+      'Sparrow / Moon Pool opțional'
+    ],
+    notes: 'Cooldown Hard Mode ~2.5h. Setup fee $100k.',
+    missions: [
+      { id: 'ko1', name: 'Cayo Perico – Gather Intel', cd: 0 },
+      { id: 'ko2', name: 'Cayo Perico – Prep', cd: 0 },
+      { id: 'ko3', name: 'Cayo Perico – Finale', cd: 150 }
+    ]
+  },
+  {
+    id: 'salvage',
+    name: 'Salvage Yard',
+    tags: ['contracts', 'passive', 'missions'],
+    parking: 'tow truck + spații',
+    hasSafe: true,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      'Tow Truck Service (crește reputația)',
+      'Passive safe până la $24.000 / zi (4 tow-uri)',
+      'Cap seif $100k (sau $250k cu Wall Safe)',
+      'Robbery Contracts pe mașini de valoare',
+      'Salvage parts'
+    ],
+    notes: 'Tow Truck Service menține reputația pentru passive maxim.',
+    missions: [
+      { id: 'sv1', name: 'Tow Truck Service', cd: 0 },
+      { id: 'sv2', name: 'Salvage Robbery', cd: 0 }
+    ]
+  },
+  {
+    id: 'bail',
+    name: 'Bail Office',
+    tags: ['missions'],
+    parking: 'da',
+    hasSafe: false,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      'Standard & Most Wanted Bounties',
+      'Agenți (până la 2) – venit semi-passive',
+      'Procesare ținte'
+    ],
+    notes: 'Davis e o locație bună ca preț/poziție.',
+    missions: [
+      { id: 'bo1', name: 'Standard Bounty', cd: 0 },
+      { id: 'bo2', name: 'Most Wanted Bounty', cd: 0 }
+    ]
+  },
+  {
+    id: 'mc',
+    name: 'MC Clubhouse',
+    tags: ['missions', 'contracts'],
+    parking: 'moto (10)',
+    hasSafe: true,
+    safeFull: false,
+    defaultCd: 48,
+    benefits: [
+      'Acces la MC Businesses (Coke, Meth, Weed, Cash, Documents)',
+      'Clubhouse Contracts',
+      'Bar passive (până la $5.000 / zi dacă e restockat)',
+      'Cooldown tipic 48 min între contracte / sell-uri'
+    ],
+    notes: 'Cooldown 48 min e standard pentru multe acțiuni MC.',
+    missions: [
+      { id: 'mc1', name: 'Clubhouse Contract', cd: 48 },
+      { id: 'mc2', name: 'Sell Product', cd: 0 },
+      { id: 'mc3', name: 'Resupply', cd: 0 }
+    ]
+  },
+  {
+    id: 'ceo',
+    name: 'CEO Office',
+    tags: ['missions'],
+    parking: 'până la 60 (3 etaje)',
+    hasSafe: false,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      'Până la 60 locuri de parcare',
+      'Special Cargo & Vehicle Cargo',
+      'VIP Work / Organization Work',
+      'Helipad',
+      'SecuroServ portal'
+    ],
+    notes: 'Necesar pentru CEO / VIP. Garage floors se cumpără separat.',
+    missions: [
+      { id: 'ce1', name: 'Special Cargo Source', cd: 0 },
+      { id: 'ce2', name: 'Vehicle Cargo Source', cd: 0 },
+      { id: 'ce3', name: 'VIP Work', cd: 0 }
+    ]
+  },
+  {
+    id: 'carwash',
+    name: 'Car Wash (Money Fronts)',
+    tags: ['passive', 'missions'],
+    parking: 'da',
+    hasSafe: true,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      'Passive income (shared safe cu celelalte Fronts)',
+      'Money Laundering missions',
+      'Boost +35% Counterfeit Cash product value',
+      'Spălat gratuit Personal Vehicles'
+    ],
+    notes: 'Entry point pentru Money Fronts (apoi Smoke on the Water + Higgins).',
+    missions: [
+      { id: 'cw1', name: 'Laundering Mission', cd: 0 }
+    ]
+  },
+  {
+    id: 'apartment',
+    name: 'High-End Apartment',
+    tags: ['heist'],
+    parking: '10',
+    hasSafe: false,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      '10 locuri de parcare',
+      'Heist-uri originale: Fleeca → Prison Break → Humane → Series A → Pacific Standard',
+      'Spawn point + wardrobe',
+      'Planning room'
+    ],
+    notes: 'Necesar pentru heist-urile clasice Lester.',
+    missions: [
+      { id: 'ap1', name: 'The Fleeca Job', cd: 0 },
+      { id: 'ap2', name: 'The Prison Break', cd: 0 },
+      { id: 'ap3', name: 'The Humane Labs Raid', cd: 0 },
+      { id: 'ap4', name: 'Series A Funding', cd: 0 },
+      { id: 'ap5', name: 'The Pacific Standard Job', cd: 0 }
+    ]
+  },
+  {
+    id: 'bunker',
+    name: 'Bunker',
+    tags: ['missions', 'passive'],
+    parking: 'MOC + spații',
+    hasSafe: false,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      'Gunrunning – producție arme',
+      'Research pentru unlock-uri Mk2',
+      'MOC (Mobile Operations Center)',
+      'Sell missions'
+    ],
+    notes: 'Staff + Equipment upgrade obligatorii pentru profit bun.',
+    missions: [
+      { id: 'bk1', name: 'Steal Supplies', cd: 0 },
+      { id: 'bk2', name: 'Sell Stock', cd: 0 },
+      { id: 'bk3', name: 'Research', cd: 0 }
+    ]
+  },
+  {
+    id: 'hangar',
+    name: 'Hangar',
+    tags: ['missions'],
+    parking: 'până la 20 aeronave',
+    hasSafe: false,
+    safeFull: false,
+    defaultCd: 0,
+    benefits: [
+      'Până la 20 aeronave',
+      'Air Freight Cargo',
+      'Workshop aeronave (arme, countermeasures)',
+      'Acces Fort Zancudo (dacă e locația acolo)'
+    ],
+    notes: 'Fort Zancudo Hangar dă acces la bază fără wanted.',
+    missions: [
+      { id: 'hg1', name: 'Source Cargo', cd: 0 },
+      { id: 'hg2', name: 'Sell Cargo', cd: 0 }
+    ]
+  }
+];
+
+let data = [];
+let editId = null;
+let addMissionToId = null;
+let editMissionId = null;
+let timers = {};
+
+const DB_NAME = 'GTAJobsDB';
+const STORE = 'data';
+
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 2);
+    r.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
+    };
+    r.onsuccess = e => res(e.target.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+
+async function loadData() {
+  const db = await openDB();
+  return new Promise(res => {
+    const tx = db.transaction(STORE, 'readonly');
+    const req = tx.objectStore(STORE).get('main');
+    req.onsuccess = () => {
+      if (req.result && Array.isArray(req.result) && req.result.length) {
+        data = req.result;
+        data.forEach(l => {
+          if (typeof l.benefits === 'string') {
+            l.benefits = l.benefits.split('\n').map(s => s.trim()).filter(Boolean);
+          }
+          if (!Array.isArray(l.benefits)) l.benefits = [];
+        });
+      } else {
+        data = structuredClone(DEFAULT_DATA);
+      }
+      res();
+    };
+    req.onerror = () => { data = structuredClone(DEFAULT_DATA); res(); };
+  });
+}
+
+async function saveData() {
+  const db = await openDB();
+  return new Promise(res => {
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).put(data, 'main');
+    tx.oncomplete = () => res();
+  });
+}
+
+function render() {
+  const q = (document.getElementById('search').value || '').toLowerCase().trim();
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  grid.innerHTML = '';
+
+  const filtered = data.filter(loc => {
+    if (!q) return true;
+    const bens = Array.isArray(loc.benefits) ? loc.benefits.join(' ') : (loc.benefits || '');
+    const hay = (loc.name + ' ' + bens + ' ' + (loc.notes||'') + ' ' +
+      (loc.missions||[]).map(m => m.name).join(' ')).toLowerCase();
+    return hay.includes(q);
+  });
+
+  if (!filtered.length) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  filtered.forEach(loc => {
+    const card = document.createElement('article');
+    card.className = 'card';
+
+    const tagsHtml = (loc.tags || []).map(t => `<span class="tag ${t}">${t}</span>`).join('');
+    const safeClass = !loc.hasSafe ? 'none' : (loc.safeFull ? 'full' : 'ok');
+    const safeLabel = !loc.hasSafe ? '—' : (loc.safeFull ? 'PLIN' : 'OK');
+    const safeTitle = !loc.hasSafe ? 'Fără seif' : (loc.safeFull ? 'Seif PLIN – click → OK' : 'Seif OK – click → PLIN');
+
+    const benefits = Array.isArray(loc.benefits) ? loc.benefits : (loc.benefits || '').split('\n').filter(Boolean);
+    const benefitsHtml = benefits.length
+      ? `<ul class="benefits-list">${benefits.map(b => `<li>${esc(b)}</li>`).join('')}</ul>`
+      : '<span style="color:var(--muted);font-size:0.85rem">—</span>';
+
+    let missionsHtml = '';
+    (loc.missions || []).forEach(m => {
+      const key = loc.id + '::' + m.id;
+      const t = timers[key];
+      let timeStr = '';
+      let timeCls = '';
+      if (t) {
+        const left = Math.max(0, Math.ceil((t.end - Date.now()) / 1000));
+        timeStr = formatTime(left);
+        timeCls = left <= 0 ? 'done' : 'running';
+      }
+      const cdVal = m.cd ?? loc.defaultCd ?? 0;
+      missionsHtml += `
+        <div class="mission">
+          <div class="mission-name">${esc(m.name)}</div>
+          <div class="mission-btns">
+            <button onclick="startTimer('${loc.id}','${m.id}', ${cdVal})" title="Start timer">▶</button>
+            <button onclick="stopTimer('${loc.id}','${m.id}')" title="Stop">⏹</button>
+            <button onclick="openEditMisModal('${loc.id}','${m.id}')" title="Editează">✏️</button>
+            <button class="danger" onclick="deleteMission('${loc.id}','${m.id}')" title="Șterge">✕</button>
+          </div>
+          <div class="mission-meta">
+            <span class="cooldown-badge">CD ${cdVal} min</span>
+            <span class="timer-display ${timeCls}" id="td-${key}">${timeStr}</span>
+          </div>
+        </div>`;
+    });
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-title">${esc(loc.name)}</div>
+        <div class="card-actions">
+          <button class="icon-btn safe-btn ${safeClass}" title="${safeTitle}"
+                  onclick="toggleSafe('${loc.id}')" ${!loc.hasSafe ? 'disabled' : ''}>${safeLabel}</button>
+          <button class="icon-btn" title="Editează locația" onclick="openEditModal('${loc.id}')">✏️</button>
+          <button class="icon-btn" title="Șterge" onclick="deleteLoc('${loc.id}')">🗑️</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="meta">${tagsHtml}</div>
+        <div class="info-row">
+          <span class="lbl">Parcare</span>
+          <span class="val">${esc(loc.parking || '—')}</span>
+        </div>
+        <div class="info-row" style="flex-direction:column;align-items:stretch;gap:0.25rem">
+          <span class="lbl">Beneficii</span>
+          ${benefitsHtml}
+        </div>
+        ${loc.notes ? `<div class="notes-text">${esc(loc.notes)}</div>` : ''}
+        <div class="missions-header">
+          <h3>Misiuni</h3>
+          <button onclick="openMisModal('${loc.id}')">+ Misiune</button>
+        </div>
+        <div class="mission-list">${missionsHtml || '<span style="color:var(--muted);font-size:0.85rem">Nicio misiune</span>'}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  renderActiveTimers();
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatTime(sec) {
+  if (sec <= 0) return '00:00';
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function toggleSafe(id) {
+  const loc = data.find(l => l.id === id);
+  if (!loc || !loc.hasSafe) return;
+  loc.safeFull = !loc.safeFull;
+  saveData();
+  render();
+  toast(loc.safeFull ? 'Seif marcat PLIN' : 'Seif marcat OK');
+}
+
+function resetAllSafes() {
+  data.forEach(l => { if (l.hasSafe) l.safeFull = false; });
+  saveData();
+  render();
+  toast('Toate seifurile pe OK');
+}
+
+function deleteMission(locId, mid) {
+  if (!confirm('Ștergi misiunea?')) return;
+  const loc = data.find(l => l.id === locId);
+  if (!loc) return;
+  stopTimer(locId, mid);
+  loc.missions = loc.missions.filter(m => m.id !== mid);
+  saveData();
+  render();
+}
+
+function deleteLoc(id) {
+  if (!confirm('Ștergi locația și toate misiunile ei?')) return;
+  Object.keys(timers).forEach(k => { if (k.startsWith(id + '::')) stopTimerByKey(k); });
+  data = data.filter(l => l.id !== id);
+  saveData();
+  render();
+}
+
+function startTimer(locId, mid, minutes) {
+  const key = locId + '::' + mid;
+  stopTimerByKey(key);
+  const loc = data.find(l => l.id === locId);
+  const m = loc?.missions.find(x => x.id === mid);
+  const mins = minutes > 0 ? minutes : (m?.cd || loc?.defaultCd || 5);
+  const end = Date.now() + mins * 60 * 1000;
+  const label = (loc?.name || '') + ' – ' + (m?.name || mid);
+
+  const tick = () => {
+    const left = Math.ceil((end - Date.now()) / 1000);
+    const el = document.getElementById('td-' + key);
+    if (el) {
+      el.textContent = formatTime(Math.max(0, left));
+      el.className = 'timer-display ' + (left <= 0 ? 'done' : 'running');
+    }
+    if (left <= 0) {
+      clearInterval(timers[key]?.intervalId);
+      playAlert();
+      toast('⏰ Timer terminat: ' + label, true);
+      renderActiveTimers();
+    } else {
+      renderActiveTimers();
+    }
+  };
+
+  timers[key] = { end, intervalId: setInterval(tick, 1000), label };
+  tick();
+  toast('Timer pornit: ' + mins + ' min');
+}
+
+function stopTimer(locId, mid) {
+  stopTimerByKey(locId + '::' + mid);
+  render();
+}
+
+function stopTimerByKey(key) {
+  if (timers[key]) {
+    clearInterval(timers[key].intervalId);
+    delete timers[key];
+  }
+  const el = document.getElementById('td-' + key);
+  if (el) { el.textContent = ''; el.className = 'timer-display'; }
+  renderActiveTimers();
+}
+
+function renderActiveTimers() {
+  const bar = document.getElementById('timersBar');
+  const box = document.getElementById('activeTimers');
+  const keys = Object.keys(timers);
+  if (!keys.length) {
+    bar.classList.remove('visible');
+    return;
+  }
+  bar.classList.add('visible');
+  box.innerHTML = keys.map(k => {
+    const t = timers[k];
+    const left = Math.max(0, Math.ceil((t.end - Date.now()) / 1000));
+    const done = left <= 0;
+    return `<div class="active-timer ${done ? 'done' : ''}">
+      <span>${esc(t.label)}</span>
+      <span class="time">${formatTime(left)}</span>
+      <button onclick="stopTimerByKey('${k}'); render()" style="padding:0.15rem 0.4rem;font-size:0.7rem">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function playAlert() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.value = 0.15;
+    osc.start();
+    setTimeout(() => { osc.frequency.value = 1175; }, 150);
+    setTimeout(() => { osc.frequency.value = 880; }, 300);
+    setTimeout(() => { osc.stop(); ctx.close(); }, 600);
+  } catch(e) {}
+}
+
+function openAddModal() {
+  editId = null;
+  document.getElementById('modalTitle').textContent = 'Adaugă locație';
+  document.getElementById('mName').value = '';
+  document.getElementById('mTags').value = '';
+  document.getElementById('mParking').value = '';
+  document.getElementById('mHasSafe').value = 'false';
+  document.getElementById('mDefaultCd').value = '';
+  document.getElementById('mBenefits').value = '';
+  document.getElementById('mNotes').value = '';
+  document.getElementById('locModal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const loc = data.find(l => l.id === id);
+  if (!loc) return;
+  editId = id;
+  document.getElementById('modalTitle').textContent = 'Editează locație';
+  document.getElementById('mName').value = loc.name || '';
+  document.getElementById('mTags').value = (loc.tags || []).join(', ');
+  document.getElementById('mParking').value = loc.parking || '';
+  document.getElementById('mHasSafe').value = loc.hasSafe ? 'true' : 'false';
+  document.getElementById('mDefaultCd').value = loc.defaultCd ?? '';
+  const bens = Array.isArray(loc.benefits) ? loc.benefits.join('\n') : (loc.benefits || '');
+  document.getElementById('mBenefits').value = bens;
+  document.getElementById('mNotes').value = loc.notes || '';
+  document.getElementById('locModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('locModal').classList.remove('open');
+}
+
+function saveLocation() {
+  const name = document.getElementById('mName').value.trim();
+  if (!name) { alert('Numele e obligatoriu'); return; }
+  const tags = document.getElementById('mTags').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  const parking = document.getElementById('mParking').value.trim();
+  const hasSafe = document.getElementById('mHasSafe').value === 'true';
+  const defaultCd = parseFloat(document.getElementById('mDefaultCd').value) || 0;
+  const benefits = document.getElementById('mBenefits').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const notes = document.getElementById('mNotes').value.trim();
+
+  if (editId) {
+    const loc = data.find(l => l.id === editId);
+    if (loc) {
+      loc.name = name;
+      loc.tags = tags;
+      loc.parking = parking;
+      loc.hasSafe = hasSafe;
+      if (!hasSafe) loc.safeFull = false;
+      loc.defaultCd = defaultCd;
+      loc.benefits = benefits;
+      loc.notes = notes;
+    }
+  } else {
+    data.push({
+      id: 'loc-' + Date.now(),
+      name, tags, parking, hasSafe, safeFull: false,
+      defaultCd, benefits, notes, missions: []
+    });
+  }
+  saveData();
+  closeModal();
+  render();
+  toast('Salvat');
+}
+
+function openMisModal(locId) {
+  addMissionToId = locId;
+  editMissionId = null;
+  document.getElementById('misModalTitle').textContent = 'Adaugă misiune';
+  document.getElementById('misName').value = '';
+  const loc = data.find(l => l.id === locId);
+  document.getElementById('misCd').value = loc?.defaultCd || 0;
+  document.getElementById('misModal').classList.add('open');
+}
+
+function openEditMisModal(locId, mid) {
+  const loc = data.find(l => l.id === locId);
+  const m = loc?.missions.find(x => x.id === mid);
+  if (!m) return;
+  addMissionToId = locId;
+  editMissionId = mid;
+  document.getElementById('misModalTitle').textContent = 'Editează misiune';
+  document.getElementById('misName').value = m.name;
+  document.getElementById('misCd').value = m.cd ?? loc.defaultCd ?? 0;
+  document.getElementById('misModal').classList.add('open');
+}
+
+function closeMisModal() {
+  document.getElementById('misModal').classList.remove('open');
+  addMissionToId = null;
+  editMissionId = null;
+}
+
+function saveMission() {
+  const name = document.getElementById('misName').value.trim();
+  if (!name) { alert('Numele misiunii e obligatoriu'); return; }
+  const cd = parseFloat(document.getElementById('misCd').value) || 0;
+  const loc = data.find(l => l.id === addMissionToId);
+  if (!loc) return;
+  loc.missions = loc.missions || [];
+  if (editMissionId) {
+    const m = loc.missions.find(x => x.id === editMissionId);
+    if (m) { m.name = name; m.cd = cd; }
+  } else {
+    loc.missions.push({ id: 'm-' + Date.now(), name, cd });
+  }
+  saveData();
+  closeMisModal();
+  render();
+  toast('Misiune salvată');
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'gta-online-joburi-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Exportat JSON');
+}
+
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      if (!Array.isArray(parsed)) throw new Error('Format invalid');
+      if (!confirm('Importul înlocuiește toate datele actuale. Continui?')) return;
+      Object.keys(timers).forEach(stopTimerByKey);
+      data = parsed;
+      data.forEach(l => {
+        if (typeof l.benefits === 'string') {
+          l.benefits = l.benefits.split('\n').map(s => s.trim()).filter(Boolean);
+        }
+      });
+      saveData();
+      render();
+      toast('Import reușit');
+    } catch (err) {
+      alert('Eroare la import: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function toast(msg, isAlert) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (isAlert ? ' alert' : '');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+loadData().then(render);
+</script>
+</body>
+</html>
