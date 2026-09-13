@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GTA Garage Manager v4</title>
+<style>
+:root {
+  --bg: #1c2026;
+  --bg2: #2a313b;
+  --bg3: #333a46;
+  --border: #444b58;
+  --text: #eef1f5;
+  --muted: #9aa3b2;
+  --accent: #3d8bfd;
+  --accent2: #2ecc71;
+  --danger: #e74c3c;
+  --warn: #f39c12;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  min-height: 100vh;
+}
+header {
+  background: #111418;
+  padding: 12px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.badge-db {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--bg2);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+main { padding: 14px 16px 40px; max-width: 1600px; margin: 0 auto; }
+
+/* Toolbar */
+#toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 14px;
+  position: sticky;
+  top: 56px;
+  z-index: 200;
+  background: var(--bg);
+  padding: 10px 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+input, select, button, textarea {
+  padding: 8px 11px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--text);
+  font-size: 13px;
+}
+button {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s;
+}
+button:hover { background: var(--bg3); }
+button.primary {
+  background: #2a5a9e;
+  border-color: #3d7ad6;
+}
+button.primary:hover { background: #3468b5; }
+button.success {
+  background: #1e6b45;
+  border-color: #2a8f5c;
+}
+button.success:hover { background: #258456; }
+button.danger {
+  background: #6b2e2e;
+  border-color: #8f3d3d;
+}
+button.danger:hover { background: #8a3a3a; }
+button.ghost {
+  background: transparent;
+}
+#search { min-width: 200px; flex: 1; max-width: 280px; }
+
+.garage-stats {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg2);
+  font-size: 12.5px;
+  line-height: 1.45;
+  min-width: 180px;
+}
+.garage-stats b { font-size: 13px; }
+.occ { color: #ff6b6b; }
+.free { color: #51cf66; }
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.filters label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--bg2);
+  border: 1px solid transparent;
+}
+.filters label:has(input:checked) {
+  border-color: var(--accent);
+  background: #243047;
+}
+.filters input[type="checkbox"] { accent-color: var(--accent); }
+
+#statusMsg {
+  color: var(--warn);
+  font-size: 13px;
+  min-width: 80px;
+}
+#stats {
+  font-size: 13px;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.card {
+  background: var(--bg2);
+  border-radius: 11px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid transparent;
+  transition: border-color .15s, transform .12s;
+}
+.card:hover {
+  border-color: var(--border);
+  transform: translateY(-1px);
+}
+.card.fav-card { border-color: #c9a22755; }
+.card img {
+  width: 100%;
+  height: 168px;
+  object-fit: cover;
+  background: #111;
+  display: block;
+}
+.card .no-img {
+  width: 100%;
+  height: 168px;
+  background: linear-gradient(135deg, #1a1f27, #2a313b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.info { padding: 11px 12px 13px; flex: 1; display: flex; flex-direction: column; }
+.info h3 {
+  margin: 0 0 3px;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.25;
+}
+.small { font-size: 12px; color: var(--muted); }
+.badges { display: flex; flex-wrap: wrap; gap: 4px; margin: 7px 0 8px; min-height: 22px; }
+.badge {
+  display: inline-block;
+  background: #3d4658;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.badge.mod { background: #3d5a40; }
+.badge.fav { background: #5a4a20; color: #ffd666; }
+.badge.imani { background: #2a4a6b; }
+.badge.hsw { background: #5a2a4a; }
+.badge.bennys { background: #4a3a2a; }
+.btn-row {
+  display: flex;
+  gap: 5px;
+  margin-top: auto;
+  padding-top: 6px;
+}
+.btn-row button {
+  padding: 6px 9px;
+  font-size: 13px;
+  flex: 1;
+  justify-content: center;
+}
+.btn-row button.fav-btn.active {
+  background: #5a4a20;
+  border-color: #c9a227;
+  color: #ffd666;
+}
+
+/* Dialogs */
+dialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  max-width: 520px;
+  width: 94vw;
+  background: var(--bg2);
+  color: var(--text);
+  box-shadow: 0 16px 50px rgba(0,0,0,.55);
+}
+dialog::backdrop { background: rgba(0,0,0,.55); }
+.dlg-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dlg-header h3 { margin: 0; font-size: 16px; }
+.dlg-body { padding: 16px 18px; max-height: 70vh; overflow-y: auto; }
+.dlg-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.form-grid .full { grid-column: 1 / -1; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+}
+.check-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-top: 4px;
+}
+.check-row label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+#imaniType { margin-top: 6px; }
+.img-preview {
+  margin-top: 8px;
+  max-width: 100%;
+  max-height: 140px;
+  border-radius: 8px;
+  display: none;
+  object-fit: cover;
+}
+.hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* Garage manager dialog */
+#garageDlg { max-width: 640px; }
+.garage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.garage-table th,
+.garage-table td {
+  padding: 9px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.garage-table th {
+  background: var(--bg3);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.garage-table tr:hover td { background: #323844; }
+.garage-table .actions { display: flex; gap: 5px; }
+.garage-table .actions button { padding: 5px 8px; font-size: 12px; }
+.occ-ok { color: #51cf66; }
+.occ-full { color: #ff6b6b; font-weight: 600; }
+.occ-over { color: #ff922b; font-weight: 600; }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+}
+.empty-state strong { color: var(--text); }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  #search { max-width: none; min-width: 140px; }
+  .garage-stats { min-width: 140px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>🚗 GTA Garage Manager <span style="font-weight:400;opacity:.7;font-size:14px">v4</span></h1>
+  <div class="header-right">
+    <span class="badge-db" id="dbStatus">IndexedDB…</span>
+    <button class="ghost" onclick="openGarageManager()" title="Gestionează garajele">🅿️ Garaje</button>
+  </div>
+</header>
+
+<main>
+  <div id="toolbar">
+    <button class="primary" onclick="newCar()">➕ Adaugă</button>
+    <input id="search" placeholder="Caută brand / model / loc..." oninput="render()">
+
+    <div class="garage-stats" id="garageStatsBox">
+      <b id="gName">Toate garajele</b><br>
+      <span class="occ">Ocupate: <span id="gOcc">0</span></span> |
+      <span class="free">Libere: <span id="gFree">—</span></span> |
+      <span>Total sloturi: <span id="gTotal">—</span></span>
+    </div>
+
+    <select id="fGarage" onchange="onGarageFilterChange()">
+      <option value="">Toate garajele</option>
+    </select>
+    <select id="fClass" onchange="render()">
+      <option value="">Toate clasele</option>
+    </select>
+    <select id="fBrand" onchange="render()">
+      <option value="">Toți producătorii</option>
+    </select>
+
+    <select id="sortBy" onchange="render()">
+      <option value="default">Sortare: Originală</option>
+      <option value="brand-asc">Brand A → Z</option>
+      <option value="brand-desc">Brand Z → A</option>
+      <option value="model-asc">Model A → Z</option>
+      <option value="cls-asc">Clasă A → Z</option>
+      <option value="garage-asc">Garaj A → Z</option>
+      <option value="fav-first">★ Favorite primele</option>
+      <option value="mod-first">Modificate primele</option>
+    </select>
+
+    <div class="filters">
+      <label><input type="checkbox" id="fFav" onchange="render()"> ★ Favorite</label>
+      <label><input type="checkbox" id="fImani" onchange="render()"> Imani</label>
+      <label><input type="checkbox" id="fModified" onchange="render()"> Modificat</label>
+      <label><input type="checkbox" id="fHsw" onchange="render()"> HSW</label>
+      <label><input type="checkbox" id="fBennys" onchange="render()"> Benny's</label>
+    </div>
+
+    <button onclick="expCars()">💾 Export mașini</button>
+    <button onclick="document.getElementById('importCarsFile').click()">📥 Import mașini</button>
+    <input type="file" id="importCarsFile" accept=".json" style="display:none" onchange="impCars(event)">
+
+    <button class="ghost" onclick="document.getElementById('importGaragesFile').click()" title="Import garages.json">📂 Import garaje</button>
+    <input type="file" id="importGaragesFile" accept=".json" style="display:none" onchange="impGarages(event)">
+
+    <span id="stats"></span>
+    <span id="statusMsg"></span>
+  </div>
+
+  <div id="grid" class="grid"></div>
+</main>
+
+<!-- Dialog mașină -->
+<dialog id="carDlg">
+  <div class="dlg-header">
+    <h3 id="carDlgTitle">Mașină</h3>
+    <button class="ghost" onclick="carDlg.close()" style="padding:4px 10px">✕</button>
+  </div>
+  <div class="dlg-body">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Producător</label>
+        <input id="brand" list="brandList" placeholder="ex: Pegassi">
+        <datalist id="brandList">
+          <option value="Pegassi"><option value="Grotti"><option value="Benefactor">
+          <option value="Bravado"><option value="Karin"><option value="Ocelot">
+          <option value="Pfister"><option value="Vapid"><option value="Declasse">
+          <option value="Übermacht"><option value="Annis"><option value="Progen">
+          <option value="Truffade"><option value="Dewbauchee"><option value="Enus">
+          <option value="Coil"><option value="Invetero"><option value="Albany">
+          <option value="Dinka"><option value="Maibatsu"><option value="Western">
+        </datalist>
+      </div>
+      <div class="form-group">
+        <label>Model</label>
+        <input id="model" placeholder="ex: Oppressor MK II">
+      </div>
+      <div class="form-group">
+        <label>Clasă / Gen</label>
+        <input id="cls" list="classList" placeholder="ex: Super">
+        <datalist id="classList">
+          <option value="Super"><option value="Sports"><option value="Sports Classic">
+          <option value="Muscle"><option value="Off-Road"><option value="SUV">
+          <option value="Sedan"><option value="Coupe"><option value="Compact">
+          <option value="Motorcycle"><option value="Open Wheel"><option value="Van">
+          <option value="Utility"><option value="Service"><option value="Military">
+        </datalist>
+      </div>
+      <div class="form-group">
+        <label>Garaj</label>
+        <input id="garage" list="garageList" placeholder="Nume garaj">
+        <datalist id="garageList"></datalist>
+      </div>
+      <div class="form-group full">
+        <label>Nivel / Loc</label>
+        <input id="spot" placeholder="ex: Garage B1 / Loc 3">
+      </div>
+      <div class="form-group full">
+        <label>Note (opțional)</label>
+        <textarea id="notes" rows="2" placeholder="Placă, culoare, comentarii..."></textarea>
+      </div>
+      <div class="form-group full">
+        <div class="check-row">
+          <label><input type="checkbox" id="modified"> Modificat</label>
+          <label><input type="checkbox" id="favorite"> ★ Favorite</label>
+          <label><input type="checkbox" id="hsw"> HSW</label>
+          <label><input type="checkbox" id="bennys"> Benny's</label>
+          <label>
+            <input type="checkbox" id="imani" onchange="document.getElementById('imaniType').disabled=!this.checked">
+            Imani Tech
+          </label>
+        </div>
+        <select id="imaniType" disabled style="margin-top:8px">
+          <option value="">-- Tip Imani --</option>
+          <option>Lock-On Jammer</option>
+          <option>RC Unit</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Imagine (screenshot)</label>
+        <input type="file" id="image" accept="image/*" onchange="previewImage(this)">
+        <p class="hint">Se comprimă automat. Lăsă gol ca să păstrezi imaginea existentă.</p>
+        <img id="imgPreview" class="img-preview" alt="Previzualizare">
+      </div>
+    </div>
+  </div>
+  <div class="dlg-footer">
+    <button class="ghost" onclick="carDlg.close()">Renunță</button>
+    <button class="primary" onclick="saveCar()">💾 Salvează</button>
+  </div>
+</dialog>
+
+<!-- Dialog gestiune garaje -->
+<dialog id="garageDlg">
+  <div class="dlg-header">
+    <h3>🅿️ Gestionează garaje</h3>
+    <button class="ghost" onclick="garageDlg.close()" style="padding:4px 10px">✕</button>
+  </div>
+  <div class="dlg-body">
+    <div class="form-grid" style="margin-bottom:14px">
+      <div class="form-group">
+        <label>Nume garaj</label>
+        <input id="gNameInput" placeholder="ex: Facility Tactical">
+      </div>
+      <div class="form-group">
+        <label>Număr locuri</label>
+        <input id="gSlotsInput" type="number" min="1" placeholder="ex: 10">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="primary" id="gSaveBtn" onclick="saveGarage()">💾 Salvează garaj</button>
+      <button class="ghost" onclick="clearGarageForm()">➕ Nou</button>
+      <button onclick="expGarages()">📤 Export garages.json</button>
+    </div>
+    <p class="hint" style="margin-bottom:10px">
+      Numele trebuie să coincidă exact cu cel folosit la mașini. Ocuparea se calculează automat.
+    </p>
+    <table class="garage-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Garaj</th>
+          <th>Locuri</th>
+          <th>Ocupate</th>
+          <th>Libere</th>
+          <th>Acțiuni</th>
+        </tr>
+      </thead>
+      <tbody id="garageTableBody"></tbody>
+    </table>
+  </div>
+  <div class="dlg-footer">
+    <button class="ghost" onclick="garageDlg.close()">Închide</button>
+  </div>
+</dialog>
+
+<script>
+const DB_NAME = "GTAGarageDB";
+const DB_VERSION = 2;
+const CARS_STORE = "cars";
+const GARAGES_STORE = "garages";
+
+let db = null;
+let cars = [];          // array of car objects (with stable id)
+let garages = [];       // [{name, slots}]
+let editCarId = null;   // null = new, otherwise car.id
+let editGarageIndex = -1;
+let nextCarId = 1;
+
+const carDlg = document.getElementById("carDlg");
+const garageDlg = document.getElementById("garageDlg");
+
+// ---------- IndexedDB ----------
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const database = e.target.result;
+      if (!database.objectStoreNames.contains(CARS_STORE)) {
+        database.createObjectStore(CARS_STORE, { keyPath: "id" });
+      }
+      if (!database.objectStoreNames.contains(GARAGES_STORE)) {
+        database.createObjectStore(GARAGES_STORE, { keyPath: "name" });
+      }
+    };
+    req.onsuccess = (e) => {
+      db = e.target.result;
+      resolve(db);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGetAll(storeName) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, "readonly");
+    const req = tx.objectStore(storeName).getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbPut(storeName, value) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, "readwrite");
+    tx.objectStore(storeName).put(value);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function dbDelete(storeName, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, "readwrite");
+    tx.objectStore(storeName).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function dbClear(storeName) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, "readwrite");
+    tx.objectStore(storeName).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function loadAll() {
+  const [carsData, garagesData] = await Promise.all([
+    dbGetAll(CARS_STORE),
+    dbGetAll(GARAGES_STORE)
+  ]);
+  cars = carsData.sort((a, b) => (a.id || 0) - (b.id || 0));
+  nextCarId = cars.reduce((m, c) => Math.max(m, c.id || 0), 0) + 1;
+  garages = garagesData.sort((a, b) => a.name.localeCompare(b.name, "ro"));
+}
+
+// ---------- Image compression ----------
+function compressImage(file, maxWidth = 480, quality = 0.72) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let w = img.width, h = img.height;
+        if (w > maxWidth) {
+          h = Math.round(h * maxWidth / w);
+          w = maxWidth;
+        }
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function previewImage(input) {
+  const prev = document.getElementById("imgPreview");
+  if (!input.files?.length) {
+    prev.style.display = "none";
+    prev.src = "";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    prev.src = e.target.result;
+    prev.style.display = "block";
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ---------- Filters & lists ----------
+function updateGarageDatalist() {
+  const dl = document.getElementById("garageList");
+  dl.innerHTML = "";
+  const names = new Set([
+    ...garages.map(g => g.name),
+    ...cars.map(c => c.garage).filter(Boolean)
+  ]);
+  [...names].sort((a, b) => a.localeCompare(b, "ro")).forEach(n => {
+    const opt = document.createElement("option");
+    opt.value = n;
+    dl.appendChild(opt);
+  });
+}
+
+function fillFilters() {
+  const fg = document.getElementById("fGarage");
+  const fc = document.getElementById("fClass");
+  const fb = document.getElementById("fBrand");
+  const curG = fg.value, curC = fc.value, curB = fb.value;
+
+  fg.innerHTML = '<option value="">Toate garajele</option>';
+  fc.innerHTML = '<option value="">Toate clasele</option>';
+  fb.innerHTML = '<option value="">Toți producătorii</option>';
+
+  const garageNames = new Set([
+    ...garages.map(g => g.name),
+    ...cars.map(c => c.garage).filter(Boolean)
+  ]);
+  [...garageNames].sort((a, b) => a.localeCompare(b, "ro")).forEach(v => {
+    fg.innerHTML += `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`;
+  });
+
+  [...new Set(cars.map(x => x.cls).filter(Boolean))].sort((a, b) => a.localeCompare(b, "ro")).forEach(v => {
+    fc.innerHTML += `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`;
+  });
+  [...new Set(cars.map(x => x.brand).filter(Boolean))].sort((a, b) => a.localeCompare(b, "ro")).forEach(v => {
+    fb.innerHTML += `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`;
+  });
+
+  fg.value = curG;
+  fc.value = curC;
+  fb.value = curB;
+  updateGarageDatalist();
+}
+
+function updateGarageStats() {
+  const sel = document.getElementById("fGarage").value || "";
+  const gNameEl = document.getElementById("gName");
+  const gOcc = document.getElementById("gOcc");
+  const gFree = document.getElementById("gFree");
+  const gTotal = document.getElementById("gTotal");
+
+  if (!sel) {
+    gNameEl.textContent = "Toate garajele";
+    const totalOcc = cars.length;
+    const totalSlots = garages.reduce((s, g) => s + (g.slots || 0), 0);
+    gOcc.textContent = totalOcc;
+    if (totalSlots > 0) {
+      gTotal.textContent = totalSlots;
+      gFree.textContent = Math.max(0, totalSlots - totalOcc);
+    } else {
+      gTotal.textContent = "—";
+      gFree.textContent = "—";
+    }
+    return;
+  }
+
+  gNameEl.textContent = sel;
+  const occ = cars.filter(c => c.garage === sel).length;
+  const g = garages.find(a => a.name === sel);
+  gOcc.textContent = occ;
+  if (g) {
+    gTotal.textContent = g.slots;
+    gFree.textContent = Math.max(0, g.slots - occ);
+  } else {
+    gTotal.textContent = "?";
+    gFree.textContent = "?";
+  }
+}
+
+function onGarageFilterChange() {
+  updateGarageStats();
+  render();
+}
+
+// ---------- Car CRUD ----------
+function newCar() {
+  editCarId = null;
+  document.getElementById("carDlgTitle").textContent = "Adaugă mașină";
+  ["brand", "model", "cls", "garage", "spot", "notes"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  ["modified", "favorite", "imani", "hsw", "bennys"].forEach(id => {
+    document.getElementById(id).checked = false;
+  });
+  document.getElementById("imaniType").value = "";
+  document.getElementById("imaniType").disabled = true;
+  document.getElementById("image").value = "";
+  const prev = document.getElementById("imgPreview");
+  prev.style.display = "none";
+  prev.src = "";
+  carDlg.showModal();
+}
+
+function editCar(id) {
+  const c = cars.find(x => x.id === id);
+  if (!c) return;
+  editCarId = id;
+  document.getElementById("carDlgTitle").textContent = "Editează mașină";
+  document.getElementById("brand").value = c.brand || "";
+  document.getElementById("model").value = c.model || "";
+  document.getElementById("cls").value = c.cls || "";
+  document.getElementById("garage").value = c.garage || "";
+  document.getElementById("spot").value = c.spot || "";
+  document.getElementById("notes").value = c.notes || "";
+  document.getElementById("modified").checked = !!c.modified;
+  document.getElementById("favorite").checked = !!c.favorite;
+  document.getElementById("imani").checked = !!c.imani;
+  document.getElementById("hsw").checked = !!c.hsw;
+  document.getElementById("bennys").checked = !!c.bennys;
+  document.getElementById("imaniType").disabled = !c.imani;
+  document.getElementById("imaniType").value = c.imaniType || "";
+  document.getElementById("image").value = "";
+  const prev = document.getElementById("imgPreview");
+  if (c.image) {
+    prev.src = c.image;
+    prev.style.display = "block";
+  } else {
+    prev.style.display = "none";
+    prev.src = "";
+  }
+  carDlg.showModal();
+}
+
+async function saveCar() {
+  const imageInput = document.getElementById("image");
+  let imgData = null;
+  if (imageInput.files?.length) {
+    try {
+      imgData = await compressImage(imageInput.files[0]);
+    } catch (e) {
+      alert("Eroare la procesarea pozei");
+      imgData = "";
+    }
+  }
+
+  const old = editCarId != null ? cars.find(c => c.id === editCarId) : null;
+  const car = {
+    id: editCarId != null ? editCarId : nextCarId++,
+    brand: document.getElementById("brand").value.trim(),
+    model: document.getElementById("model").value.trim(),
+    cls: document.getElementById("cls").value.trim(),
+    garage: document.getElementById("garage").value.trim(),
+    spot: document.getElementById("spot").value.trim(),
+    notes: document.getElementById("notes").value.trim(),
+    modified: document.getElementById("modified").checked,
+    favorite: document.getElementById("favorite").checked,
+    imani: document.getElementById("imani").checked,
+    imaniType: document.getElementById("imani").checked
+      ? document.getElementById("imaniType").value
+      : "",
+    hsw: document.getElementById("hsw").checked,
+    bennys: document.getElementById("bennys").checked,
+    image: imgData !== null ? imgData : (old?.image || "")
+  };
+
+  if (editCarId != null) {
+    const idx = cars.findIndex(c => c.id === editCarId);
+    if (idx >= 0) cars[idx] = car;
+  } else {
+    cars.push(car);
+  }
+
+  await dbPut(CARS_STORE, car);
+  fillFilters();
+  render();
+  carDlg.close();
+  showStatus(editCarId != null ? "Actualizat" : "Adăugat");
+}
+
+async function delCar(id) {
+  const c = cars.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`Ștergi „${c.brand || ""} ${c.model || ""}”?`)) return;
+  cars = cars.filter(x => x.id !== id);
+  await dbDelete(CARS_STORE, id);
+  fillFilters();
+  render();
+  showStatus("Șters");
+}
+
+async function dupCar(id) {
+  const src = cars.find(x => x.id === id);
+  if (!src) return;
+  const copy = { ...JSON.parse(JSON.stringify(src)), id: nextCarId++ };
+  // optional: clear favorite on duplicate
+  cars.push(copy);
+  await dbPut(CARS_STORE, copy);
+  fillFilters();
+  render();
+  showStatus("Duplicat");
+}
+
+async function toggleFav(id) {
+  const c = cars.find(x => x.id === id);
+  if (!c) return;
+  c.favorite = !c.favorite;
+  await dbPut(CARS_STORE, c);
+  render();
+}
+
+// ---------- Render ----------
+function render() {
+  const t = document.getElementById("search").value.toLowerCase().trim();
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  let list = cars.filter(c => {
+    if (t) {
+      const hay = `${c.brand || ""} ${c.model || ""} ${c.spot || ""} ${c.garage || ""} ${c.notes || ""}`.toLowerCase();
+      if (!hay.includes(t)) return false;
+    }
+    if (document.getElementById("fGarage").value && c.garage !== document.getElementById("fGarage").value) return false;
+    if (document.getElementById("fClass").value && c.cls !== document.getElementById("fClass").value) return false;
+    if (document.getElementById("fBrand").value && c.brand !== document.getElementById("fBrand").value) return false;
+    if (document.getElementById("fFav").checked && !c.favorite) return false;
+    if (document.getElementById("fImani").checked && !c.imani) return false;
+    if (document.getElementById("fModified").checked && !c.modified) return false;
+    if (document.getElementById("fHsw").checked && !c.hsw) return false;
+    if (document.getElementById("fBennys").checked && !c.bennys) return false;
+    return true;
+  });
+
+  const sortBy = document.getElementById("sortBy").value;
+  list.sort((a, b) => {
+    switch (sortBy) {
+      case "brand-asc":
+        return (a.brand || "").localeCompare(b.brand || "", "ro", { sensitivity: "base" });
+      case "brand-desc":
+        return (b.brand || "").localeCompare(a.brand || "", "ro", { sensitivity: "base" });
+      case "model-asc":
+        return (a.model || "").localeCompare(b.model || "", "ro", { sensitivity: "base" });
+      case "cls-asc":
+        return (a.cls || "").localeCompare(b.cls || "", "ro", { sensitivity: "base" });
+      case "garage-asc":
+        return (a.garage || "").localeCompare(b.garage || "", "ro", { sensitivity: "base" });
+      case "fav-first":
+        return (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0);
+      case "mod-first":
+        return (b.modified ? 1 : 0) - (a.modified ? 1 : 0);
+      default:
+        return (a.id || 0) - (b.id || 0);
+    }
+  });
+
+  document.getElementById("stats").textContent = `Rezultate: ${list.length} / ${cars.length}`;
+  updateGarageStats();
+
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <div style="font-size:32px;margin-bottom:8px">🚗</div>
+        <div><strong>Nicio mașină</strong></div>
+        <div style="margin-top:6px;font-size:13px">Apasă „Adaugă” sau importă un fișier JSON</div>
+      </div>`;
+    return;
+  }
+
+  list.forEach(c => {
+    const card = document.createElement("div");
+    card.className = "card" + (c.favorite ? " fav-card" : "");
+
+    if (c.image) {
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.alt = `${c.brand || ""} ${c.model || ""}`;
+      img.src = c.image;
+      img.onerror = () => {
+        img.replaceWith(Object.assign(document.createElement("div"), {
+          className: "no-img",
+          textContent: "Fără imagine"
+        }));
+      };
+      card.appendChild(img);
+    } else {
+      const ph = document.createElement("div");
+      ph.className = "no-img";
+      ph.textContent = "Fără imagine";
+      card.appendChild(ph);
+    }
+
+    const info = document.createElement("div");
+    info.className = "info";
+
+    let badges = "";
+    if (c.modified) badges += '<span class="badge mod">Modificat</span>';
+    if (c.favorite) badges += '<span class="badge fav">★ Favorite</span>';
+    if (c.imani) badges += `<span class="badge imani">Imani: ${escapeHtml(c.imaniType || "Da")}</span>`;
+    if (c.hsw) badges += '<span class="badge hsw">HSW</span>';
+    if (c.bennys) badges += '<span class="badge bennys">Benny\'s</span>';
+
+    info.innerHTML = `
+      <h3>${escapeHtml(c.brand || "")} ${escapeHtml(c.model || "")}</h3>
+      <div class="small">${escapeHtml(c.cls || "—")}</div>
+      <div class="small" style="margin:3px 0">${escapeHtml(c.garage || "—")} • ${escapeHtml(c.spot || "—")}</div>
+      ${c.notes ? `<div class="small" style="margin-top:2px;font-style:italic">${escapeHtml(c.notes)}</div>` : ""}
+      <div class="badges">${badges}</div>
+      <div class="btn-row">
+        <button class="fav-btn ${c.favorite ? "active" : ""}" onclick="toggleFav(${c.id})" title="Favorite">★</button>
+        <button onclick="editCar(${c.id})" title="Editează">✏️</button>
+        <button onclick="dupCar(${c.id})" title="Duplică">📋</button>
+        <button class="danger" onclick="delCar(${c.id})" title="Șterge">🗑️</button>
+      </div>
+    `;
+    card.appendChild(info);
+    grid.appendChild(card);
+  });
+}
+
+// ---------- Garage Manager ----------
+function openGarageManager() {
+  editGarageIndex = -1;
+  clearGarageForm();
+  renderGarageTable();
+  garageDlg.showModal();
+}
+
+function clearGarageForm() {
+  editGarageIndex = -1;
+  document.getElementById("gNameInput").value = "";
+  document.getElementById("gSlotsInput").value = "";
+  document.getElementById("gSaveBtn").textContent = "💾 Salvează garaj";
+}
+
+function renderGarageTable() {
+  const tbody = document.getElementById("garageTableBody");
+  tbody.innerHTML = "";
+
+  // also show garages that appear on cars but are not defined
+  const known = new Map(garages.map(g => [g.name, g]));
+  const extraNames = [...new Set(cars.map(c => c.garage).filter(Boolean))]
+    .filter(n => !known.has(n));
+
+  const rows = [
+    ...garages.map((g, i) => ({ ...g, _idx: i, _defined: true })),
+    ...extraNames.map(n => ({ name: n, slots: null, _idx: -1, _defined: false }))
+  ].sort((a, b) => a.name.localeCompare(b.name, "ro"));
+
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Niciun garaj definit</td></tr>`;
+    return;
+  }
+
+  rows.forEach((g, i) => {
+    const occ = cars.filter(c => c.garage === g.name).length;
+    const slots = g.slots;
+    let freeCell = "—";
+    let occClass = "";
+    if (slots != null) {
+      const free = slots - occ;
+      freeCell = String(Math.max(0, free));
+      if (occ > slots) occClass = "occ-over";
+      else if (occ >= slots) occClass = "occ-full";
+      else occClass = "occ-ok";
+    }
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${escapeHtml(g.name)}${g._defined ? "" : ' <span class="small">(nedefinit)</span>'}</td>
+      <td>${slots != null ? slots : "—"}</td>
+      <td class="${occClass}">${occ}</td>
+      <td>${freeCell}</td>
+      <td>
+        <div class="actions">
+          ${g._defined ? `
+            <button onclick="editGarage(${g._idx})" title="Editează">✏️</button>
+            <button class="danger" onclick="deleteGarage(${g._idx})" title="Șterge">🗑️</button>
+          ` : `
+            <button onclick="quickAddGarage('${escapeAttr(g.name)}')" title="Definește">➕</button>
+          `}
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function editGarage(idx) {
+  editGarageIndex = idx;
+  const g = garages[idx];
+  document.getElementById("gNameInput").value = g.name;
+  document.getElementById("gSlotsInput").value = g.slots;
+  document.getElementById("gSaveBtn").textContent = "💾 Actualizează";
+  document.getElementById("gNameInput").focus();
+}
+
+function quickAddGarage(name) {
+  editGarageIndex = -1;
+  document.getElementById("gNameInput").value = name;
+  document.getElementById("gSlotsInput").value = "";
+  document.getElementById("gSlotsInput").focus();
+  document.getElementById("gSaveBtn").textContent = "💾 Salvează garaj";
+}
+
+async function saveGarage() {
+  const name = document.getElementById("gNameInput").value.trim();
+  const slots = parseInt(document.getElementById("gSlotsInput").value, 10);
+
+  if (!name) {
+    alert("Introdu numele garajului.");
+    return;
+  }
+  if (!slots || slots < 1) {
+    alert("Introdu un număr valid de locuri (minim 1).");
+    return;
+  }
+
+  if (editGarageIndex === -1) {
+    const exists = garages.some(g => g.name.toLowerCase() === name.toLowerCase());
+    if (exists) {
+      if (!confirm("Există deja un garaj cu un nume similar. Adaugi oricum?")) return;
+    }
+    const g = { name, slots };
+    garages.push(g);
+    await dbPut(GARAGES_STORE, g);
+  } else {
+    const old = garages[editGarageIndex];
+    // if name changed, remove old key
+    if (old.name !== name) {
+      await dbDelete(GARAGES_STORE, old.name);
+    }
+    const g = { name, slots };
+    garages[editGarageIndex] = g;
+    await dbPut(GARAGES_STORE, g);
+  }
+
+  garages.sort((a, b) => a.name.localeCompare(b.name, "ro"));
+  fillFilters();
+  updateGarageStats();
+  renderGarageTable();
+  clearGarageForm();
+  showStatus("Garaj salvat");
+}
+
+async function deleteGarage(idx) {
+  const g = garages[idx];
+  if (!confirm(`Ștergi garajul „${g.name}”?\n(Mașinile rămân, doar definiția de sloturi dispare.)`)) return;
+  garages.splice(idx, 1);
+  await dbDelete(GARAGES_STORE, g.name);
+  fillFilters();
+  updateGarageStats();
+  renderGarageTable();
+  clearGarageForm();
+  showStatus("Garaj șters");
+}
+
+// ---------- Import / Export ----------
+function expCars() {
+  const exportData = cars.map(({ id, ...rest }) => rest);
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "garage.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showStatus("Exportat mașini");
+}
+
+function expGarages() {
+  const blob = new Blob([JSON.stringify(garages, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "garages.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showStatus("Exportat garaje");
+}
+
+async function impCars(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (!Array.isArray(imported)) throw new Error("Fișierul trebuie să conțină un array");
+
+      // replace all cars
+      await dbClear(CARS_STORE);
+      cars = [];
+      nextCarId = 1;
+      for (const raw of imported) {
+        const car = {
+          id: nextCarId++,
+          brand: raw.brand || "",
+          model: raw.model || "",
+          cls: raw.cls || "",
+          garage: raw.garage || "",
+          spot: raw.spot || "",
+          notes: raw.notes || "",
+          modified: !!raw.modified,
+          favorite: !!raw.favorite,
+          imani: !!raw.imani,
+          imaniType: raw.imaniType || "",
+          hsw: !!raw.hsw,
+          bennys: !!raw.bennys,
+          image: raw.image || ""
+        };
+        cars.push(car);
+        await dbPut(CARS_STORE, car);
+      }
+      fillFilters();
+      render();
+      showStatus(`Importat: ${cars.length} mașini`);
+    } catch (err) {
+      alert("Eroare la import: " + err.message);
+    }
+    e.target.value = "";
+  };
+  reader.readAsText(f);
+}
+
+async function impGarages(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw new Error("Nu e un array");
+      await dbClear(GARAGES_STORE);
+      garages = [];
+      for (const g of data) {
+        if (!g.name) continue;
+        const item = { name: String(g.name), slots: parseInt(g.slots, 10) || 1 };
+        garages.push(item);
+        await dbPut(GARAGES_STORE, item);
+      }
+      garages.sort((a, b) => a.name.localeCompare(b.name, "ro"));
+      fillFilters();
+      updateGarageStats();
+      showStatus(`Garaje importate (${garages.length})`);
+    } catch (err) {
+      alert("Garages.json invalid: " + err.message);
+    }
+    e.target.value = "";
+  };
+  reader.readAsText(f);
+}
+
+// ---------- Utils ----------
+function showStatus(msg) {
+  const el = document.getElementById("statusMsg");
+  el.textContent = msg;
+  setTimeout(() => { if (el.textContent === msg) el.textContent = ""; }, 2500);
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+function escapeAttr(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+}
+
+// ---------- Init ----------
+(async function init() {
+  try {
+    await openDB();
+    await loadAll();
+    document.getElementById("dbStatus").textContent = "IndexedDB ✓";
+    fillFilters();
+    render();
+  } catch (e) {
+    console.error(e);
+    document.getElementById("dbStatus").textContent = "Eroare DB";
+    alert("Nu s-a putut deschide baza de date IndexedDB.\nVerifică dacă browserul permite stocare locală.");
+  }
+})();
+</script>
+</body>
+</html>
