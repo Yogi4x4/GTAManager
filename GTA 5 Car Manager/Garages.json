@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Agency",
+    "slots": 21
+  },
+  {
+    "name": "Vinewood Mansion",
+    "slots": 20
+  },
+  {
+    "name": "Del Perro Heights, Apt. 7",
+    "slots": 10
+  },
+  {
+    "name": "Casino Penthouse Garage",
+    "slots": 10
+  },
+  {
+    "name": "Arena Workshop",
+    "slots": 30
+  },
+  {
+    "name": "Arcade",
+    "slots": 10
+  },
+  {
+    "name": "Auto Shop",
+    "slots": 10
+  },
+  {
+    "name": "Bail Office",
+    "slots": 2
+  },
+  {
+    "name": "Office",
+    "slots": 60
+  },
+  {
+    "name": "Nightclub",
+    "slots": 31
+  },
+  {
+    "name": "Facility Standard",
+    "slots": 7
+  },
+  {
+    "name": "Facility Tactical",
+    "slots": 5
+  },
+  {
+    "name": "Garment Factory",
+    "slots": 10
+  },
+  {
+    "name": "Clubhouse",
+    "slots": 10
+  }
+]
