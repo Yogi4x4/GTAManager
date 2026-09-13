@@ -1,0 +1,201 @@
+{
+  "version": 2,
+  "exportedAt": "2026-09-11T22:54:52.081Z",
+  "warehouse": [
+    {
+      "name": "Seven-70",
+      "plate": "4LLOY5",
+      "id": 1789164224686
+    },
+    {
+      "name": "X80 Proto",
+      "plate": "TURBO",
+      "id": 1789164296500
+    },
+    {
+      "name": "Jester",
+      "plate": "TOPCLOWN",
+      "id": 1789164305712
+    },
+    {
+      "name": "Entity XF",
+      "plate": "IML4T3",
+      "id": 1789164319132
+    },
+    {
+      "name": "Seven-70",
+      "plate": "SP33DY",
+      "id": 1789164327896
+    },
+    {
+      "name": "Omnis",
+      "plate": "W1D3B0D",
+      "id": 1789164353699
+    },
+    {
+      "name": "Verlierer",
+      "plate": "CURV35",
+      "id": 1789164363351
+    },
+    {
+      "name": "Coquette Classic",
+      "plate": "T0PL3SS",
+      "id": 1789164381999
+    },
+    {
+      "name": "Tyrus",
+      "plate": "C1TRUS",
+      "id": 1789164391143
+    },
+    {
+      "name": "Feltzer",
+      "plate": "K3YL1M3",
+      "id": 1789164416318
+    },
+    {
+      "name": "Tropos Rallye",
+      "plate": "1MSORAD",
+      "id": 1789164432218
+    },
+    {
+      "name": "Stirling GT",
+      "plate": "R4LLY",
+      "id": 1789164449533
+    },
+    {
+      "name": "Sabre Turbo Custom",
+      "plate": "0R1G1N4L",
+      "id": 1789164464489
+    },
+    {
+      "name": "Reaper",
+      "plate": "GR1M",
+      "id": 1789165168424
+    },
+    {
+      "name": "Stirling GT",
+      "plate": "M4J3ST1C",
+      "id": 1789165203079
+    },
+    {
+      "name": "Tampa",
+      "plate": "CH4RG3D",
+      "id": 1789165213135
+    },
+    {
+      "name": "T20",
+      "plate": "D3V1L",
+      "id": 1789165229766
+    },
+    {
+      "name": "Coquette BlackFin",
+      "plate": "BLKF1N",
+      "id": 1789165237382
+    },
+    {
+      "name": "Coquette Classic",
+      "plate": "T0FF33",
+      "id": 1789165254734
+    },
+    {
+      "name": "Omnis",
+      "plate": "0BEYM3",
+      "id": 1789165260494
+    },
+    {
+      "name": "Cheetah",
+      "plate": "BUZZ3D",
+      "id": 1789165269094
+    },
+    {
+      "name": "Sultan RS",
+      "plate": "SN0WFLK3",
+      "id": 1789165277862
+    },
+    {
+      "name": "X80 Proto",
+      "plate": "FUTUR3",
+      "id": 1789165290985
+    },
+    {
+      "name": "Turismo R",
+      "plate": "TPD4WG",
+      "id": 1789165298861
+    },
+    {
+      "name": "Tyrus",
+      "plate": "B35TL4P",
+      "id": 1789165307193
+    },
+    {
+      "name": "Turismo R",
+      "plate": "IN4H4ZE",
+      "id": 1789165313085
+    },
+    {
+      "name": "Jester",
+      "plate": "H0TP1NK",
+      "id": 1789165327757
+    },
+    {
+      "name": "Jester",
+      "plate": "NOF00L",
+      "id": 1789165339148
+    },
+    {
+      "name": "Nightshade",
+      "plate": "DE4DLY",
+      "id": 1789165348784
+    },
+    {
+      "name": "Nightshade",
+      "plate": "E4TM3",
+      "id": 1789165357132
+    },
+    {
+      "name": "Seven-70",
+      "plate": "FRU1TY",
+      "id": 1789165367276
+    },
+    {
+      "name": "Massacro",
+      "plate": "TR0P1CAL",
+      "id": 1789165372116
+    },
+    {
+      "name": "Massacro",
+      "plate": "B4N4N4",
+      "id": 1789165385511
+    },
+    {
+      "name": "Zentorno",
+      "plate": "H3R0",
+      "id": 1789165393599
+    },
+    {
+      "name": "Coquette BlackFin",
+      "plate": "W1P3OUT",
+      "id": 1789165417735
+    },
+    {
+      "name": "Zentorno",
+      "plate": "0LDN3W5",
+      "id": 1789165428831
+    },
+    {
+      "name": "Zentorno",
+      "plate": "W1NN1NG",
+      "id": 1789165437858
+    },
+    {
+      "name": "Entity XF",
+      "plate": "0V3RFL0D",
+      "id": 1789165825559
+    }
+  ],
+  "checks": {
+    "fading": true,
+    "fading_0": true,
+    "fading_1": true
+  }
+}

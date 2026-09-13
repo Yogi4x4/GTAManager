@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTA Online – Vehicle Cargo Tracker</title>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --card: #161616;
+    --sidebar: #121212;
+    --accent: #00d4aa;
+    --green: #1db954;
+    --green-bg: #0d2a1a;
+    --text: #e8e8e8;
+    --muted: #888;
+    --border: #2a2a2a;
+    --top: #ff5c5c;
+    --mid: #ffcc33;
+    --std: #4cd964;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 360px;
+    min-width: 360px;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+  .sidebar h2 { font-size: 1.15rem; margin-bottom: 4px; color: var(--accent); }
+  .sidebar .count { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; }
+  .range-stats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .range-stat {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+  .range-stat .num { font-weight: 700; font-size: 1.1rem; display: block; }
+  .range-stat.top .num { color: var(--top); }
+  .range-stat.mid .num { color: var(--mid); }
+  .range-stat.std .num { color: var(--std); }
+  .range-stat .label { color: var(--muted); font-size: 0.7rem; }
+  .add-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .add-form input {
+    background: #1e1e1e; border: 1px solid var(--border); color: var(--text);
+    padding: 9px 12px; border-radius: 6px; font-size: 0.95rem;
+  }
+  .add-form input:focus { outline: none; border-color: var(--accent); }
+  .add-form button {
+    background: var(--accent); color: #000; border: none; padding: 10px;
+    border-radius: 6px; font-weight: 600; cursor: pointer;
+  }
+  .add-form button:hover { filter: brightness(1.1); }
+  .suggestions {
+    background: #1a1a1a; border: 1px solid var(--border); border-radius: 6px;
+    max-height: 200px; overflow-y: auto; display: none; margin-bottom: 8px;
+  }
+  .suggestions div {
+    padding: 8px 12px; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid #222;
+  }
+  .suggestions div:hover, .suggestions div.active { background: #0d3d2e; }
+  .suggestions .plate { font-family: monospace; color: var(--accent); }
+  .suggestions .range-tag { font-size: 0.7rem; padding: 1px 5px; border-radius: 3px; margin-left: 6px; }
+  .io-buttons { display: flex; gap: 8px; margin-bottom: 14px; }
+  .io-buttons button {
+    flex: 1; background: #2a2a2a; color: #fff; border: 1px solid var(--border);
+    padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+  }
+  .io-buttons button:hover { background: #3a3a3a; }
+  .warehouse-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+  .wh-item {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .wh-item.match { background: var(--green-bg); border-color: var(--green); }
+  .wh-item .name { font-weight: 600; }
+  .wh-item .plate { font-family: monospace; letter-spacing: 1px; color: #fff; font-size: 0.95rem; }
+  .wh-item .match-badge {
+    font-size: 0.7rem; background: var(--green); color: #000; padding: 2px 6px;
+    border-radius: 4px; font-weight: 700; margin-left: 6px;
+  }
+  .wh-item button { background: transparent; border: none; color: #ff5555; cursor: pointer; font-size: 1.1rem; }
+  .main { flex: 1; padding: 24px 28px; overflow-y: auto; }
+  .main h1 { font-size: 1.6rem; color: var(--accent); margin-bottom: 4px; }
+  .subtitle { color: var(--muted); margin-bottom: 20px; font-size: 0.95rem; }
+  .progress { margin-bottom: 24px; font-size: 1.05rem; }
+  .progress span { color: var(--accent); font-weight: 700; }
+  .collection {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 18px;
+  }
+  .collection.done { border-color: var(--accent); background: #0f1f1a; }
+  .collection-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .collection-header input { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+  .collection-title { font-size: 1.2rem; font-weight: 600; }
+  .bonus {
+    margin-left: auto; background: #0d3d2e; color: var(--accent);
+    padding: 3px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;
+  }
+  .collector { color: var(--muted); font-size: 0.85rem; margin-bottom: 12px; }
+  .vehicles { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .vehicle {
+    background: #111; border: 1px solid #2a2a2a; border-radius: 8px;
+    padding: 10px 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .vehicle.match { background: var(--green-bg); border-color: var(--green); }
+  .vehicle.done { opacity: 0.7; }
+  .vehicle input { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+  .vehicle .info { flex: 1; }
+  .vehicle .name { font-weight: 600; font-size: 0.95rem; }
+  .vehicle .plate { font-family: monospace; letter-spacing: 1px; font-size: 0.9rem; }
+  .range {
+    display: inline-block; font-size: 0.7rem; padding: 1px 6px;
+    border-radius: 4px; margin-top: 3px; font-weight: 600;
+  }
+  .range.top { background: #3a1515; color: var(--top); }
+  .range.mid { background: #3a3010; color: var(--mid); }
+  .range.std { background: #143a1a; color: var(--std); }
+  .actions { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .actions button {
+    background: #2a2a2a; color: #fff; border: none; padding: 9px 16px;
+    border-radius: 6px; cursor: pointer; font-size: 0.9rem;
+  }
+  .actions button:hover { background: #3a3a3a; }
+  @media (max-width: 900px) {
+    body { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: relative; max-height: 50vh; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <h2>Vehicle Warehouse</h2>
+  <div class="count"><span id="whCount">0</span> mașini stocate</div>
+
+  <div class="range-stats">
+    <div class="range-stat top">
+      <span class="num" id="countTop">0</span>
+      <span class="label">Top</span>
+    </div>
+    <div class="range-stat mid">
+      <span class="num" id="countMid">0</span>
+      <span class="label">Mid</span>
+    </div>
+    <div class="range-stat std">
+      <span class="num" id="countStd">0</span>
+      <span class="label">Standard</span>
+    </div>
+  </div>
+
+  <div class="add-form">
+    <input type="text" id="searchInput" placeholder="Caută după plăcuță sau nume..." autocomplete="off">
+    <div class="suggestions" id="suggestions"></div>
+    <input type="text" id="carName" placeholder="Nume mașină" readonly style="opacity:0.7">
+    <input type="text" id="carPlate" placeholder="Plăcuță" readonly style="opacity:0.7; text-transform:uppercase">
+    <input type="text" id="carRange" placeholder="Range" readonly style="opacity:0.7">
+    <button onclick="addCar()">+ Adaugă în warehouse</button>
+  </div>
+
+  <div class="io-buttons">
+    <button onclick="exportData()">⬇ Export</button>
+    <button onclick="document.getElementById('importFile').click()">⬆ Import</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+
+  <div class="warehouse-list" id="warehouseList"></div>
+</aside>
+
+<main class="main">
+  <h1>Vehicle Cargo Collections</h1>
+  <p class="subtitle">Lista completă din GTA Wiki (96 variante). Mașinile din warehouse care au plăcuța de colecție apar evidențiate cu verde.</p>
+
+  <div class="progress">
+    Colecții complete: <span id="doneCount">0</span> / 10
+  </div>
+
+  <div id="collections"></div>
+
+  <div class="actions">
+    <button onclick="resetCollections()">Resetează colecțiile</button>
+    <button onclick="resetWarehouse()">Golește warehouse</button>
+  </div>
+</main>
+
+<script>
+/* ===== COMPLETE ACCURATE LIST FROM GTA WIKI (96 variants) ===== */
+const allCars = [
+  {plate:"B1GMON3Y",range:"Top",name:"Z-Type",collection:"End of Empires"},
+  {plate:"K1NGP1N",range:"Top",name:"Z-Type",collection:""},
+  {plate:"CE0",range:"Top",name:"Z-Type",collection:""},
+  {plate:"B1GB0Y",range:"Top",name:"ETR1",collection:""},
+  {plate:"M0N4RCH",range:"Top",name:"ETR1",collection:""},
+  {plate:"PR3TTY",range:"Top",name:"ETR1",collection:"Pastel Perfection"},
+  {plate:"M1DL1F3",range:"Top",name:"811",collection:""},
+  {plate:"R3G4L",range:"Top",name:"811",collection:""},
+  {plate:"SL1CK",range:"Top",name:"811",collection:"No Direct Sunlight"},
+  {plate:"OH3LL0",range:"Top",name:"Osiris",collection:""},
+  {plate:"PH4R40H",range:"Top",name:"Osiris",collection:""},
+  {plate:"SL33K",range:"Top",name:"Osiris",collection:"Uninsurable"},
+  {plate:"2FA5T4U",range:"Top",name:"Reaper",collection:""},
+  {plate:"D34TH4U",range:"Top",name:"Reaper",collection:"Molten Metal"},
+  {plate:"GR1M",range:"Top",name:"Reaper",collection:""},
+  {plate:"0LDBLU3",range:"Top",name:"Mamba",collection:""},
+  {plate:"BLKM4MB4",range:"Top",name:"Mamba",collection:"Stay Declasse"},
+  {plate:"V1P",range:"Top",name:"Mamba",collection:""},
+  {plate:"C4TCHM3",range:"Top",name:"FMJ",collection:"Birds of Paradise"},
+  {plate:"J0K3R",range:"Top",name:"FMJ",collection:""},
+  {plate:"H0T4U",range:"Top",name:"FMJ",collection:""},
+  {plate:"M4J3ST1C",range:"Top",name:"Stirling GT",collection:""},
+  {plate:"T0UR3R",range:"Top",name:"Stirling GT",collection:""},
+  {plate:"R4LLY",range:"Top",name:"Stirling GT",collection:"Shades of Blue"},
+  {plate:"FUTUR3",range:"Top",name:"X80 Proto",collection:""},
+  {plate:"M4K3B4NK",range:"Top",name:"X80 Proto",collection:"Uninsurable"},
+  {plate:"TURB0",range:"Top",name:"X80 Proto",collection:""},
+  {plate:"C1TRUS",range:"Top",name:"Tyrus",collection:"Birds of Paradise"},
+  {plate:"B35TL4P",range:"Top",name:"Tyrus",collection:""},
+  {plate:"TR3X",range:"Top",name:"Tyrus",collection:""},
+  {plate:"CAR4M3L",range:"Top",name:"T20",collection:""},
+  {plate:"T0PSP33D",range:"Top",name:"T20",collection:""},
+  {plate:"D3V1L",range:"Top",name:"T20",collection:"Uninsurable"},
+  {plate:"L4WLE55",range:"Top",name:"Roosevelt Valor",collection:""},
+  {plate:"0LDT1M3R",range:"Top",name:"Roosevelt Valor",collection:"End of Empires"},
+  {plate:"V4L0R",range:"Top",name:"Roosevelt Valor",collection:""},
+  {plate:"T0PL3SS",range:"Mid",name:"Coquette Classic",collection:"Pastel Perfection"},
+  {plate:"T0FF33",range:"Mid",name:"Coquette Classic",collection:""},
+  {plate:"CL45SY",range:"Mid",name:"Coquette Classic",collection:""},
+  {plate:"PR3C1OUS",range:"Mid",name:"Verlierer",collection:"Pastel Perfection"},
+  {plate:"0UTFR0NT",range:"Mid",name:"Verlierer",collection:""},
+  {plate:"CURV35",range:"Mid",name:"Verlierer",collection:""},
+  {plate:"W1NN1NG",range:"Mid",name:"Zentorno",collection:"Molten Metal"},
+  {plate:"0LDN3W5",range:"Mid",name:"Zentorno",collection:""},
+  {plate:"H3R0",range:"Mid",name:"Zentorno",collection:""},
+  {plate:"1MS0RAD",range:"Mid",name:"Tropos Rallye",collection:""},
+  {plate:"31GHT135",range:"Mid",name:"Tropos Rallye",collection:""},
+  {plate:"1985",range:"Mid",name:"Tropos Rallye",collection:"Hip to be Square"},
+  {plate:"SN0WFLK3",range:"Mid",name:"Sultan RS",collection:"Hip to be Square"},
+  {plate:"F1D3L1TY",range:"Mid",name:"Sultan RS",collection:""},
+  {plate:"5H0W0FF",range:"Mid",name:"Sultan RS",collection:""},
+  {plate:"BUZZ3D",range:"Mid",name:"Cheetah",collection:"Birds of Paradise"},
+  {plate:"M1DN1GHT",range:"Mid",name:"Cheetah",collection:""},
+  {plate:"B1GC4T",range:"Mid",name:"Cheetah",collection:""},
+  {plate:"FRU1TY",range:"Mid",name:"Seven-70",collection:""},
+  {plate:"4LLOY5",range:"Mid",name:"Seven-70",collection:"Shades of Blue"},
+  {plate:"SP33DY",range:"Mid",name:"Seven-70",collection:""},
+  {plate:"0BEYM3",range:"Mid",name:"Omnis",collection:""},
+  {plate:"W1D3B0D",range:"Mid",name:"Omnis",collection:"Hip to be Square"},
+  {plate:"D1RTY",range:"Mid",name:"Omnis",collection:""},
+  {plate:"IML4TE",range:"Mid",name:"Entity XF",collection:""},
+  {plate:"0V3RFL0D",range:"Mid",name:"Entity XF",collection:"Birds of Paradise"},
+  {plate:"W1DEB0Y",range:"Mid",name:"Entity XF",collection:""},
+  {plate:"V1NT4G3",range:"Mid",name:"Coquette BlackFin",collection:"Fading Power"},
+  {plate:"W1P3OUT",range:"Mid",name:"Coquette BlackFin",collection:""},
+  {plate:"BLKF1N",range:"Mid",name:"Coquette BlackFin",collection:""},
+  {plate:"IN4H4ZE",range:"Standard",name:"Turismo R",collection:""},
+  {plate:"M1LKYW4Y",range:"Standard",name:"Turismo R",collection:""},
+  {plate:"TPD4WG",range:"Standard",name:"Turismo R",collection:"Shades of Blue"},
+  {plate:"CH4RG3D",range:"Standard",name:"Tampa",collection:"Stay Declasse"},
+  {plate:"CRU151N",range:"Standard",name:"Tampa",collection:""},
+  {plate:"MU5CL3",range:"Standard",name:"Tampa",collection:""},
+  {plate:"GUNZ0UT",range:"Standard",name:"Sabre Turbo Custom",collection:""},
+  {plate:"0R1G1N4L",range:"Standard",name:"Sabre Turbo Custom",collection:""},
+  {plate:"B0UNC3",range:"Standard",name:"Sabre Turbo Custom",collection:"Stay Declasse"},
+  {plate:"DE4DLY",range:"Standard",name:"Nightshade",collection:""},
+  {plate:"TH37OS",range:"Standard",name:"Nightshade",collection:"Fading Power"},
+  {plate:"E4TM3",range:"Standard",name:"Nightshade",collection:""},
+  {plate:"TR0P1CAL",range:"Standard",name:"Massacro",collection:""},
+  {plate:"B4N4N4",range:"Standard",name:"Massacro",collection:""},
+  {plate:"B055",range:"Standard",name:"Massacro",collection:"Molten Metal"},
+  {plate:"H0TP1NK",range:"Standard",name:"Jester",collection:""},
+  {plate:"T0PCL0WN",range:"Standard",name:"Jester",collection:""},
+  {plate:"NOF00L",range:"Standard",name:"Jester",collection:"Hip to be Square"},
+  {plate:"P0W3RFUL",range:"Standard",name:"Feltzer",collection:"No Direct Sunlight"},
+  {plate:"K3YL1M3",range:"Standard",name:"Feltzer",collection:""},
+  {plate:"R4C3R",range:"Standard",name:"Feltzer",collection:""},
+  {plate:"BE4STY",range:"Standard",name:"Bestia GTS",collection:"No Direct Sunlight"},
+  {plate:"5T34LTH",range:"Standard",name:"Bestia GTS",collection:""},
+  {plate:"5M00TH",range:"Standard",name:"Bestia GTS",collection:""},
+  {plate:"V1S10NRY",range:"Standard",name:"Alpha",collection:"Molten Metal"},
+  {plate:"L0NG80Y",range:"Standard",name:"Alpha",collection:""},
+  {plate:"R31GN",range:"Standard",name:"Alpha",collection:""},
+  {plate:"DR1FT3R",range:"Standard",name:"Banshee 900R",collection:"Shades of Blue"},
+  {plate:"D0M1N0",range:"Standard",name:"Banshee 900R",collection:""},
+  {plate:"H0WL3R",range:"Standard",name:"Banshee 900R",collection:""}
+];
+
+const collections = [
+  { id:"uninsurable", name:"Uninsurable", collector:"Jay Norris", bonus:"$35,000",
+    vehicles:[{name:"X80 Proto",plate:"M4K3B4NK",range:"Top"},{name:"T20",plate:"D3V1L",range:"Top"},{name:"Osiris",plate:"SL33K",range:"Top"}] },
+  { id:"birds", name:"Birds of Paradise", collector:"Curtis Cray Esq", bonus:"$50,000",
+    vehicles:[{name:"Tyrus",plate:"C1TRUS",range:"Top"},{name:"Cheetah",plate:"BUZZ3D",range:"Mid"},{name:"FMJ",plate:"C4TCHM3",range:"Top"},{name:"Entity XF",plate:"0V3RFL0D",range:"Mid"}] },
+  { id:"fading", name:"Fading Power", collector:"Keith Collins MD", bonus:"$20,000",
+    vehicles:[{name:"Coquette BlackFin",plate:"V1NT4G3",range:"Mid"},{name:"Nightshade",plate:"TH37OS",range:"Standard"}] },
+  { id:"nodirect", name:"No Direct Sunlight", collector:"DJ Playlist", bonus:"$35,000",
+    vehicles:[{name:"Bestia GTS",plate:"BE4STY",range:"Standard"},{name:"Feltzer",plate:"P0W3RFUL",range:"Standard"},{name:"811",plate:"SL1CK",range:"Top"}] },
+  { id:"stay", name:"Stay Declasse", collector:"Ms. M Schultz", bonus:"$35,000",
+    vehicles:[{name:"Sabre Turbo Custom",plate:"B0UNC3",range:"Standard"},{name:"Tampa",plate:"CH4RG3D",range:"Standard"},{name:"Mamba",plate:"BLKM4MB4",range:"Top"}] },
+  { id:"molten", name:"Molten Metal", collector:"Ronnie Bonelli", bonus:"$50,000",
+    vehicles:[{name:"Alpha",plate:"V1S10NRY",range:"Standard"},{name:"Reaper",plate:"D34TH4U",range:"Top"},{name:"Massacro",plate:"B055",range:"Standard"},{name:"Zentorno",plate:"W1NN1NG",range:"Mid"}] },
+  { id:"pastel", name:"Pastel Perfection", collector:"Cloe Parker", bonus:"$35,000",
+    vehicles:[{name:"Coquette Classic",plate:"T0PL3SS",range:"Mid"},{name:"Verlierer",plate:"PR3C1OUS",range:"Mid"},{name:"ETR1",plate:"PR3TTY",range:"Top"}] },
+  { id:"hip", name:"Hip to be Square", collector:"Tao Cheng", bonus:"$50,000",
+    vehicles:[{name:"Omnis",plate:"W1D3B0D",range:"Mid"},{name:"Tropos Rallye",plate:"1985",range:"Mid"},{name:"Jester",plate:"NOF00L",range:"Standard"},{name:"Sultan RS",plate:"SN0WFLK3",range:"Mid"}] },
+  { id:"shades", name:"Shades of Blue", collector:"Cris Formage", bonus:"$50,000",
+    vehicles:[{name:"Banshee 900R",plate:"DR1FT3R",range:"Standard"},{name:"Stirling GT",plate:"R4LLY",range:"Top"},{name:"Seven-70",plate:"4LLOY5",range:"Mid"},{name:"Turismo R",plate:"TPD4WG",range:"Standard"}] },
+  { id:"empires", name:"End of Empires", collector:"The Sultan of Amir", bonus:"$20,000",
+    vehicles:[{name:"Roosevelt Valor",plate:"0LDT1M3R",range:"Top"},{name:"Z-Type",plate:"B1GMON3Y",range:"Top"}] }
+];
+
+/* plate -> range lookup */
+const plateToRange = {};
+allCars.forEach(c => { plateToRange[c.plate] = c.range; });
+
+function loadWarehouse(){try{return JSON.parse(localStorage.getItem("gtaWarehouse")||"[]");}catch{return[];}}
+function saveWarehouse(list){localStorage.setItem("gtaWarehouse",JSON.stringify(list));}
+function loadChecks(){try{return JSON.parse(localStorage.getItem("gtaChecks")||"{}");}catch{return{};}}
+function saveChecks(obj){localStorage.setItem("gtaChecks",JSON.stringify(obj));}
+
+const collectionPlates=new Set();
+collections.forEach(c=>c.vehicles.forEach(v=>collectionPlates.add(v.plate.toUpperCase())));
+
+const searchInput=document.getElementById("searchInput");
+const suggestionsEl=document.getElementById("suggestions");
+let selectedIdx=-1,currentMatches=[];
+
+searchInput.addEventListener("input",()=>{
+  const q=searchInput.value.trim().toUpperCase();
+  selectedIdx=-1;
+  if(q.length<1){suggestionsEl.style.display="none";return;}
+  currentMatches=allCars.filter(c=>c.plate.includes(q)||c.name.toUpperCase().includes(q)).slice(0,14);
+  if(currentMatches.length===0){suggestionsEl.style.display="none";return;}
+  suggestionsEl.innerHTML=currentMatches.map((c,i)=>{
+    const rangeClass=c.range==="Top"?"top":c.range==="Mid"?"mid":"std";
+    const col=c.collection?` · <span style="color:var(--green)">${c.collection}</span>`:"";
+    return `<div data-idx="${i}" class="${i===0?'active':''}"><span class="plate">${c.plate}</span><span class="range-tag range ${rangeClass}">${c.range}</span> — ${c.name}${col}</div>`;
+  }).join("");
+  suggestionsEl.style.display="block";
+});
+
+suggestionsEl.addEventListener("click",e=>{
+  const div=e.target.closest("div[data-idx]");
+  if(!div)return;
+  selectCar(currentMatches[+div.dataset.idx]);
+});
+
+searchInput.addEventListener("keydown",e=>{
+  if(suggestionsEl.style.display!=="block")return;
+  if(e.key==="ArrowDown"){e.preventDefault();selectedIdx=Math.min(selectedIdx+1,currentMatches.length-1);updateActive();}
+  else if(e.key==="ArrowUp"){e.preventDefault();selectedIdx=Math.max(selectedIdx-1,0);updateActive();}
+  else if(e.key==="Enter"){e.preventDefault();if(selectedIdx>=0)selectCar(currentMatches[selectedIdx]);else if(currentMatches.length===1)selectCar(currentMatches[0]);}
+  else if(e.key==="Escape"){suggestionsEl.style.display="none";}
+});
+
+function updateActive(){[...suggestionsEl.children].forEach((el,i)=>el.classList.toggle("active",i===selectedIdx));}
+function selectCar(car){
+  document.getElementById("carName").value=car.name;
+  document.getElementById("carPlate").value=car.plate;
+  document.getElementById("carRange").value=car.range+(car.collection?" · "+car.collection:"");
+  searchInput.value="";suggestionsEl.style.display="none";
+}
+
+function exportData(){
+  const data={version:2,exportedAt:new Date().toISOString(),warehouse:loadWarehouse(),checks:loadChecks()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download=`gta-vehicle-cargo-${new Date().toISOString().slice(0,10)}.json`;a.click();
+  URL.revokeObjectURL(url);
+}
+function importData(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.warehouse){data.warehouse.forEach(c=>{if(!c.id)c.id=Date.now()+Math.random();});saveWarehouse(data.warehouse);}
+      if(data.checks)saveChecks(data.checks);
+      render();alert("Import reușit!");
+    }catch(err){alert("Eroare: "+err.message);}
+  };
+  reader.readAsText(file);event.target.value="";
+}
+
+function addCar(){
+  const name=document.getElementById("carName").value.trim();
+  const plate=document.getElementById("carPlate").value.trim().toUpperCase();
+  if(!name||!plate){alert("Selectează mai întâi o mașină din listă!");return;}
+  const list=loadWarehouse();
+  if(list.some(c=>c.plate===plate)){alert("Această plăcuță există deja în warehouse!");return;}
+  list.push({name,plate,id:Date.now()});saveWarehouse(list);
+  document.getElementById("carName").value="";document.getElementById("carPlate").value="";document.getElementById("carRange").value="";
+  render();
+}
+function removeCar(id){saveWarehouse(loadWarehouse().filter(c=>c.id!==id));render();}
+
+function renderWarehouse(){
+  const list=loadWarehouse();
+  const container=document.getElementById("warehouseList");
+  document.getElementById("whCount").textContent=list.length;
+
+  // count by range
+  let top=0, mid=0, std=0;
+  list.forEach(car => {
+    const r = plateToRange[car.plate] || "";
+    if(r==="Top") top++;
+    else if(r==="Mid") mid++;
+    else if(r==="Standard") std++;
+  });
+  document.getElementById("countTop").textContent = top;
+  document.getElementById("countMid").textContent = mid;
+  document.getElementById("countStd").textContent = std;
+
+  if(list.length===0){container.innerHTML='<div style="color:var(--muted);font-size:0.9rem;padding:10px 0">Nicio mașină adăugată încă.</div>';return;}
+  container.innerHTML=list.map(car=>{
+    const isMatch=collectionPlates.has(car.plate);
+    return `<div class="wh-item ${isMatch?'match':''}"><div><div class="name">${car.name}</div><div class="plate">${car.plate}${isMatch?'<span class="match-badge">COLECȚIE</span>':''}</div></div><button onclick="removeCar(${car.id})" title="Șterge">✕</button></div>`;
+  }).join("");
+}
+
+function renderCollections(){
+  const checks=loadChecks();
+  const warehouse=loadWarehouse();
+  const warehousePlates=new Set(warehouse.map(c=>c.plate));
+  const container=document.getElementById("collections");
+  container.innerHTML="";let done=0;
+  collections.forEach(col=>{
+    const colDone=checks[col.id]===true;if(colDone)done++;
+    const div=document.createElement("div");
+    div.className="collection"+(colDone?" done":"");
+    div.innerHTML=`<div class="collection-header"><input type="checkbox" id="col_${col.id}" ${colDone?"checked":""}><div class="collection-title">${col.name}</div><div class="bonus">${col.bonus}</div></div><div class="collector">Collector: ${col.collector}</div><div class="vehicles">${col.vehicles.map((v,i)=>{const vid=col.id+"_"+i;const vDone=checks[vid]===true;const hasInWarehouse=warehousePlates.has(v.plate);return `<div class="vehicle ${hasInWarehouse?'match':''} ${vDone?'done':''}"><input type="checkbox" id="${vid}" ${vDone?"checked":""}><div class="info"><div class="name">${v.name}</div><div class="plate">${v.plate}</div><span class="range ${v.range.toLowerCase()}">${v.range}</span></div></div>`;}).join("")}</div>`;
+    container.appendChild(div);
+    document.getElementById("col_"+col.id).addEventListener("change",e=>{
+      checks[col.id]=e.target.checked;
+      if(e.target.checked)col.vehicles.forEach((_,i)=>checks[col.id+"_"+i]=true);
+      saveChecks(checks);render();
+    });
+    col.vehicles.forEach((_,i)=>{
+      const vid=col.id+"_"+i;
+      document.getElementById(vid).addEventListener("change",e=>{
+        checks[vid]=e.target.checked;
+        checks[col.id]=col.vehicles.every((_,j)=>checks[col.id+"_"+j]);
+        saveChecks(checks);render();
+      });
+    });
+  });
+  document.getElementById("doneCount").textContent=done;
+}
+
+function render(){renderWarehouse();renderCollections();}
+function resetCollections(){if(confirm("Resetezi toate bifările de colecții?")){localStorage.removeItem("gtaChecks");render();}}
+function resetWarehouse(){if(confirm("Golești lista de mașini din warehouse?")){localStorage.removeItem("gtaWarehouse");render();}}
+document.addEventListener("click",e=>{if(!e.target.closest(".add-form"))suggestionsEl.style.display="none";});
+render();
+</script>
+</body>
+</html>

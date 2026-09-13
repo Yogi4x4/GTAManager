@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTA Production Manager</title>
+<style>
+:root {
+  --bg: #0f1216;
+  --panel: #1a1f27;
+  --panel2: #232a34;
+  --border: #2e3642;
+  --text: #e8ecf1;
+  --muted: #8b95a5;
+  --accent: #3d8bfd;
+  --red: #e74c3c;
+  --orange: #e67e22;
+  --green: #27ae60;
+  --sidebar-w: 300px;
+  --topbar-h: 52px;
+  --msize: 42px;
+  --lsize: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#topbar {
+  height: var(--topbar-h);
+  background: #14181f;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+#topbar h1 { font-size: 15px; font-weight: 650; white-space: nowrap; margin-right: 6px; }
+.btn {
+  background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+  padding: 6px 11px; border-radius: 7px; font-size: 12.5px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+}
+.btn:hover { background: #2c3440; }
+.btn.primary { background: #1e4a8c; border-color: #2d6bc4; }
+.btn.primary:hover { background: #255aa8; }
+.btn.danger { background: #5c2a2a; border-color: #8a3d3d; }
+.btn.danger:hover { background: #743636; }
+.spacer { flex: 1; }
+.legend { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: 4px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dot.red { background: var(--red); }
+.dot.orange { background: var(--orange); }
+.dot.green { background: var(--green); }
+#layout { display: flex; flex: 1; min-height: 0; }
+#sidebar {
+  width: var(--sidebar-w); background: var(--panel); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden;
+}
+.side-section { padding: 12px 12px 8px; border-bottom: 1px solid var(--border); }
+.side-section h3 {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--muted); margin-bottom: 8px;
+}
+.tool-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.tool-btn {
+  flex: 1; min-width: 70px; text-align: center; padding: 8px 6px;
+  background: var(--panel2); border: 1px solid var(--border); border-radius: 7px;
+  cursor: pointer; font-size: 12px;
+}
+.tool-btn:hover { background: #2c3440; }
+.tool-btn.active { border-color: var(--accent); background: #1e2f4a; color: #7eb6ff; }
+.biz-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  max-height: 220px; overflow-y: auto;
+}
+.biz-item {
+  display: flex; align-items: center; gap: 7px; padding: 7px 8px;
+  background: var(--panel2); border: 1px solid transparent; border-radius: 7px;
+  cursor: pointer; font-size: 12px; user-select: none;
+}
+.biz-item:hover { background: #2c3440; }
+.biz-item.active { border-color: var(--accent); background: #1e2f4a; }
+.biz-item .icon-wrap {
+  width: 28px; height: 28px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.biz-item .icon-wrap svg { width: 24px; height: 24px; }
+#list-panel { flex: 1; overflow-y: auto; padding: 8px 10px 16px; }
+#list-panel h3 {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--muted); margin: 8px 4px 6px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.count-pills { display: flex; gap: 4px; font-size: 10px; text-transform: none; letter-spacing: 0; }
+.pill { padding: 1px 6px; border-radius: 999px; background: var(--panel2); color: var(--muted); }
+.pill.r { background: #3d2020; color: #ff8a80; }
+.pill.o { background: #3d2e18; color: #ffb74d; }
+.pill.g { background: #1a3d28; color: #81c784; }
+.marker-row {
+  display: flex; align-items: center; gap: 8px; padding: 7px 8px;
+  border-radius: 7px; cursor: pointer; margin-bottom: 3px; border: 1px solid transparent;
+}
+.marker-row:hover { background: var(--panel2); }
+.marker-row.selected { background: #1e2f4a; border-color: var(--accent); }
+.marker-row .m-icon {
+  width: 32px; height: 32px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.marker-row .m-icon svg { width: 26px; height: 26px; }
+.marker-row .m-info { flex: 1; min-width: 0; }
+.marker-row .m-name {
+  font-size: 12.5px; font-weight: 600; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.marker-row .m-type { font-size: 11px; color: var(--muted); }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.empty { background: var(--red); }
+.status-dot.half { background: var(--orange); }
+.status-dot.full { background: var(--green); }
+
+#map-wrap {
+  flex: 1; position: relative; overflow: auto; background: #0a0c0f; cursor: default;
+}
+#map-wrap.placing { cursor: crosshair; }
+#map-inner { position: relative; display: inline-block; line-height: 0; overflow: visible; }
+#map-img {
+  display: block; max-width: none; width: auto; height: auto;
+  user-select: none; pointer-events: none;
+}
+/* Fit = scale image to container width; markers stay % of inner */
+#map-inner.fit { width: 100%; }
+#map-inner.fit #map-img { width: 100%; height: auto; }
+
+/* Anchor = icon center. Label never shifts the anchor point. */
+.marker {
+  position: absolute;
+  width: 0;
+  height: 0;
+  cursor: grab;
+  z-index: 10;
+  user-select: none;
+  touch-action: none;
+}
+.marker:hover { z-index: 20; }
+.marker.selected { z-index: 50; }
+.marker.dragging { cursor: grabbing; z-index: 100; opacity: .92; }
+.marker .m-body {
+  position: absolute;
+  left: 0; top: 0;
+  width: var(--this-size, var(--msize));
+  height: var(--this-size, var(--msize));
+  margin-left: calc(var(--this-size, var(--msize)) / -2);
+  margin-top: calc(var(--this-size, var(--msize)) / -2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2.5px solid rgba(255,255,255,.85);
+  box-shadow: 0 3px 10px rgba(0,0,0,.55);
+  background: #222;
+}
+.marker:hover .m-body { transform: scale(1.06); }
+.marker.selected .m-body {
+  box-shadow: 0 0 0 3px var(--accent), 0 4px 14px rgba(0,0,0,.5);
+}
+.marker .m-body svg { width: 70%; height: 70%; pointer-events: none; }
+.marker .m-body img.custom-icon {
+  width: 78%; height: 78%;
+  object-fit: contain;
+  pointer-events: none;
+  border-radius: 4px;
+}
+.marker .m-label {
+  position: absolute;
+  font-size: var(--lsize); font-weight: 800; color: #fff; line-height: 1.2;
+  width: max-content;
+  max-width: 200px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  text-shadow:
+    -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000,
+    0 -1.5px 0 #000, 0 1.5px 0 #000, -1.5px 0 0 #000, 1.5px 0 0 #000,
+    0 0 3px #000;
+}
+/* Label positions relative to icon center */
+.marker.pos-below .m-label {
+  left: 0; top: calc(var(--this-size, var(--msize)) / 2 + 4px);
+  transform: translateX(-50%);
+  text-align: center;
+}
+.marker.pos-above .m-label {
+  left: 0; bottom: calc(var(--this-size, var(--msize)) / 2 + 4px);
+  transform: translateX(-50%);
+  text-align: center;
+}
+.marker.pos-right .m-label {
+  left: calc(var(--this-size, var(--msize)) / 2 + 6px); top: 0;
+  transform: translateY(-50%);
+  text-align: left;
+}
+.marker.pos-left .m-label {
+  right: calc(var(--this-size, var(--msize)) / 2 + 6px); top: 0;
+  left: auto;
+  transform: translateY(-50%);
+  text-align: right;
+}
+.marker.status-empty .m-body { background: #8b1e1e; border-color: #ff6b6b; }
+.marker.status-half .m-body { background: #8b4e12; border-color: #ffb347; }
+.marker.status-full .m-body { background: #1a6b3a; border-color: #51cf66; }
+
+/* Fixed edit panel – always visible on screen */
+#edit-panel {
+  display: none;
+  position: fixed;
+  top: 64px;
+  right: 16px;
+  width: 300px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+  z-index: 150;
+  overflow: hidden;
+}
+#edit-panel.show { display: block; }
+#edit-panel .ep-head {
+  padding: 10px 12px; background: var(--panel2); border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; font-weight: 600;
+}
+#edit-panel .ep-body { padding: 12px; max-height: calc(100vh - 120px); overflow-y: auto; }
+#edit-panel label {
+  display: block; font-size: 11px; color: var(--muted);
+  margin-bottom: 3px; margin-top: 10px;
+}
+#edit-panel label:first-child { margin-top: 0; }
+#edit-panel input, #edit-panel select {
+  width: 100%; padding: 7px 9px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 13px;
+}
+.status-btns { display: flex; gap: 6px; margin-top: 4px; }
+.status-btns button {
+  flex: 1; padding: 9px 4px; border-radius: 7px; border: 2px solid transparent;
+  cursor: pointer; font-size: 12px; font-weight: 700; color: #fff;
+}
+.status-btns button[data-s="empty"] { background: var(--red); }
+.status-btns button[data-s="half"] { background: var(--orange); }
+.status-btns button[data-s="full"] { background: var(--green); }
+.status-btns button.active {
+  border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,.35); transform: scale(1.04);
+}
+.pos-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 4px; }
+.pos-btns button {
+  padding: 7px 4px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--panel2); color: var(--text); cursor: pointer; font-size: 11.5px;
+}
+.pos-btns button:hover { background: #2c3440; }
+.pos-btns button.active { border-color: var(--accent); background: #1e2f4a; color: #7eb6ff; }
+.ep-actions { display: flex; gap: 6px; margin-top: 14px; }
+.ep-actions .btn { flex: 1; justify-content: center; }
+
+/* Vehicle Warehouse inventory */
+#ep-vehicle-section { display: none; margin-top: 12px; padding: 10px; background: var(--panel2); border-radius: 8px; border: 1px solid var(--border); }
+#ep-vehicle-section.show { display: block; }
+#ep-vehicle-section .veh-title { font-size: 12px; font-weight: 650; margin-bottom: 8px; color: #90caf9; }
+.veh-row { display: grid; grid-template-columns: 1fr 70px 90px; gap: 6px; align-items: center; margin-bottom: 6px; font-size: 12px; }
+.veh-row label { margin: 0 !important; color: var(--text); font-size: 12px; }
+.veh-row input[type="number"] { width: 100%; padding: 5px 7px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 13px; text-align: center; }
+.veh-row .veh-val { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.veh-total { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 650; }
+.veh-total .slots { color: var(--muted); font-weight: 500; font-size: 12px; }
+.veh-total .money { color: #81c784; }
+.marker-row .m-veh { font-size: 10.5px; color: #90caf9; margin-top: 1px; }
+
+#empty-hint {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  text-align: center; color: var(--muted); pointer-events: none; font-size: 15px;
+  background: rgba(15,18,22,.85); padding: 20px 28px; border-radius: 12px;
+  border: 1px solid var(--border); z-index: 5;
+}
+#empty-hint strong { color: var(--text); }
+.size-ctrl { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.size-ctrl input[type="range"] { width: 70px; accent-color: var(--accent); }
+
+#modal-bg {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
+  z-index: 200; align-items: center; justify-content: center;
+}
+#modal-bg.show { display: flex; }
+#modal {
+  background: var(--panel); border-radius: 14px; width: 92%; max-width: 480px;
+  max-height: 80vh; overflow-y: auto; border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0,0,0,.45);
+}
+#modal h2 { font-size: 16px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+#modal .modal-body { padding: 12px 16px 16px; }
+.tpl-card {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  background: var(--panel2); border-radius: 8px; margin-bottom: 6px;
+  cursor: pointer; border: 1px solid transparent;
+}
+.tpl-card:hover { border-color: var(--accent); background: #1e2f4a; }
+.tpl-card .icon-wrap { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+.tpl-card .icon-wrap svg { width: 30px; height: 30px; }
+.tpl-card strong { display: block; font-size: 13px; }
+.tpl-card small { color: var(--muted); font-size: 11.5px; }
+.modal-foot { padding: 10px 16px 14px; text-align: right; border-top: 1px solid var(--border); }
+.hint-line { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.35; }
+</style>
+</head>
+<body>
+<div id="topbar">
+  <h1>🏭 Production Manager</h1>
+  <button class="btn" id="btn-fit" title="Fit map to screen width">⛶ Fit</button>
+  <button class="btn" id="btn-full" title="Actual size (100%)">1:1</button>
+  <button class="btn" id="btn-labels" title="Show/hide labels">🏷 Labels</button>
+  <div class="size-ctrl" title="Default size for new icons">
+    <span>Default</span>
+    <input type="range" id="sizeSlider" min="28" max="64" value="42">
+    <span id="sizeVal">42</span>
+  </div>
+  <div class="size-ctrl" title="Label text size">
+    <span>Text</span>
+    <input type="range" id="labelSlider" min="9" max="22" value="12">
+    <span id="labelVal">12</span>
+  </div>
+  <div class="legend">
+    <span><i class="dot red"></i> Empty</span>
+    <span><i class="dot orange"></i> Half</span>
+    <span><i class="dot green"></i> Ready</span>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn" id="btn-templates">📦 Warehouses</button>
+  <button class="btn" id="btn-export">💾 Export</button>
+  <button class="btn" id="btn-import">📥 Import</button>
+  <button class="btn danger" id="btn-clear">Clear all</button>
+</div>
+<div id="layout">
+  <aside id="sidebar">
+    <div class="side-section">
+      <h3>Mode</h3>
+      <div class="tool-row">
+        <div class="tool-btn active" data-mode="select">Select / Move</div>
+        <div class="tool-btn" data-mode="add">Add</div>
+        <div class="tool-btn" data-mode="delete">Delete</div>
+      </div>
+      <p class="hint-line">In <b>Select / Move</b>, drag an icon to reposition it.</p>
+    </div>
+    <div class="side-section">
+      <h3>Business type (for Add)</h3>
+      <div class="biz-grid" id="biz-grid"></div>
+    </div>
+    <div id="list-panel">
+      <h3>On map <span class="count-pills" id="countPills"></span></h3>
+      <div id="marker-list"></div>
+    </div>
+  </aside>
+  <div id="map-wrap">
+    <div id="map-inner">
+      <img id="map-img" src="map.jpg" alt="GTA Map" draggable="false">
+      <div id="empty-hint">
+        <div>No markers on the map</div>
+        <div style="margin-top:8px;font-size:13px">
+          Choose <strong>Add</strong> + type, then click the map<br>
+          or <strong>Warehouses</strong> for the 5 known ones
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="edit-panel">
+  <div class="ep-head">
+    <span id="ep-title">Marker</span>
+    <button class="btn" id="ep-close" style="padding:3px 8px">✕</button>
+  </div>
+  <div class="ep-body">
+    <label>Name / label (shown on map)</label>
+    <input id="ep-name" type="text" placeholder="e.g. Derriere Lingerie Backlot" autocomplete="off">
+    <label>Type</label>
+    <select id="ep-type"></select>
+
+    <div id="ep-vehicle-section">
+      <div class="veh-title">🚗 Vehicle inventory (max 40 slots)</div>
+      <div class="veh-row">
+        <label>Standard ($30k)</label>
+        <input type="number" id="ep-veh-std" min="0" max="40" value="0">
+        <span class="veh-val" id="ep-veh-std-val">$0</span>
+      </div>
+      <div class="veh-row">
+        <label>Middle ($50k)</label>
+        <input type="number" id="ep-veh-mid" min="0" max="40" value="0">
+        <span class="veh-val" id="ep-veh-mid-val">$0</span>
+      </div>
+      <div class="veh-row">
+        <label>Top Range ($80k)</label>
+        <input type="number" id="ep-veh-top" min="0" max="40" value="0">
+        <span class="veh-val" id="ep-veh-top-val">$0</span>
+      </div>
+      <div class="veh-total">
+        <span class="slots" id="ep-veh-slots">0 / 40 slots</span>
+        <span class="money" id="ep-veh-total">Total: $0</span>
+      </div>
+    </div>
+
+    <label>Status (color)</label>
+    <div class="status-btns">
+      <button type="button" data-s="empty">Empty</button>
+      <button type="button" data-s="half">Half</button>
+      <button type="button" data-s="full">Ready</button>
+    </div>
+    <label>Label position</label>
+    <div class="pos-btns">
+      <button type="button" data-pos="below">Below</button>
+      <button type="button" data-pos="above">Above</button>
+      <button type="button" data-pos="right">Right</button>
+      <button type="button" data-pos="left">Left</button>
+    </div>
+    <label>Layer order</label>
+    <div class="pos-btns">
+      <button type="button" id="ep-front">Bring to front</button>
+      <button type="button" id="ep-back">Send to back</button>
+    </div>
+    <label>Icon size (this marker only)</label>
+    <div class="size-ctrl" style="margin-top:4px">
+      <input type="range" id="ep-size" min="24" max="72" value="42" style="width:100%">
+      <span id="ep-size-val">42</span>
+    </div>
+    <label>Custom icon (optional)</label>
+    <div style="display:flex;gap:6px;margin-top:4px;align-items:center;flex-wrap:wrap">
+      <button type="button" class="btn" id="ep-icon-upload">📷 Upload</button>
+      <button type="button" class="btn" id="ep-icon-clear">Reset</button>
+      <input type="file" id="ep-icon-file" accept="image/*" style="display:none">
+    </div>
+    <p class="hint-line">PNG/SVG recommended. Scales with icon size.</p>
+    <label>Note (list only)</label>
+    <input id="ep-note" type="text" placeholder="optional">
+    <div class="ep-actions">
+      <button class="btn primary" id="ep-save" type="button">Save</button>
+      <button class="btn danger" id="ep-delete" type="button">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-bg">
+  <div id="modal">
+    <h2>CEO Warehouses (the 5)</h2>
+    <div class="modal-body" id="tpl-list"></div>
+    <div class="modal-foot">
+      <button class="btn" id="modal-close">Close</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="import-file" accept=".json" style="display:none">
+
+<script>
+const ICONS = {
+  wh16: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="32" height="28" rx="2" fill="#5c4030" stroke="#c4a574" stroke-width="1.5"/><rect x="8" y="26" width="7" height="5" rx="0.8" fill="#d4a84b" stroke="#8b6914" stroke-width="0.8"/><rect x="16.5" y="26" width="7" height="5" rx="0.8" fill="#d4a84b" stroke="#8b6914" stroke-width="0.8"/><rect x="25" y="26" width="7" height="5" rx="0.8" fill="#d4a84b" stroke="#8b6914" stroke-width="0.8"/><text x="20" y="18" text-anchor="middle" fill="#f0e0c0" font-size="9" font-weight="700" font-family="Segoe UI,sans-serif">16</text></svg>`,
+  wh42: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="32" height="28" rx="2" fill="#4a3a28" stroke="#c4a574" stroke-width="1.5"/><rect x="8" y="20" width="7" height="4.5" rx="0.7" fill="#d4a84b" stroke="#8b6914" stroke-width="0.7"/><rect x="16.5" y="20" width="7" height="4.5" rx="0.7" fill="#d4a84b" stroke="#8b6914" stroke-width="0.7"/><rect x="25" y="20" width="7" height="4.5" rx="0.7" fill="#d4a84b" stroke="#8b6914" stroke-width="0.7"/><rect x="8" y="26.5" width="7" height="4.5" rx="0.7" fill="#d4a84b" stroke="#8b6914" stroke-width="0.7"/><rect x="16.5" y="26.5" width="7" height="4.5" rx="0.7" fill="#d4a84b" stroke="#8b6914" stroke-width="0.7"/><rect x="25" y="26.5" width="7" height="4.5" rx="0.7" fill="#d4a84b" stroke="#8b6914" stroke-width="0.7"/><text x="20" y="15" text-anchor="middle" fill="#f0e0c0" font-size="8" font-weight="700" font-family="Segoe UI,sans-serif">42</text></svg>`,
+  wh111: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="32" height="32" rx="2" fill="#3d3020" stroke="#c4a574" stroke-width="1.5"/><rect x="8" y="12" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="15.5" y="12" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="23" y="12" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="8" y="17.5" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="15.5" y="17.5" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="23" y="17.5" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="8" y="23" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="15.5" y="23" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="23" y="23" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="8" y="28.5" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="15.5" y="28.5" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><rect x="23" y="28.5" width="6" height="3.8" rx="0.6" fill="#d4a84b" stroke="#8b6914" stroke-width="0.6"/><text x="20" y="10" text-anchor="middle" fill="#f0e0c0" font-size="7" font-weight="700" font-family="Segoe UI,sans-serif">111</text></svg>`,
+  cocaine: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="#2a4a6b" stroke="#7eb6ff" stroke-width="1.5"/><text x="20" y="24" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="Segoe UI,sans-serif">COC</text></svg>`,
+  weed: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="#1a4a2a" stroke="#51cf66" stroke-width="1.5"/><path d="M20 8 L22 16 L20 20 L18 16 Z M20 20 L26 14 L28 18 L22 22 Z M20 20 L26 26 L22 28 L18 22 Z M20 20 L14 26 L12 22 L18 18 Z M20 20 L14 14 L12 18 L18 22 Z" fill="#81c784"/></svg>`,
+  meth: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="#3a2a5a" stroke="#b388ff" stroke-width="1.5"/><text x="20" y="24" text-anchor="middle" fill="#e0d0ff" font-size="10" font-weight="700" font-family="Segoe UI,sans-serif">METH</text></svg>`,
+  cash: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="#2a4a2a" stroke="#81c784" stroke-width="1.5"/><text x="20" y="25" text-anchor="middle" fill="#b8f0b8" font-size="16" font-weight="700" font-family="Segoe UI,sans-serif">$</text></svg>`,
+  acid: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="#1a3a4a" stroke="#4dd0e1" stroke-width="1.5"/><text x="20" y="24" text-anchor="middle" fill="#b2ebf2" font-size="10" font-weight="700" font-family="Segoe UI,sans-serif">ACID</text></svg>`,
+  bunker: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="10" width="28" height="22" rx="2" fill="#3a3a2a" stroke="#c4b88a" stroke-width="1.5"/><path d="M10 10 L20 4 L30 10" fill="#4a4a30" stroke="#c4b88a" stroke-width="1.2"/><rect x="16" y="20" width="8" height="12" fill="#222" stroke="#888" stroke-width="1"/></svg>`,
+  nightclub: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="#4a1a4a" stroke="#e040fb" stroke-width="1.5"/><text x="20" y="24" text-anchor="middle" fill="#f8bbd0" font-size="14" font-weight="700" font-family="Segoe UI,sans-serif">♪</text></svg>`,
+  hangar: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M4 28 L20 8 L36 28 Z" fill="#2a3a4a" stroke="#90caf9" stroke-width="1.5"/><rect x="14" y="22" width="12" height="10" fill="#1a2a3a" stroke="#90caf9" stroke-width="1"/></svg>`,
+  document: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="#3a3a2a" stroke="#d4c48a" stroke-width="1.5"/><text x="20" y="24" text-anchor="middle" fill="#f0e8c0" font-size="9" font-weight="700" font-family="Segoe UI,sans-serif">DOC</text></svg>`,
+  vehicle: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="20" cy="20" r="15" fill="#1a2a3a" stroke="#64b5f6" stroke-width="1.5"/>
+    <rect x="9" y="18" width="22" height="8" rx="1.5" fill="#90caf9"/>
+    <rect x="12" y="14" width="10" height="5" rx="1" fill="#bbdefb"/>
+    <circle cx="14" cy="26" r="2.2" fill="#1565c0"/>
+    <circle cx="26" cy="26" r="2.2" fill="#1565c0"/>
+  </svg>`,
+  other: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="#333" stroke="#aaa" stroke-width="1.5"/><text x="20" y="24" text-anchor="middle" fill="#ddd" font-size="14" font-weight="700" font-family="Segoe UI,sans-serif">?</text></svg>`
+};
+
+const BIZ_TYPES = [
+  { id: "wh16", label: "WH 16 crates", icon: "wh16" },
+  { id: "wh42", label: "WH 42 crates", icon: "wh42" },
+  { id: "wh111", label: "WH 111 crates", icon: "wh111" },
+  { id: "cocaine", label: "Cocaine", icon: "cocaine" },
+  { id: "weed", label: "Weed", icon: "weed" },
+  { id: "meth", label: "Meth", icon: "meth" },
+  { id: "cash", label: "Counterfeit", icon: "cash" },
+  { id: "document", label: "Documents", icon: "document" },
+  { id: "acid", label: "Acid Lab", icon: "acid" },
+  { id: "bunker", label: "Bunker", icon: "bunker" },
+  { id: "nightclub", label: "Nightclub", icon: "nightclub" },
+  { id: "hangar", label: "Hangar", icon: "hangar" },
+  { id: "vehicle", label: "Vehicle WH", icon: "vehicle" },
+  { id: "other", label: "Other", icon: "other" }
+];
+
+const KNOWN_WAREHOUSES = [
+  { type: "wh42", name: "Derriere Lingerie Backlot", note: "42 crates" },
+  { type: "wh42", name: "Old Power Station", note: "42 crates" },
+  { type: "wh16", name: "White Widow Garage", note: "16 crates" },
+  { type: "wh16", name: "Convenience Store Lockup", note: "16 crates" },
+  { type: "wh111", name: "Walker & Sons Warehouse", note: "111 crates" }
+];
+
+const STORAGE_KEY = "gta_production_v4";
+const DB_NAME = "GTAProductionDB";
+const DB_STORE = "state";
+
+let markers = [];
+let nextId = 1;
+let mode = "select";
+let selectedType = "wh42";
+let selectedId = null;
+let showLabels = true;
+let markerSize = 42;
+let labelSize = 12;
+let mapFit = false;
+let dragState = null;
+let db = null;
+let didDrag = false;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(DB_STORE)) d.createObjectStore(DB_STORE);
+    };
+    req.onsuccess = () => { db = req.result; resolve(db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveState() {
+  const data = { markers, nextId, markerSize, labelSize, showLabels, mapFit };
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
+  if (!db) return;
+  try {
+    const tx = db.transaction(DB_STORE, "readwrite");
+    tx.objectStore(DB_STORE).put(data, "main");
+  } catch (_) {}
+}
+
+async function loadState() {
+  try {
+    if (!db) await openDB();
+    const tx = db.transaction(DB_STORE, "readonly");
+    const data = await new Promise((res, rej) => {
+      const r = tx.objectStore(DB_STORE).get("main");
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+    if (data) { applyLoaded(data); return; }
+  } catch (_) {}
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+      || localStorage.getItem("gta_production_v3")
+      || localStorage.getItem("gta_production_v2");
+    if (raw) applyLoaded(JSON.parse(raw));
+  } catch (_) {}
+}
+
+function applyLoaded(data) {
+  markers = (data.markers || []).map((m, i) => {
+    const base = {
+      labelPos: "below",
+      status: "empty",
+      name: "",
+      note: "",
+      z: i + 1,
+      size: markerSize,
+      ...m
+    };
+    if (base.type === "vehicle") {
+      base.vehicles = { standard: 0, middle: 0, top: 0, ...(m.vehicles || {}) };
+    }
+    return base;
+  });
+  nextId = data.nextId || (Math.max(0, ...markers.map(m => m.id || 0)) + 1);
+  markerSize = data.markerSize || 42;
+  labelSize = data.labelSize || 12;
+  showLabels = data.showLabels !== false;
+  mapFit = !!data.mapFit;
+}
+
+const VEH_PRICES = { standard: 30000, middle: 50000, top: 80000 };
+const VEH_MAX_SLOTS = 40;
+
+function formatMoney(n) {
+  return "$" + Math.round(n).toLocaleString("en-US");
+}
+
+function getVehicleTotals(v) {
+  const std = Math.max(0, parseInt(v?.standard, 10) || 0);
+  const mid = Math.max(0, parseInt(v?.middle, 10) || 0);
+  const top = Math.max(0, parseInt(v?.top, 10) || 0);
+  const slots = std + mid + top;
+  return {
+    standard: std, middle: mid, top,
+    slots,
+    valStd: std * VEH_PRICES.standard,
+    valMid: mid * VEH_PRICES.middle,
+    valTop: top * VEH_PRICES.top,
+    total: std * VEH_PRICES.standard + mid * VEH_PRICES.middle + top * VEH_PRICES.top
+  };
+}
+
+function updateVehicleUI() {
+  const std = Math.max(0, parseInt(document.getElementById("ep-veh-std").value, 10) || 0);
+  const mid = Math.max(0, parseInt(document.getElementById("ep-veh-mid").value, 10) || 0);
+  const top = Math.max(0, parseInt(document.getElementById("ep-veh-top").value, 10) || 0);
+  const t = getVehicleTotals({ standard: std, middle: mid, top });
+  document.getElementById("ep-veh-std-val").textContent = formatMoney(t.valStd);
+  document.getElementById("ep-veh-mid-val").textContent = formatMoney(t.valMid);
+  document.getElementById("ep-veh-top-val").textContent = formatMoney(t.valTop);
+  document.getElementById("ep-veh-slots").textContent = t.slots + " / " + VEH_MAX_SLOTS + " slots";
+  document.getElementById("ep-veh-total").textContent = "Total: " + formatMoney(t.total);
+  const slotsEl = document.getElementById("ep-veh-slots");
+  slotsEl.style.color = t.slots > VEH_MAX_SLOTS ? "var(--red)" : "var(--muted)";
+}
+
+function getType(id) {
+  return BIZ_TYPES.find(t => t.id === id) || BIZ_TYPES[BIZ_TYPES.length - 1];
+}
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function buildBizGrid() {
+  const grid = document.getElementById("biz-grid");
+  grid.innerHTML = "";
+  BIZ_TYPES.forEach(t => {
+    const el = document.createElement("div");
+    el.className = "biz-item" + (t.id === selectedType ? " active" : "");
+    el.dataset.type = t.id;
+    el.innerHTML = `<div class="icon-wrap">${ICONS[t.icon]}</div><span>${t.label}</span>`;
+    el.addEventListener("click", () => {
+      selectedType = t.id;
+      document.querySelectorAll(".biz-item").forEach(b =>
+        b.classList.toggle("active", b.dataset.type === selectedType)
+      );
+      if (mode !== "add") setMode("add");
+    });
+    grid.appendChild(el);
+  });
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll(".tool-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.mode === m)
+  );
+  document.getElementById("map-wrap").classList.toggle("placing", m === "add");
+}
+
+function applyMapFit() {
+  const inner = document.getElementById("map-inner");
+  inner.classList.toggle("fit", mapFit);
+}
+
+function updateCounts() {
+  const e = markers.filter(m => m.status === "empty").length;
+  const h = markers.filter(m => m.status === "half").length;
+  const f = markers.filter(m => m.status === "full").length;
+  document.getElementById("countPills").innerHTML =
+    `<span class="pill r">${e}</span><span class="pill o">${h}</span><span class="pill g">${f}</span>`;
+}
+
+function renderList() {
+  const list = document.getElementById("marker-list");
+  list.innerHTML = "";
+  updateCounts();
+  if (markers.length === 0) {
+    list.innerHTML = `<div style="padding:12px;color:var(--muted);font-size:12.5px;text-align:center">No markers</div>`;
+    return;
+  }
+  const sorted = [...markers].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  sorted.forEach(m => {
+    const t = getType(m.type);
+    const row = document.createElement("div");
+    row.className = "marker-row" + (m.id === selectedId ? " selected" : "");
+    const listIcon = m.customImage
+      ? `<img src="${m.customImage}" alt="" style="width:26px;height:26px;object-fit:contain">`
+      : ICONS[t.icon];
+    let vehLine = "";
+    if (m.type === "vehicle" && m.vehicles) {
+      const vt = getVehicleTotals(m.vehicles);
+      vehLine = `<div class="m-veh">S:${vt.standard} M:${vt.middle} T:${vt.top} · ${vt.slots}/40 · ${formatMoney(vt.total)}</div>`;
+    }
+    row.innerHTML = `
+      <div class="m-icon">${listIcon}</div>
+      <div class="m-info">
+        <div class="m-name">${esc(m.name || t.label)}</div>
+        <div class="m-type">${t.label}</div>
+        ${vehLine}
+      </div>
+      <div class="status-dot ${m.status}"></div>`;
+    row.addEventListener("click", () => selectMarker(m.id));
+    list.appendChild(row);
+  });
+}
+
+function renderMarkers() {
+  const inner = document.getElementById("map-inner");
+  inner.querySelectorAll(".marker").forEach(el => el.remove());
+  document.getElementById("empty-hint").style.display = markers.length ? "none" : "block";
+  document.documentElement.style.setProperty("--msize", markerSize + "px");
+  document.documentElement.style.setProperty("--lsize", labelSize + "px");
+
+  markers.forEach(m => {
+    const t = getType(m.type);
+    const pos = m.labelPos || "below";
+    const el = document.createElement("div");
+    el.className = `marker pos-${pos} status-${m.status}` + (m.id === selectedId ? " selected" : "");
+    el.dataset.id = m.id;
+    el.style.left = m.x + "%";
+    el.style.top = m.y + "%";
+    const sz = m.size || markerSize;
+    el.style.setProperty("--this-size", sz + "px");
+    // keep layer order; selected gets a visual boost only
+    const baseZ = m.z ?? 10;
+    el.style.zIndex = String(m.id === selectedId ? baseZ + 10000 : baseZ);
+    const labelText = (m.name && m.name.trim()) ? m.name.trim() : t.label;
+    const bodyContent = m.customImage
+      ? `<img class="custom-icon" src="${m.customImage}" alt="">`
+      : ICONS[t.icon];
+    el.innerHTML = `
+      <div class="m-body">${bodyContent}</div>
+      ${showLabels ? `<div class="m-label">${esc(labelText)}</div>` : ""}`;
+
+    el.addEventListener("pointerdown", (e) => onMarkerPointerDown(e, m, el));
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (didDrag) { didDrag = false; return; }
+      if (mode === "delete") { deleteMarker(m.id); return; }
+      selectMarker(m.id);
+      if (mode === "add") setMode("select");
+    });
+    inner.appendChild(el);
+  });
+  renderList();
+}
+
+function selectMarker(id) {
+  selectedId = id;
+  const m = markers.find(x => x.id === id);
+  if (!m) {
+    hideEditPanel();
+    renderMarkers();
+    return;
+  }
+  showEditPanel(m);
+  renderMarkers();
+}
+
+function showEditPanel(m) {
+  document.getElementById("edit-panel").classList.add("show");
+  document.getElementById("ep-title").textContent = getType(m.type).label;
+  document.getElementById("ep-name").value = m.name || "";
+  document.getElementById("ep-note").value = m.note || "";
+  const sz = m.size || markerSize;
+  document.getElementById("ep-size").value = sz;
+  document.getElementById("ep-size-val").textContent = sz;
+  const sel = document.getElementById("ep-type");
+  sel.innerHTML = BIZ_TYPES.map(t =>
+    `<option value="${t.id}" ${t.id === m.type ? "selected" : ""}>${t.label}</option>`
+  ).join("");
+  document.querySelectorAll(".status-btns button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.s === m.status);
+  });
+  document.querySelectorAll(".pos-btns button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.pos === (m.labelPos || "below"));
+  });
+  // Vehicle inventory section
+  const vehSec = document.getElementById("ep-vehicle-section");
+  if (m.type === "vehicle") {
+    vehSec.classList.add("show");
+    const v = m.vehicles || { standard: 0, middle: 0, top: 0 };
+    document.getElementById("ep-veh-std").value = v.standard || 0;
+    document.getElementById("ep-veh-mid").value = v.middle || 0;
+    document.getElementById("ep-veh-top").value = v.top || 0;
+    updateVehicleUI();
+  } else {
+    vehSec.classList.remove("show");
+  }
+}
+
+function hideEditPanel() {
+  document.getElementById("edit-panel").classList.remove("show");
+  selectedId = null;
+  renderMarkers();
+}
+
+/** Save from edit panel – applies all fields and keeps panel open */
+function applyEdit() {
+  const m = markers.find(x => x.id === selectedId);
+  if (!m) return;
+  m.name = document.getElementById("ep-name").value.trim();
+  m.note = document.getElementById("ep-note").value.trim();
+  m.type = document.getElementById("ep-type").value;
+  m.size = parseInt(document.getElementById("ep-size").value, 10) || markerSize;
+  if (m.type === "vehicle") {
+    m.vehicles = {
+      standard: Math.max(0, parseInt(document.getElementById("ep-veh-std").value, 10) || 0),
+      middle: Math.max(0, parseInt(document.getElementById("ep-veh-mid").value, 10) || 0),
+      top: Math.max(0, parseInt(document.getElementById("ep-veh-top").value, 10) || 0)
+    };
+  } else {
+    delete m.vehicles;
+  }
+  // status & labelPos already applied live via their buttons
+  saveState();
+  renderMarkers();
+  showEditPanel(m);
+  // brief feedback on button
+  const btn = document.getElementById("ep-save");
+  const prev = btn.textContent;
+  btn.textContent = "Saved ✓";
+  setTimeout(() => { btn.textContent = prev; }, 1000);
+}
+
+function setStatus(status) {
+  const m = markers.find(x => x.id === selectedId);
+  if (!m) return;
+  m.status = status;
+  saveState();
+  showEditPanel(m);
+  renderMarkers();
+}
+
+function setLabelPos(pos) {
+  const m = markers.find(x => x.id === selectedId);
+  if (!m) return;
+  m.labelPos = pos;
+  saveState();
+  showEditPanel(m);
+  renderMarkers();
+}
+
+function onMapClick(e) {
+  if (mode !== "add") return;
+  if (e.target.closest(".marker") || e.target.closest("#edit-panel")) return;
+  const inner = document.getElementById("map-inner");
+  const rect = inner.getBoundingClientRect();
+  const w = inner.offsetWidth, h = inner.offsetHeight;
+  if (!w || !h) return;
+  const x = ((e.clientX - rect.left) / w) * 100;
+  const y = ((e.clientY - rect.top) / h) * 100;
+  if (x < -2 || x > 102 || y < -2 || y > 102) return;
+
+  const t = getType(selectedType);
+  const maxZ = markers.reduce((a, m) => Math.max(a, m.z || 0), 0);
+  const m = {
+    id: nextId++,
+    type: selectedType,
+    name: t.label,
+    note: "",
+    status: "empty",
+    labelPos: "below",
+    z: maxZ + 1,
+    size: markerSize,
+    x: Math.round(Math.max(0, Math.min(100, x)) * 100) / 100,
+    y: Math.round(Math.max(0, Math.min(100, y)) * 100) / 100
+  };
+  if (selectedType === "vehicle") {
+    m.vehicles = { standard: 0, middle: 0, top: 0 };
+  }
+  markers.push(m);
+  saveState();
+  setMode("select");
+  renderMarkers();
+  selectMarker(m.id);
+}
+
+function onMarkerPointerDown(e, m, el) {
+  if (mode === "delete") return;
+  if (e.button !== 0) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const inner = document.getElementById("map-inner");
+  didDrag = false;
+  dragState = {
+    m, el,
+    startX: e.clientX, startY: e.clientY,
+    origX: m.x, origY: m.y,
+    imgW: inner.offsetWidth, imgH: inner.offsetHeight
+  };
+  el.classList.add("dragging");
+  el.setPointerCapture(e.pointerId);
+  el.addEventListener("pointermove", onMarkerDrag);
+  el.addEventListener("pointerup", onMarkerDragEnd);
+  el.addEventListener("pointercancel", onMarkerDragEnd);
+}
+
+function onMarkerDrag(e) {
+  if (!dragState) return;
+  const dx = e.clientX - dragState.startX;
+  const dy = e.clientY - dragState.startY;
+  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) didDrag = true;
+  const pdx = (dx / dragState.imgW) * 100;
+  const pdy = (dy / dragState.imgH) * 100;
+  dragState.m.x = Math.max(0, Math.min(100, dragState.origX + pdx));
+  dragState.m.y = Math.max(0, Math.min(100, dragState.origY + pdy));
+  dragState.el.style.left = dragState.m.x + "%";
+  dragState.el.style.top = dragState.m.y + "%";
+}
+
+function onMarkerDragEnd(e) {
+  if (!dragState) return;
+  const el = dragState.el;
+  el.classList.remove("dragging");
+  try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+  el.removeEventListener("pointermove", onMarkerDrag);
+  el.removeEventListener("pointerup", onMarkerDragEnd);
+  el.removeEventListener("pointercancel", onMarkerDragEnd);
+  dragState.m.x = Math.round(dragState.m.x * 100) / 100;
+  dragState.m.y = Math.round(dragState.m.y * 100) / 100;
+  saveState();
+  dragState = null;
+  if (didDrag && mode === "add") setMode("select");
+}
+
+function deleteMarker(id) {
+  markers = markers.filter(m => m.id !== id);
+  if (selectedId === id) {
+    selectedId = null;
+    document.getElementById("edit-panel").classList.remove("show");
+  }
+  saveState();
+  renderMarkers();
+}
+
+function openTemplates() {
+  const list = document.getElementById("tpl-list");
+  list.innerHTML = "";
+  KNOWN_WAREHOUSES.forEach((w, i) => {
+    const t = getType(w.type);
+    const card = document.createElement("div");
+    card.className = "tpl-card";
+    card.innerHTML = `
+      <div class="icon-wrap">${ICONS[t.icon]}</div>
+      <div><strong>${esc(w.name)}</strong><small>${t.label}</small></div>`;
+    card.addEventListener("click", () => {
+      const maxZ = markers.reduce((a, m) => Math.max(a, m.z || 0), 0);
+      const m = {
+        id: nextId++,
+        type: w.type,
+        name: w.name,
+        note: w.note,
+        status: "empty",
+        labelPos: "below",
+        z: maxZ + 1 + i,
+        size: markerSize,
+        x: 40 + (i % 3) * 8,
+        y: 35 + Math.floor(i / 3) * 12
+      };
+      markers.push(m);
+      saveState();
+      setMode("select");
+      renderMarkers();
+      selectMarker(m.id);
+      closeModal();
+    });
+    list.appendChild(card);
+  });
+  document.getElementById("modal-bg").classList.add("show");
+}
+
+function closeModal() {
+  document.getElementById("modal-bg").classList.remove("show");
+}
+
+function doExport() {
+  const data = { markers, nextId, markerSize, labelSize, showLabels, mapFit, version: 4 };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "gta-production.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function doImport(file) {
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data.markers)) throw new Error("Invalid format");
+      applyLoaded(data);
+      document.getElementById("sizeSlider").value = markerSize;
+      document.getElementById("sizeVal").textContent = markerSize;
+      document.getElementById("labelSlider").value = labelSize;
+      document.getElementById("labelVal").textContent = labelSize;
+      applyMapFit();
+      saveState();
+      renderMarkers();
+      hideEditPanel();
+    } catch (err) {
+      alert("Import failed: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+
+
+function loadImageAsDataURL(file, maxW = 128) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        if (h > maxW) { w = Math.round(w * maxW / h); h = maxW; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        // prefer png for transparency
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function bringToFront() {
+
+  const m = markers.find(x => x.id === selectedId);
+  if (!m) return;
+  const maxZ = markers.reduce((a, x) => Math.max(a, x.z || 0), 0);
+  m.z = maxZ + 1;
+  saveState();
+  renderMarkers();
+  selectMarker(m.id);
+}
+function sendToBack() {
+  const m = markers.find(x => x.id === selectedId);
+  if (!m) return;
+  const minZ = markers.reduce((a, x) => Math.min(a, x.z || 0), 0);
+  m.z = minZ - 1;
+  saveState();
+  renderMarkers();
+  selectMarker(m.id);
+}
+
+async function init() {
+
+  buildBizGrid();
+  document.getElementById("ep-type").innerHTML = BIZ_TYPES.map(t =>
+    `<option value="${t.id}">${t.label}</option>`
+  ).join("");
+
+  document.querySelectorAll(".tool-btn").forEach(btn => {
+    btn.addEventListener("click", () => setMode(btn.dataset.mode));
+  });
+
+  document.getElementById("map-wrap").addEventListener("click", onMapClick);
+
+  document.getElementById("ep-close").addEventListener("click", hideEditPanel);
+  document.getElementById("ep-save").addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    applyEdit();
+  });
+  document.getElementById("ep-delete").addEventListener("click", () => {
+    if (selectedId && confirm("Delete this marker?")) deleteMarker(selectedId);
+  });
+
+  document.querySelectorAll(".status-btns button").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setStatus(btn.dataset.s);
+    });
+  });
+  document.querySelectorAll(".pos-btns button[data-pos]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setLabelPos(btn.dataset.pos);
+    });
+  });
+  document.getElementById("ep-front").addEventListener("click", (e) => {
+    e.preventDefault(); e.stopPropagation(); bringToFront();
+  });
+  document.getElementById("ep-back").addEventListener("click", (e) => {
+    e.preventDefault(); e.stopPropagation(); sendToBack();
+  });
+
+  // Per-marker size (live)
+  document.getElementById("ep-size").addEventListener("input", () => {
+    const m = markers.find(x => x.id === selectedId);
+    if (!m) return;
+    const sz = parseInt(document.getElementById("ep-size").value, 10);
+    m.size = sz;
+    document.getElementById("ep-size-val").textContent = sz;
+    const el = document.querySelector(`.marker[data-id="${m.id}"]`);
+    if (el) el.style.setProperty("--this-size", sz + "px");
+    saveState();
+  });
+
+  document.getElementById("ep-icon-upload").addEventListener("click", () => {
+    document.getElementById("ep-icon-file").click();
+  });
+  document.getElementById("ep-icon-file").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file || selectedId == null) return;
+    const m = markers.find(x => x.id === selectedId);
+    if (!m) return;
+    try {
+      m.customImage = await loadImageAsDataURL(file, 128);
+      saveState();
+      renderMarkers();
+      selectMarker(m.id);
+    } catch (err) {
+      alert("Could not load image.");
+    }
+  });
+  document.getElementById("ep-icon-clear").addEventListener("click", () => {
+    const m = markers.find(x => x.id === selectedId);
+    if (!m) return;
+    m.customImage = null;
+    saveState();
+    renderMarkers();
+    selectMarker(m.id);
+  });
+
+  // Live label update while typing
+  document.getElementById("ep-name").addEventListener("input", () => {
+    const m = markers.find(x => x.id === selectedId);
+    if (!m) return;
+    m.name = document.getElementById("ep-name").value;
+    const el = document.querySelector(`.marker[data-id="${m.id}"] .m-label`);
+    if (el) el.textContent = m.name.trim() || getType(m.type).label;
+  });
+  document.getElementById("ep-name").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); applyEdit(); }
+  });
+
+  document.getElementById("ep-type").addEventListener("change", () => {
+    const m = markers.find(x => x.id === selectedId);
+    if (!m) return;
+    m.type = document.getElementById("ep-type").value;
+    if (m.type === "vehicle" && !m.vehicles) {
+      m.vehicles = { standard: 0, middle: 0, top: 0 };
+    } else if (m.type !== "vehicle") {
+      delete m.vehicles;
+    }
+    saveState();
+    renderMarkers();
+    selectMarker(m.id);
+  });
+
+  // Vehicle inventory live calc + auto-save
+  ["ep-veh-std", "ep-veh-mid", "ep-veh-top"].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener("input", () => {
+      updateVehicleUI();
+      const m = markers.find(x => x.id === selectedId);
+      if (!m || m.type !== "vehicle") return;
+      m.vehicles = {
+        standard: Math.max(0, parseInt(document.getElementById("ep-veh-std").value, 10) || 0),
+        middle: Math.max(0, parseInt(document.getElementById("ep-veh-mid").value, 10) || 0),
+        top: Math.max(0, parseInt(document.getElementById("ep-veh-top").value, 10) || 0)
+      };
+      saveState();
+      renderList();
+    });
+  });
+
+  document.getElementById("sizeSlider").addEventListener("input", (e) => {
+    markerSize = parseInt(e.target.value, 10);
+    document.getElementById("sizeVal").textContent = markerSize;
+    document.documentElement.style.setProperty("--msize", markerSize + "px");
+    saveState();
+  });
+  document.getElementById("labelSlider").addEventListener("input", (e) => {
+    labelSize = parseInt(e.target.value, 10);
+    document.getElementById("labelVal").textContent = labelSize;
+    document.documentElement.style.setProperty("--lsize", labelSize + "px");
+    saveState();
+  });
+
+  document.getElementById("btn-fit").addEventListener("click", () => {
+    mapFit = true;
+    applyMapFit();
+    saveState();
+  });
+  document.getElementById("btn-full").addEventListener("click", () => {
+    mapFit = false;
+    applyMapFit();
+    saveState();
+  });
+  document.getElementById("btn-labels").addEventListener("click", () => {
+    showLabels = !showLabels;
+    saveState();
+    renderMarkers();
+  });
+  document.getElementById("btn-templates").addEventListener("click", openTemplates);
+  document.getElementById("btn-export").addEventListener("click", doExport);
+  document.getElementById("btn-import").addEventListener("click", () =>
+    document.getElementById("import-file").click()
+  );
+  document.getElementById("import-file").addEventListener("change", (e) => {
+    if (e.target.files[0]) doImport(e.target.files[0]);
+    e.target.value = "";
+  });
+  document.getElementById("btn-clear").addEventListener("click", () => {
+    if (!confirm("Delete ALL markers?")) return;
+    markers = [];
+    hideEditPanel();
+    saveState();
+    renderMarkers();
+  });
+  document.getElementById("modal-close").addEventListener("click", closeModal);
+  document.getElementById("modal-bg").addEventListener("click", (e) => {
+    if (e.target.id === "modal-bg") closeModal();
+  });
+
+  const img = document.getElementById("map-img");
+  img.onerror = () => {
+    document.getElementById("empty-hint").innerHTML = `
+      <div style="color:#ff8a80"><strong>map.jpg not found</strong></div>
+      <div style="margin-top:8px;font-size:13px">
+        Place <code>map.jpg</code> in the same folder as this HTML
+      </div>`;
+    document.getElementById("empty-hint").style.display = "block";
+  };
+
+  try { await openDB(); } catch (_) {}
+  await loadState();
+
+  document.getElementById("sizeSlider").value = markerSize;
+  document.getElementById("sizeVal").textContent = markerSize;
+  document.getElementById("labelSlider").value = labelSize;
+  document.getElementById("labelVal").textContent = labelSize;
+  document.documentElement.style.setProperty("--msize", markerSize + "px");
+  document.documentElement.style.setProperty("--lsize", labelSize + "px");
+  applyMapFit();
+  renderMarkers();
+}
+
+init();
+</script>
+</body>
+</html>
