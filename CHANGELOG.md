@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.18.0 (2026-10-27)
+* Everywhere:
+  * Add: every copy of GTA V Manager (a fork on another GitHub account) updates itself. When a new version is out, its owner (logged in) is asked “Update now?”; on Yes the new files are copied from the original repository into theirs, the ones already the same are skipped, and the page reloads by itself once GitHub has published it. Their data/ and login (auth.json) are never touched.
+  * Add: “Not now” keeps it for later: ⋮ → Update to … asks again. Visitors who aren't logged in are not asked.
+  * Add: update.json in the original repository lists the files a copy takes, so new files can be added later without changing the copies.
+
 ### v0.17.1 (2026-10-27)
 * Everywhere:
   * Fix: saving to GitHub no longer warns at the first failure (a phone waking up, Chrome back from the background, a short network drop): it tries again quietly after 5 s, 15 s, then every 30 s, and right away when you come back to the app. The warning shows only if it still fails after 2 minutes, with the reason, and a note confirms when it is saved.

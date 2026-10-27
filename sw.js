@@ -3,7 +3,7 @@
      so a new version shows up at once, with no Ctrl+F5; offline, the last copy is used.
    - Pictures, icons and fonts are kept and refreshed in the background.
    - GitHub saving (api.github.com, raw.githubusercontent.com) is never touched. */
-const VERSION = "0.17.1";
+const VERSION = "0.18";
 const CACHE = "gtam-" + VERSION;
 const CORE = ["./GTA_V_Manager.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./favicon-32.png", "./home_bg.webp"];
 

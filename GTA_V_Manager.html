@@ -420,6 +420,9 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .inst-here small { color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-size: 11px; }
 .inst-other summary { cursor: pointer; color: var(--accent); font-weight: 600; margin-top: 4px; }
 .inst-other p { margin: 8px 0; font-size: 14px; }
+/* self-update progress (0.18) */
+.upd-prog { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--bg3); border: 1px solid var(--border); font-size: 14px; line-height: 1.5; }
+.upd-prog .bad-txt { color: var(--bad); }
 </style>
 </head>
 <body>
@@ -528,7 +531,7 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.17.1";
+const APP_VERSION = "0.18";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -606,7 +609,7 @@ i18n({
     tourOf: (a, b) => `Step ${a} of ${b}`, tourNext: "Next", tourBack: "Back", tourSkip: "Skip", tourDone: "Done",
     tourViewNote: "You're only viewing; log in to change things.",
     aboutTitle: "About", version: "Version", changelog: "Changelog", helpTitle: "Help",
-    updTitle: "New version", updText: (n, o) => `GTA V Manager <b>${n}</b> is out (you have ${o}).`, updOnline: "You can open it online, or download the new file and replace yours.", updHere: "Reload the page to get it.", updOpen: "Open it online", updGet: "Download", updReload: "Reload", updNews: "What's new", updOk: "OK",
+    updYes: "Yes, update", updNo: "Not now", updAsk: "Update now? The new files go into your repository and the page reloads by itself. Your data and login stay as they are.", updStep: (i, n, f) => `Updating… ${i}/${n} · ${f}`, updSent: n => `${n} file(s) updated in your repository.`, updSkipped: f => `Skipped (your token can't change them, not needed): ${f}`, updWait: "GitHub publishes the page in a minute or two; it reloads by itself.", updDone: v => `Version ${v} is ready. Reloading…`, updFail: e => `The update stopped: ${e}. Nothing is lost; you can try again.`, m_update: v => `⬆️ Update to ${v}`, updTitle: "New version", updText: (n, o) => `GTA V Manager <b>${n}</b> is out (you have ${o}).`, updOnline: "You can open it online, or download the new file and replace yours.", updHere: "Reload the page to get it.", updOpen: "Open it online", updGet: "Download", updReload: "Reload", updNews: "What's new", updOk: "OK",
     aboutIntro: "<p>GTA V Manager keeps track of your GTA Online world: the vehicles you own, your businesses on the map and the cars waiting to be exported. A free personal project with no ads and no connection to the game itself: everything is entered by hand.</p>",
     desktopDenied: "The browser blocked desktop notifications for this page."
   },
@@ -638,7 +641,7 @@ i18n({
     tourOf: (a, b) => `Pasul ${a} din ${b}`, tourNext: "Înainte", tourBack: "Înapoi", tourSkip: "Sari peste", tourDone: "Gata",
     tourViewNote: "Doar vizualizezi; intră în cont ca să modifici.",
     aboutTitle: "Despre", version: "Versiunea", changelog: "Istoricul schimbărilor", helpTitle: "Ajutor",
-    updTitle: "Versiune nouă", updText: (n, o) => `A apărut GTA V Manager <b>${n}</b> (tu ai ${o}).`, updOnline: "O poți deschide online sau poți descărca fișierul nou ca să-l înlocuiești pe al tău.", updHere: "Reîncarcă pagina ca s-o primești.", updOpen: "Deschide online", updGet: "Descarcă", updReload: "Reîncarcă", updNews: "Ce e nou", updOk: "OK",
+    updYes: "Da, actualizează", updNo: "Nu acum", updAsk: "Actualizezi acum? Fișierele noi intră în repository-ul tău, iar pagina se reîncarcă singură. Datele și login-ul tău rămân cum sunt.", updStep: (i, n, f) => `Se actualizează… ${i}/${n} · ${f}`, updSent: n => `${n} fișier(e) actualizate în repository-ul tău.`, updSkipped: f => `Sărite (tokenul tău nu le poate schimba, nu e nevoie): ${f}`, updWait: "GitHub publică pagina în 1–2 minute; se reîncarcă singură.", updDone: v => `Versiunea ${v} e gata. Se reîncarcă…`, updFail: e => `Actualizarea s-a oprit: ${e}. Nu s-a pierdut nimic; poți încerca din nou.`, m_update: v => `⬆️ Actualizează la ${v}`, updTitle: "Versiune nouă", updText: (n, o) => `A apărut GTA V Manager <b>${n}</b> (tu ai ${o}).`, updOnline: "O poți deschide online sau poți descărca fișierul nou ca să-l înlocuiești pe al tău.", updHere: "Reîncarcă pagina ca s-o primești.", updOpen: "Deschide online", updGet: "Descarcă", updReload: "Reîncarcă", updNews: "Ce e nou", updOk: "OK",
     aboutIntro: "<p>GTA V Manager ține evidența lumii tale din GTA Online: vehiculele pe care le deții, afacerile de pe hartă și mașinile care așteaptă exportul. Proiect personal, gratuit, fără reclame și fără nicio legătură cu jocul: totul se introduce manual.</p>",
     desktopDenied: "Browserul a blocat notificările pe desktop pentru această pagină."
   }
@@ -806,6 +809,30 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.18.0",
+  "date": "2026-10-27",
+  "en": [
+   {
+    "area": "Everywhere",
+    "items": [
+     "Add: every copy of GTA V Manager (a fork on another GitHub account) updates itself. When a new version is out, its owner (logged in) is asked “Update now?”; on Yes the new files are copied from the original repository into theirs, the ones already the same are skipped, and the page reloads by itself once GitHub has published it. Their data/ and login (auth.json) are never touched.",
+     "Add: “Not now” keeps it for later: ⋮ → Update to … asks again. Visitors who aren't logged in are not asked.",
+     "Add: update.json in the original repository lists the files a copy takes, so new files can be added later without changing the copies."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Peste tot",
+    "items": [
+     "Adaugă: fiecare copie a GTA V Manager (un fork pe alt cont GitHub) se actualizează singură. Când apare o versiune nouă, proprietarul (logat) e întrebat „Actualizezi acum?”; la Da, fișierele noi se copiază din repository-ul original în al lui, cele deja identice sunt sărite, iar pagina se reîncarcă singură după ce GitHub o publică. Datele (data/) și login-ul (auth.json) nu sunt atinse niciodată.",
+     "Adaugă: „Nu acum” o lasă pe mai târziu: ⋮ → Actualizează la … întreabă din nou. Vizitatorii nelogați nu sunt întrebați.",
+     "Adaugă: update.json din repository-ul original spune ce fișiere ia o copie, așa că pe viitor se pot adăuga fișiere noi fără să se schimbe copiile."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.17.1",
   "date": "2026-10-27",
@@ -1435,39 +1462,112 @@ const App = {
 App.init();
 
 const Update = {
+  // the original GTA V Manager: every copy (fork) learns about new versions from here
+  ORIG_OWNER: "Yogi4x4", ORIG_REPO: "GTAManager",
+  REPO: "https://github.com/Yogi4x4/GTAManager",
   SRC: "https://raw.githubusercontent.com/Yogi4x4/GTAManager/main/CHANGELOG.md",
   LIVE: "https://yogi4x4.github.io/GTAManager/GTA_V_Manager.html",
   FILE: "https://github.com/Yogi4x4/GTAManager/blob/main/GTA_V_Manager.html",
   NEWS: "https://github.com/Yogi4x4/GTAManager/blob/main/CHANGELOG.md",
   num: v => String(v).split(".").map(n => parseInt(n, 10) || 0),
   newer(a, b) { const x = this.num(a), y = this.num(b); for (let i = 0; i < Math.max(x.length, y.length); i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; },
-  async check() {
-    if (Date.now() - (+LS.raw("gtaUpdateCheckedAt") || 0) < 864e5) return;
-    let txt;
-    try { const r = await fetch(this.SRC, { cache: "no-store" }); if (!r.ok) return; txt = await r.text(); } catch (e) { return; }
-    LS.set("gtaUpdateCheckedAt", String(Date.now()));
-    const m = txt.match(/^###\s*v(\d+(?:\.\d+)*)/m);
-    if (!m) return;
-    const v = m[1].replace(/\.0$/, "");
-    if (!this.newer(v, APP_VERSION) || LS.raw("gtaUpdateSeen") === v) return;
+  RAW: "https://raw.githubusercontent.com/Yogi4x4/GTAManager/main/",
+  isOriginal(a) { return a.owner.toLowerCase() === this.ORIG_OWNER.toLowerCase() && a.repo.toLowerCase() === this.ORIG_REPO.toLowerCase(); },
+  latest: () => LS.raw("gtaUpdateLatest") || "",
+  // the newest version is read from the original's CHANGELOG.md once a day
+  async check(force) {
+    if (force || Date.now() - (+LS.raw("gtaUpdateCheckedAt") || 0) >= 864e5) {
+      let txt;
+      try { const r = await fetch(this.SRC + "?t=" + Date.now(), { cache: "no-store" }); if (!r.ok) return; txt = await r.text(); } catch (e) { return; }
+      LS.set("gtaUpdateCheckedAt", String(Date.now()));
+      const m = txt.match(/^###\s*v(\d+(?:\.\d+)*)/m);
+      if (m) LS.set("gtaUpdateLatest", m[1].replace(/\.0$/, ""));
+    }
+    this.maybe();
+  },
+  available() { const v = this.latest(); return v && this.newer(v, APP_VERSION) ? v : null; },
+  // where this page runs: "orig" (Yogi4x4's page), "copy" (someone's fork on github.io) or "file" (downloaded)
+  where() {
+    if (!/\.github\.io$/i.test(location.hostname)) return "file";
+    return this.isOriginal(AUTH_DEF) ? "orig" : "copy";
+  },
+  // a copy can update itself when its owner is logged in (the token writes to their repository)
+  canSelf() { const a = Auth.get(); return this.where() === "copy" && !!(a && a.token) && !this.isOriginal(a); },
+  maybe() {
+    const v = this.available();
+    if (!v || LS.raw("gtaUpdateSeen") === v) return;
+    if (this.where() === "copy" && !this.canSelf()) return;   // visitors of someone's copy aren't asked; the owner is, once logged in
     this.show(v);
   },
   show(v) {
     // never on top of a tour or another window: try again a bit later
     if (document.querySelector("dialog[open]")) { setTimeout(() => this.show(v), 15000); return; }
     LS.set("gtaUpdateSeen", v);
-    const here = /yogi4x4\.github\.io$/i.test(location.hostname);
-    const d = $("#updDlg");
-    $("#updBody").innerHTML = `<p>${t("updText", v, APP_VERSION)}</p><p class="muted">${here ? t("updHere") : t("updOnline")}</p>
-      <div class="upd-btns">${here ? `<button class="btn primary" id="updReload">${t("updReload")}</button>`
-        : `<a class="btn primary" href="${this.LIVE}" target="_blank" rel="noopener">${t("updOpen")}</a><a class="btn" href="${this.FILE}" target="_blank" rel="noopener">${t("updGet")}</a>`}
-      <a class="btn" href="${this.NEWS}" target="_blank" rel="noopener">${t("updNews")}</a><button class="btn" data-close>${t("updOk")}</button></div>`;
+    const w = this.where(), self = this.canSelf();
+    const btns = self ? `<button class="btn primary" id="updYes">${t("updYes")}</button><button class="btn" data-close>${t("updNo")}</button>`
+      : w === "orig" ? `<button class="btn primary" id="updReload">${t("updReload")}</button><button class="btn" data-close>${t("updOk")}</button>`
+      : `<a class="btn primary" href="${this.LIVE}" target="_blank" rel="noopener">${t("updOpen")}</a><a class="btn" href="${this.FILE}" target="_blank" rel="noopener">${t("updGet")}</a><button class="btn" data-close>${t("updOk")}</button>`;
     $("#updTitle").textContent = t("updTitle");
+    $("#updBody").innerHTML = `<p>${t("updText", v, APP_VERSION)}</p><p class="muted">${self ? t("updAsk") : w === "orig" ? t("updHere") : t("updOnline")}</p>
+      <div class="upd-btns">${btns}<a class="btn ghost" href="${this.NEWS}" target="_blank" rel="noopener">${t("updNews")}</a></div><div id="updProg" class="upd-prog" hidden></div>`;
     const rl = $("#updReload"); if (rl) rl.onclick = () => location.reload();
-    d.showModal();
+    const yes = $("#updYes"); if (yes) yes.onclick = () => this.run(v);
+    const d = $("#updDlg"); if (!d.open) d.showModal();
+  },
+  /* Yes: copy the new files from the original repository into this copy's repository (never data/ or auth.json),
+     skipping the ones that are already the same; the page last. Then wait for GitHub Pages and reload. */
+  running: false,
+  async run(v) {
+    if (this.running) return;
+    this.running = true;
+    const a = Auth.get(), prog = $("#updProg"), say = h => { prog.hidden = false; prog.innerHTML = h; };
+    $("#updBody").querySelectorAll(".upd-btns .btn").forEach(b => { if (b.tagName === "BUTTON") b.disabled = true; });
+    try {
+      say(t("updStep", 0, "?", "update.json"));
+      const r = await fetch(this.RAW + "update.json?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) throw new Error("update.json: HTTP " + r.status);
+      const list = (await r.json()).files.filter(f => f.path && !/^(data\/|auth\.json$)/.test(f.path));
+      list.sort((x, y) => (x.path === "GTA_V_Manager.html") - (y.path === "GTA_V_Manager.html"));   // the page last
+      let sent = 0, skipped = [];
+      for (let i = 0; i < list.length; i++) {
+        const f = list[i];
+        say(t("updStep", i + 1, list.length, f.path));
+        const fr = await fetch(this.RAW + f.path.split("/").map(encodeURIComponent).join("/") + "?t=" + Date.now(), { cache: "no-store" });
+        if (!fr.ok) throw new Error(f.path + ": HTTP " + fr.status);
+        const bytes = new Uint8Array(await fr.arrayBuffer());
+        try {
+          delete GH.shas[f.path];
+          if (await GH.sha(f.path, a) === await blobSha(bytes)) continue;   // already the same
+          await GH.put(f.path, { b64: b64of(bytes), message: `Update to v${v} (GTA Manager)` }, a);
+          sent++;
+        } catch (e) {
+          if (f.optional) { skipped.push(f.path); continue; }   // e.g. the weekly workflow needs an extra token permission
+          throw e;
+        }
+      }
+      say(`<b>${t("updSent", sent)}</b>${skipped.length ? `<br><small class="muted">${t("updSkipped", skipped.join(", "))}</small>` : ""}<br>${t("updWait")}`);
+      this.waitLive(v);
+    } catch (e) {
+      say(`<span class="bad-txt">${t("updFail", esc(e.message === "token" ? t("tokenBad") : e.message))}</span>`);
+      $("#updBody").querySelectorAll(".upd-btns .btn").forEach(b => b.disabled = false);
+      LS.set("gtaUpdateSeen", "");
+    } finally { this.running = false; }
+  },
+  // GitHub Pages publishes the new files in a minute or two: look for the new version, then reload
+  waitLive(v, n = 0) {
+    setTimeout(async () => {
+      try {
+        const txt = await (await fetch("GTA_V_Manager.html?v=" + Date.now(), { cache: "no-store" })).text();
+        const m = txt.match(/APP_VERSION = "([\d.]+)"/);
+        if (m && !this.newer(v, m[1])) { $("#updProg").innerHTML = `<b>${t("updDone", v)}</b>`; setTimeout(() => location.reload(), 1500); return; }
+      } catch (e) {}
+      if (n < 40) this.waitLive(v, n + 1);
+      else $("#updProg").insertAdjacentHTML("beforeend", `<br><button class="btn primary" onclick="location.reload()">${t("updReload")}</button>`);
+    }, 15000);
   }
 };
 setTimeout(() => Update.check(), 4000);
+Bus.on("auth", on => { if (on) setTimeout(() => Update.maybe(), 1500); });   // the owner of a copy is asked once logged in
 
 /* ---------- guided tour engine: spotlight + card, steps come from each section ----------
    step = { k: "vm.t3", target: () => el | [el], before: () => {}, note: () => bool (show the note), noteKey } */
@@ -1656,6 +1756,12 @@ $("#setupForm").addEventListener("submit", async e => {
 });
 
 /* ---------- GitHub files: read, write (remembers each file's version) ---------- */
+function b64of(bytes) { let bin = ""; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(bin); }
+// the sha GitHub gives a file: sha1 of "blob <size>\0" + the bytes (to skip files that are already the same)
+async function blobSha(bytes) {
+  const head = utf8("blob " + bytes.length + "\0"), all = new Uint8Array(head.length + bytes.length); all.set(head); all.set(bytes, head.length);
+  return [...new Uint8Array(await crypto.subtle.digest("SHA-1", all))].map(b => b.toString(16).padStart(2, "0")).join("");
+}
 const GH = {
   shas: {},
   url(a, path) { return `https://api.github.com/repos/${encodeURIComponent(a.owner)}/${encodeURIComponent(a.repo)}/contents/${path.split("/").map(encodeURIComponent).join("/")}`; },
@@ -1669,6 +1775,15 @@ const GH = {
     return r.text();
   },
   async getJson(path) { const s = await this.get(path); return s ? JSON.parse(s) : null; },
+  // the sha GitHub has for a file (null: it doesn't exist); kept in this.shas
+  async sha(path, a = Auth.get()) {
+    if (this.shas[path] !== undefined) return this.shas[path];
+    const r = await fetch(this.url(a, path) + "?ref=" + encodeURIComponent(a.branch) + "&t=" + Date.now(), { headers: this.hdr("application/vnd.github.object+json", a.token), cache: "no-store" });
+    if (r.status === 404) return this.shas[path] = null;
+    if (!r.ok) throw new Error(r.status === 401 || r.status === 403 ? "token" : "HTTP " + r.status);
+    return this.shas[path] = (await r.json()).sha;
+  },
+  // text, or { b64, message } for a file of any kind (used by the updater)
   async put(path, text, a = Auth.get(), tries = 3) {
     if (this.shas[path] === undefined) {
       // "&t=" makes GitHub answer with the file as it is now, not a copy from a few seconds ago (else: a conflict again)
@@ -1676,9 +1791,7 @@ const GH = {
       this.shas[path] = r.status === 404 ? null : r.ok ? (await r.json()).sha : undefined;
       if (this.shas[path] === undefined) throw new Error(r.status === 401 || r.status === 403 ? "token" : "HTTP " + r.status);
     }
-    const bytes = utf8(text); let bin = "";
-    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-    const body = { message: `Update ${path.split("/").pop()} (GTA Manager)`, content: btoa(bin), branch: a.branch };
+    const body = { message: (typeof text === "object" && text.message) || `Update ${path.split("/").pop()} (GTA Manager)`, content: typeof text === "object" ? text.b64 : b64of(utf8(text)), branch: a.branch };
     if (this.shas[path]) body.sha = this.shas[path];
     const r = await fetch(this.url(a, path), { method: "PUT", headers: { ...this.hdr("application/vnd.github+json", a.token), "Content-Type": "application/json" }, body: JSON.stringify(body) });
     // the file changed on GitHub since we last saw it: take its new version and overwrite
@@ -1839,6 +1952,8 @@ const Router = {
     if (s.tour && s.tour()) items.push({ label: t("m_tour"), act: () => $("#tourBtn").click() });
     items.push({ label: t("m_guide"), act: openGuide });
     if (help) items.push({ label: t("m_help"), act: () => openText(t("helpTitle"), help) });
+    const up = Update.available();
+    if (up && (Update.canSelf() || Update.where() === "orig")) items.push({ label: t("m_update", up), act: () => Update.show(up) });
     if (App.canOffer()) items.push({ label: t("m_install"), act: () => App.install() });
     items.push({ label: t("m_about"), act: openAbout });
     const list = $("#moreList");
