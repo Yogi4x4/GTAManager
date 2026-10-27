@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.19.0 (2026-10-27)
+* Vehicle Manager:
+  * Add: the details on a car's card are filters: click the manufacturer (e.g. Canis), the class, the vehicle type, the garage, the level or an icon (Imani, Benny's, HSW, Modified, Favorite) to see only the cars with it; click again to take it off.
+  * Add: a level filter next to the garage filter (with how many cars are on each level), shown when the chosen garage has levels.
+  * Add: the filters in use show as chips above the cards, each with ✕, plus Clear all.
+* Everywhere:
+  * Change: new versions are looked for every 3 hours (was once a day).
+
 ### v0.18.0 (2026-10-27)
 * Everywhere:
   * Add: every copy of GTA V Manager (a fork on another GitHub account) updates itself. When a new version is out, its owner (logged in) is asked “Update now?”; on Yes the new files are copied from the original repository into theirs, the ones already the same are skipped, and the page reloads by itself once GitHub has published it. Their data/ and login (auth.json) are never touched.

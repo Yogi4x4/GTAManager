@@ -531,7 +531,7 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.18";
+const APP_VERSION = "0.19";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -809,6 +809,42 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.19.0",
+  "date": "2026-10-27",
+  "en": [
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Add: the details on a car's card are filters: click the manufacturer (e.g. Canis), the class, the vehicle type, the garage, the level or an icon (Imani, Benny's, HSW, Modified, Favorite) to see only the cars with it; click again to take it off.",
+     "Add: a level filter next to the garage filter (with how many cars are on each level), shown when the chosen garage has levels.",
+     "Add: the filters in use show as chips above the cards, each with ✕, plus Clear all."
+    ]
+   },
+   {
+    "area": "Everywhere",
+    "items": [
+     "Change: new versions are looked for every 3 hours (was once a day)."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Adaugă: detaliile de pe cardul unei mașini sunt filtre: click pe producător (ex. Canis), clasă, tipul vehiculului, garaj, nivel sau pe o iconiță (Imani, Benny's, HSW, Modificat, Favorite) și vezi doar mașinile cu ele; încă un click scoate filtrul.",
+     "Adaugă: filtru de nivel lângă filtrul de garaj (cu câte mașini sunt pe fiecare nivel), când garajul ales are niveluri.",
+     "Adaugă: filtrele folosite apar ca etichete deasupra cardurilor, fiecare cu ✕, plus Șterge tot."
+    ]
+   },
+   {
+    "area": "Peste tot",
+    "items": [
+     "Schimbă: versiunile noi se caută la 3 ore (era o dată pe zi)."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.18.0",
   "date": "2026-10-27",
@@ -1476,7 +1512,7 @@ const Update = {
   latest: () => LS.raw("gtaUpdateLatest") || "",
   // the newest version is read from the original's CHANGELOG.md once a day
   async check(force) {
-    if (force || Date.now() - (+LS.raw("gtaUpdateCheckedAt") || 0) >= 864e5) {
+    if (force || Date.now() - (+LS.raw("gtaUpdateCheckedAt") || 0) >= 3 * 3600e3) {   // every 3 hours at most
       let txt;
       try { const r = await fetch(this.SRC + "?t=" + Date.now(), { cache: "no-store" }); if (!r.ok) return; txt = await r.text(); } catch (e) { return; }
       LS.set("gtaUpdateCheckedAt", String(Date.now()));
@@ -2443,6 +2479,18 @@ Section({
 @media (max-height: 520px) and (min-width: 761px) {
 #sec-vehicles .grid {grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));}
 }
+#sec-vehicles .card .ff {all: unset; cursor: pointer; border-radius: 4px; padding: 0 2px; margin: 0 -2px; transition: background .12s, color .12s;}
+#sec-vehicles .card .ff:hover, #sec-vehicles .card .ff:focus-visible {background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--text); text-decoration: underline dotted; text-underline-offset: 3px;}
+#sec-vehicles .card .ff:focus-visible {outline: 2px solid var(--accent);}
+#sec-vehicles .card .badges .ff {display: inline-flex; padding: 1px; margin: 0;}
+#sec-vehicles .card h3 .ff {font: inherit;}
+#sec-vehicles .active-f {display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 10px;}
+#sec-vehicles .active-f .af-lbl {font-size: 13px; color: var(--muted);}
+#sec-vehicles .af-chip, #sec-vehicles .af-clear {display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font: 600 13px var(--body, inherit); cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--border)); background: color-mix(in srgb, var(--accent) 16%, var(--bg2)); color: var(--text);}
+#sec-vehicles .af-chip b {font-size: 11px; opacity: .7;}
+#sec-vehicles .af-chip:hover b {opacity: 1;}
+#sec-vehicles .af-clear {background: none; border-color: var(--border); color: var(--muted); font-weight: 500;}
 
 #sec-vehicles { min-height: calc(100vh - var(--header-h)); margin: 0; }
 .vm-garages .lbl { margin-left: 2px; }
@@ -2507,6 +2555,7 @@ Section({
         <span><span data-i18n="vm.totalSlots"></span> <span id="gTotal">—</span></span>
       </div>
       <select id="fGarage" data-f></select>
+      <select id="fSpot" data-f hidden></select>
       <select id="fType" data-f><option value="" data-i18n="vm.allTypes"></option><option value="car" data-i18n="vm.vt_car"></option><option value="moto" data-i18n="vm.vt_moto"></option><option value="plane" data-i18n="vm.vt_plane"></option><option value="heli" data-i18n="vm.vt_heli"></option><option value="boat" data-i18n="vm.vt_boat"></option><option value="yacht" data-i18n="vm.vt_yacht"></option><option value="other" data-i18n="vm.vt_other"></option></select>
       <select id="fClass" data-f></select>
       <select id="fBrand" data-f></select>
@@ -2533,6 +2582,7 @@ Section({
     <span id="stats"></span>
     <span id="statusMsg"></span>
   </div>
+  <div id="activeF" class="active-f" hidden></div>
   <div id="grid" class="grid"></div>
 </div>
 
@@ -2664,7 +2714,7 @@ i18n({
   en: {
     "vm.garagesBtn": "🅿️ Garages", "vm.manageGarages": "Manage garages", "vm.addBtn": "➕ Add",
     "vm.searchPh": "Search brand / model / spot...", "vm.occupied": "Occupied:", "vm.free": "Free:", "vm.totalSlots": "Total slots:",
-    "vm.allGarages": "All garages", "vm.allClasses": "All classes", "vm.allBrands": "All manufacturers",
+    "vm.allGarages": "All garages", "vm.allLevels": "All levels", "vm.ffShow": n => `Show all: ${n}`, "vm.ffOff": "Take this filter off", "vm.ffActive": "Showing:", "vm.ffClear": "Clear all", "vm.allClasses": "All classes", "vm.allBrands": "All manufacturers",
     "vm.sortDefault": "Sort: Original", "vm.sortCls": "Class A → Z", "vm.sortGarage": "Garage A → Z",
     "vm.sortFav": "★ Favorites first", "vm.sortMod": "Modified first", "vm.modified": "Modified",
     "vm.exportCars": "📤 Export Cars.json", "vm.importCars": "📥 Import Cars.json", "vm.exportGarages": "📤 Export Garages.json", "vm.importGarages": "📥 Import Garages.json",
@@ -2749,7 +2799,7 @@ i18n({
   ro: {
     "vm.garagesBtn": "🅿️ Garaje", "vm.manageGarages": "Gestionează garajele", "vm.addBtn": "➕ Adaugă",
     "vm.searchPh": "Caută brand / model / loc...", "vm.occupied": "Ocupate:", "vm.free": "Libere:", "vm.totalSlots": "Total sloturi:",
-    "vm.allGarages": "Toate garajele", "vm.allClasses": "Toate clasele", "vm.allBrands": "Toți producătorii",
+    "vm.allGarages": "Toate garajele", "vm.allLevels": "Toate nivelurile", "vm.ffShow": n => `Arată toate: ${n}`, "vm.ffOff": "Scoate filtrul", "vm.ffActive": "Afișez:", "vm.ffClear": "Șterge tot", "vm.allClasses": "Toate clasele", "vm.allBrands": "Toți producătorii",
     "vm.sortDefault": "Sortare: Originală", "vm.sortCls": "Clasă A → Z", "vm.sortGarage": "Garaj A → Z",
     "vm.sortFav": "★ Favorite primele", "vm.sortMod": "Modificate primele", "vm.modified": "Modificat",
     "vm.exportCars": "📤 Export Cars.json", "vm.importCars": "📥 Import Cars.json", "vm.exportGarages": "📤 Export Garages.json", "vm.importGarages": "📥 Import Garages.json",
@@ -3343,8 +3393,18 @@ Section({
       fc.innerHTML = opts(T("allClasses"), [...new Set(cars.map(x => x.cls).filter(Boolean))].sort(byName));
       fb.innerHTML = opts(T("allBrands"), [...new Set(cars.map(x => x.brand).filter(Boolean))].sort(byName));
       [fg.value, fc.value, fb.value] = cur;
+      fillSpots();
       byId("garageList").innerHTML = allGarageNames().map(n => { const o = occupancy(n);
         return `<option value="${esc(n)}" label="${o.slots != null ? `${o.occ}/${o.slots}${o.occ >= o.slots ? " ⚠" : ""}` : o.occ}"></option>`; }).join("");
+    }
+    /* idea 66: levels of the chosen garage (its set levels, plus any level a car in it uses); hidden when it has none */
+    function fillSpots() {
+      const fs = byId("fSpot"), g = byId("fGarage").value, cur = fs.value;
+      const gar = garages.find(x => x.name === g);
+      const names = g ? [...new Set([...((gar && gar.levels) || []).map(l => l.name), ...cars.filter(c => c.garage === g).map(c => c.spot).filter(Boolean)])] : [];
+      fs.hidden = !names.length;
+      fs.innerHTML = `<option value="">${T("allLevels")}</option>` + names.map(n => `<option value="${esc(n)}">${esc(n)} (${levelOcc(g, n)})</option>`).join("");
+      fs.value = names.includes(cur) ? cur : "";
     }
     function updateGarageStats() {
       const sel = byId("fGarage").value;
@@ -3357,7 +3417,41 @@ Section({
         set(sel, occ, g ? Math.max(0, g.slots - occ) : "?", g ? g.slots : "?");
       }
     }
-    el.addEventListener("change", e => { if (e.target.matches("[data-f]")) { if (e.target.id === "fGarage") updateGarageStats(); render(); } });
+    el.addEventListener("change", e => { if (e.target.matches("[data-f]")) { if (e.target.id === "fGarage") { fillSpots(); updateGarageStats(); } render(); } });
+    /* idea 66: the details on a card are filters: a click shows only the cars with that detail, a second click takes it off */
+    const FF_SEL = ["fGarage", "fSpot", "fType", "fClass", "fBrand"], FF_BOX = ["fFav", "fImani", "fModified", "fHsw", "fBennys"];
+    function setFilter(id, val) {
+      const box = FF_BOX.includes(id), f = byId(id);
+      if (box) f.checked = !f.checked;
+      else if (id === "fSpot") { const [g, l] = JSON.parse(val), same = byId("fGarage").value === g && f.value === l; byId("fGarage").value = g; fillSpots(); f.value = same ? "" : l; }
+      else { f.value = f.value === val ? "" : val; if (id === "fGarage") { byId("fSpot").value = ""; fillSpots(); } }
+      updateGarageStats(); render();
+      byId("activeF").scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+    function clearFilters() { FF_SEL.forEach(id => byId(id).value = ""); FF_BOX.forEach(id => byId(id).checked = false); fillSpots(); updateGarageStats(); render(); }
+    // the filters in use, as chips above the cards (each with ✕), so they are seen even with the filter panel closed
+    function renderActive() {
+      const lab = { fGarage: "🏠", fSpot: "▤", fType: "", fClass: "", fBrand: "" }, chips = [];
+      FF_SEL.forEach(id => { const f = byId(id), v = f.value; if (!v) return;
+        const txt = id === "fType" ? f.selectedOptions[0].textContent : id === "fSpot" ? v : v;
+        chips.push(`<button type="button" class="af-chip" data-af="${id}" title="${esc(T("ffOff"))}">${lab[id] ? lab[id] + " " : ""}${esc(txt)} <b>✕</b></button>`); });
+      const boxName = { fFav: "Favorite", fImani: "Imani", fModified: T("modified"), fHsw: "HSW", fBennys: "Benny's" };
+      FF_BOX.forEach(id => { if (byId(id).checked) chips.push(`<button type="button" class="af-chip" data-af="${id}" title="${esc(T("ffOff"))}">${esc(boxName[id])} <b>✕</b></button>`); });
+      const box = byId("activeF");
+      box.hidden = !chips.length;
+      box.innerHTML = chips.length ? `<span class="af-lbl">${T("ffActive")}</span>${chips.join("")}${chips.length > 1 ? `<button type="button" class="af-clear" data-af="all">${T("ffClear")}</button>` : ""}` : "";
+    }
+    el.addEventListener("click", e => {
+      const ff = e.target.closest("[data-ff]");
+      if (ff) { e.preventDefault(); setFilter(ff.dataset.ff, ff.dataset.fv); return; }
+      const af = e.target.closest("[data-af]");
+      if (!af) return;
+      const id = af.dataset.af;
+      if (id === "all") return clearFilters();
+      if (FF_BOX.includes(id)) byId(id).checked = false; else byId(id).value = "";
+      if (id === "fGarage") byId("fSpot").value = "";
+      fillSpots(); updateGarageStats(); render();
+    });
     byId("search").addEventListener("input", render);
 
     /* ---------- cars ---------- */
@@ -3418,11 +3512,12 @@ Section({
       byId("cntFav").textContent = n("favorite"); byId("cntImani").textContent = n("imani"); byId("cntModified").textContent = n("modified");
       byId("cntHsw").textContent = n("hsw"); byId("cntBennys").textContent = n("bennys");
       const v = id => byId(id).value, on = id => byId(id).checked;
-      byId("filterCount").textContent = (["fGarage", "fType", "fClass", "fBrand"].filter(v).length + ["fFav", "fImani", "fModified", "fHsw", "fBennys"].filter(on).length + (v("sortBy") !== "default" ? 1 : 0)) || "";
+      byId("filterCount").textContent = (["fGarage", "fSpot", "fType", "fClass", "fBrand"].filter(v).length + ["fFav", "fImani", "fModified", "fHsw", "fBennys"].filter(on).length + (v("sortBy") !== "default" ? 1 : 0)) || "";
       const query = norm(v("search").trim());
       const list = cars.filter(c => {
         if (query && !norm(`${c.brand || ""} ${c.model || ""} ${c.cls || ""} ${c.spot || ""} ${c.garage || ""} ${c.notes || ""} ${c.imaniType || ""}`).includes(query)) return false;
         if (v("fGarage") && c.garage !== v("fGarage")) return false;
+        if (v("fSpot") && (c.spot || "") !== v("fSpot")) return false;
         if (v("fClass") && c.cls !== v("fClass")) return false;
         if (v("fType") && vehType(c) !== v("fType")) return false;
         if (v("fBrand") && c.brand !== v("fBrand")) return false;
@@ -3433,6 +3528,7 @@ Section({
         "fav-first": (a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0), "mod-first": (a, b) => (b.modified ? 1 : 0) - (a.modified ? 1 : 0) };
       list.sort(SORT[v("sortBy")] || ((a, b) => (a.id || 0) - (b.id || 0)));
       byId("stats").textContent = `${T("results")}: ${list.length} / ${cars.length}`;
+      renderActive();
       updateGarageStats();
       const grid = byId("grid");
       if (!list.length) {
@@ -3441,19 +3537,21 @@ Section({
         return;
       }
       grid.innerHTML = list.map(c => {
+        // idea 66: every detail is a filter button (ff = which filter, fv = its value)
+        const ff = (id, val, html, what) => `<button type="button" class="ff" data-ff="${id}" data-fv="${esc(val)}" title="${esc(T("ffShow", what))}">${html}</button>`;
         let badges = "";
-        if (c.favorite) badges += badgeIcon(BADGE_ICONS.favorite, "Favorite");
-        if (c.modified) badges += badgeIcon(BADGE_ICONS.modified, T("modified"));
-        if (c.imani) badges += BADGE_ICONS[c.imaniType] ? badgeIcon(BADGE_ICONS[c.imaniType], "Imani: " + c.imaniType) : '<span class="badge imani">Imani</span>';
-        if (c.hsw) badges += badgeIcon(BADGE_ICONS.hsw, "HSW");
-        if (c.bennys) badges += badgeIcon(BADGE_ICONS.bennys, "Benny's");
+        if (c.favorite) badges += ff("fFav", "1", badgeIcon(BADGE_ICONS.favorite, "Favorite"), "Favorite");
+        if (c.modified) badges += ff("fModified", "1", badgeIcon(BADGE_ICONS.modified, T("modified")), T("modified"));
+        if (c.imani) badges += ff("fImani", "1", BADGE_ICONS[c.imaniType] ? badgeIcon(BADGE_ICONS[c.imaniType], "Imani: " + c.imaniType) : '<span class="badge imani">Imani</span>', "Imani");
+        if (c.hsw) badges += ff("fHsw", "1", badgeIcon(BADGE_ICONS.hsw, "HSW"), "HSW");
+        if (c.bennys) badges += ff("fBennys", "1", badgeIcon(BADGE_ICONS.bennys, "Benny's"), "Benny's");
         const vt = vehType(c);
         return `<div class="card${c.favorite ? " fav-card" : ""}">
           ${c.image ? `<img class="car-img" loading="lazy" alt="${esc(`${c.brand || ""} ${c.model || ""}`)}" src="${c.image}">` : `<div class="no-img">${T("noImage")}</div>`}
           <div class="info">
-            <h3>${esc(c.brand || "")} ${esc(c.model || "")}</h3>
-            <div class="small"><span class="vt-ico" title="${T("vt_" + vt)}">${VT_ICON[vt]}</span>${esc(c.cls || "—")}</div>
-            <div class="small" style="margin:3px 0">${esc(c.garage || "—")} • ${esc(c.spot || "—")}</div>
+            <h3>${c.brand ? ff("fBrand", c.brand, esc(c.brand), c.brand) : ""} ${esc(c.model || "")}</h3>
+            <div class="small">${ff("fType", vt, `<span class="vt-ico">${VT_ICON[vt]}</span>`, T("vt_" + vt))}${c.cls ? ff("fClass", c.cls, esc(c.cls), c.cls) : "—"}</div>
+            <div class="small" style="margin:3px 0">${c.garage ? ff("fGarage", c.garage, esc(c.garage), c.garage) : "—"} • ${c.garage && c.spot ? ff("fSpot", JSON.stringify([c.garage, c.spot]), esc(c.spot), c.garage + " · " + c.spot) : esc(c.spot || "—")}</div>
             ${c.notes ? `<div class="small" style="margin-top:2px;font-style:italic">${esc(c.notes)}</div>` : ""}
             <div class="badges">${badges}</div>
             <div class="btn-row">
