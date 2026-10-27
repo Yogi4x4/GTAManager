@@ -1,7 +1,8 @@
 # GTA V Manager: weekly GTA Online bonuses for the Home page.
 # Every Thursday (after Rockstar's weekly update) and once a day as a check, this reads the newest
 # "Weekly Bonuses and Discounts" post on r/gtaonline (the same info Rockstar posts on its Newswire),
-# (JSON, then its RSS feed), with gtaboss.gg / gtabase.com as fallbacks, and saves it as data/weekly.json. The page only reads that file.
+# (JSON, then its RSS feed); a copy (fork) then takes the original repository's list; gtaboss.gg / gtabase.com are the last fallbacks.
+# It saves it as data/weekly.json. The page only reads that file.
 # Run it by hand any time: Actions → Weekly bonuses → Run workflow.
 name: Weekly bonuses
 on:
@@ -137,6 +138,22 @@ jobs:
                   print("reddit rss failed:", e)
               return None
 
+          # ---- 1b. a copy of GTA V Manager (a fork): Reddit often refuses GitHub's servers, so take the list the original
+          #          repository already has, when it came from r/gtaonline and is at most 8 days old ----
+          ORIGINAL = "Yogi4x4/GTAManager"
+          def from_original():
+              import os
+              if os.environ.get("GITHUB_REPOSITORY", "").lower() == ORIGINAL.lower(): return None
+              try:
+                  d = json.loads(get("https://raw.githubusercontent.com/" + ORIGINAL + "/main/data/weekly.json"))
+                  age = datetime.datetime.utcnow() - datetime.datetime.strptime(d.get("fetched", ""), "%Y-%m-%dT%H:%MZ")
+                  if d.get("source") == "r/gtaonline" and d.get("sections") and age.days <= 8:
+                      d.pop("fetched", None); return d
+                  print("original's list is old or not from r/gtaonline")
+              except Exception as e:
+                  print("original failed:", e)
+              return None
+
           # ---- 2. gtaboss.gg / gtabase.com weekly pages (HTML) ----
           def from_sites():
               for url in ("https://www.gtaboss.gg/gta-5-online/gta-online-weekly-updates", "https://www.gtabase.com/gta-online/this-week-bonuses-discounts"):
@@ -146,7 +163,14 @@ jobs:
                       m = re.search(r'href="(/gta-5-online/gta-online-weekly-updates/\d{4}-\d{2}-\d{2})"', page)
                       if m:
                           url = "https://www.gtaboss.gg" + m.group(1); page = get(url)
-                      secs = sections_of(page)
+                      # drop the site's own menus and captions ("999+ markers", "Home", "/ Weekly Updates", "Image credit: ...")
+                      junk_t = re.compile(r"^(online|more|menu|this week at a glance|related|share)$", re.I)
+                      junk_i = re.compile(r"^(home|/.*|image credit.*|updated .*|\d+\+ \w+)$", re.I)
+                      secs = []
+                      for sec in sections_of(page):
+                          if junk_t.match(sec["title"].strip()): continue
+                          items = [i for i in sec["items"] if not junk_i.match(i.strip())]
+                          if items: secs.append({"title": sec["title"], "items": items})
                       if secs:
                           name = url.split("/")[2].replace("www.", "")
                           return {"source": name, "title": "GTA Online weekly update", "url": url, "posted": "", "sections": secs}
@@ -155,7 +179,7 @@ jobs:
                       print("site failed:", url, e)
               return None
 
-          data = from_reddit() or from_reddit_rss() or from_sites()
+          data = from_reddit() or from_reddit_rss() or from_original() or from_sites()
           if not data:
               # red X in Actions, so a failed week is visible; data/weekly.json stays as it was
               print("::error::No source answered this time; data/weekly.json stays as it was."); raise SystemExit(1)
