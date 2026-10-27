@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.20.0 (2026-10-28)
+* Job Manager:
+  * Add: the Agency page (from the Agency card): owned, area (4 Agencies with prices), the office safe and the Security Contracts.
+  * Add: Agency safe like the Nightclub's: it fills while “In game” is on, by what the Security Contracts done give ($500 a day for every 5, up to $20,000), holds $250,000; the amount, the contracts and the daily value can be typed or slid; a bell when it is nearly full and when it is full.
+  * Add: “I finished a contract”: counts it and rings after the 5 minutes between two Security Contracts.
+  * Add: the Job Manager map: a round button at the bottom right grows into a medium window with the map and the Agency on it (its pin can be moved), and shrinks back into the button when closed.
+  * Change: Dr. Dre Contract moved to the HEISTS card.
+
 ### v0.19.0 (2026-10-27)
 * Vehicle Manager:
   * Add: the details on a car's card are filters: click the manufacturer (e.g. Canis), the class, the vehicle type, the garage, the level or an icon (Imani, Benny's, HSW, Modified, Favorite) to see only the cars with it; click again to take it off.

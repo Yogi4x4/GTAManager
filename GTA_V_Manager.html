@@ -531,7 +531,7 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.19";
+const APP_VERSION = "0.20";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -809,6 +809,34 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.20.0",
+  "date": "2026-10-28",
+  "en": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Add: the Agency page (from the Agency card): owned, area (4 Agencies with prices), the office safe and the Security Contracts.",
+     "Add: Agency safe like the Nightclub's: it fills while “In game” is on, by what the Security Contracts done give ($500 a day for every 5, up to $20,000), holds $250,000; the amount, the contracts and the daily value can be typed or slid; a bell when it is nearly full and when it is full.",
+     "Add: “I finished a contract”: counts it and rings after the 5 minutes between two Security Contracts.",
+     "Add: the Job Manager map: a round button at the bottom right grows into a medium window with the map and the Agency on it (its pin can be moved), and shrinks back into the button when closed.",
+     "Change: Dr. Dre Contract moved to the HEISTS card."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Adaugă: pagina Agency (din cardul Agency): o deții, zona (cele 4 Agency, cu prețuri), seiful din birou și Security Contracts.",
+     "Adaugă: seiful Agency ca la Nightclub: se umple cât e pornit „În joc”, după cât dau Security Contracts făcute (500 $ pe zi la fiecare 5, până la 20.000 $), ține 250.000 $; suma, contractele și valoarea pe zi se scriu sau se trag din slider; clopoțel când e aproape plin și când e plin.",
+     "Adaugă: „Am terminat un contract”: îl numără și sună după cele 5 minute dintre două Security Contracts.",
+     "Adaugă: harta Job Manager: un buton rotund jos în dreapta crește într-o fereastră medie cu harta și Agency-ul pe ea (pinul se poate muta), iar la închidere se strânge la loc în buton.",
+     "Schimbă: Dr. Dre Contract s-a mutat în cardul HEISTS."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.19.0",
   "date": "2026-10-27",
@@ -1918,6 +1946,7 @@ const ROUTES = {
   hangar:     { sec: "production", title: "Hangar",                 view: "hangar" },
   jobs:       { sec: "production", title: "Job Manager",            view: "jobs" },
   fronts:     { sec: "production", title: "Money Fronts",           view: "fronts" },
+  agency:     { sec: "production", title: "Agency",                 view: "agency" },
   export:     { sec: "export",     title: "Vehicle Export Tracker" }
 };
 const SECTIONS = {};
@@ -1967,7 +1996,7 @@ const Router = {
     const group = (head, subs) => `<div class="pm-group">${head}<div class="pm-sub" role="group">${subs}</div></div>`;
     $("#pagesList").innerHTML = link("", t("pg_home")) + link("vehicles", "Vehicle Manager")
       + group(link("production", "Production Manager"), link("mc", "MC Business") + link("night", "Nightclub") + link("bunker", "Bunker") + link("hangar", "Hangar") + link("export", "Vehicle Export Tracker"))
-      + group(link("jobs", "Job Manager"), link("fronts", "Money Fronts"));
+      + group(link("jobs", "Job Manager"), link("agency", "Agency") + link("fronts", "Money Fronts"));
   },
   // ⋮ menu: the section's own items, then notifications, account, help, about
   renderMore() {
@@ -4165,6 +4194,61 @@ Section({
 @media (max-width: 1100px) and (min-height: 521px) {
 #sec-production .job-head {max-width: 440px;}
 }
+#sec-production .ag-logo {height: 76px !important; width: auto;}
+#sec-production .ag-top {display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 14px;}
+#sec-production .ag-top .ceo-pick {margin: 0; min-width: 240px;}
+#sec-production .ag-top .hint {margin: 0;}
+#sec-production .ag-bar {height: 12px; border-radius: 6px; background: var(--asphalt); border: 1px solid var(--line); overflow: hidden; margin: 6px 0 4px;}
+#sec-production .ag-bar.thin {height: 7px;}
+#sec-production .ag-bar i {display: block; height: 100%; background: linear-gradient(90deg, var(--sodium), color-mix(in srgb, var(--sodium) 60%, #fff)); transition: width .4s;}
+#sec-production .ag-row {display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 2px;}
+#sec-production .ag-row .val-in {flex: 1; min-width: 170px; margin: 0;}
+#sec-production .ag-n {width: 90px; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font: 600 16px var(--body);}
+#sec-production .ag-range {width: 100%; margin: 6px 0 4px; accent-color: var(--sodium);}
+#sec-production .ag-sep {height: 1px; background: var(--line); margin: 14px 0 10px;}
+#sec-production .ag-safe .bar-cap b.full {color: var(--ok);}
+#sec-production .ag-done {width: 100%; justify-content: center; font-size: 16px; padding: 12px; margin: 4px 0 10px;}
+#sec-production .ag-cd {display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: var(--asphalt); border: 1px solid var(--line); margin: 0 0 8px;}
+#sec-production .ag-cd b {flex: 1;}
+#sec-production .ag-cd.ready {border-color: var(--ok); color: var(--ok);}
+#sec-production .ag-sc .kv {margin-top: 6px;}
+#sec-production .jm-btn {position: fixed; right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 40; width: 52px; height: 52px; border-radius: 50%;
+  display: none; align-items: center; justify-content: center; cursor: pointer; color: var(--sodium-ink); background: var(--sodium); border: 0;
+  box-shadow: 0 6px 18px var(--shadow); transition: transform .25s ease, opacity .2s ease;}
+#sec-production .jm-btn.on {display: flex;}
+#sec-production .jm-btn:hover {transform: scale(1.07);}
+#sec-production .jm-btn.hid {opacity: 0; transform: scale(.6); pointer-events: none;}
+#sec-production .jm-win {position: fixed; right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 41;
+  width: min(760px, calc(100vw - 36px)); height: min(560px, calc(100dvh - var(--head-h) - 36px));
+  display: flex; flex-direction: column; overflow: hidden; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 50px var(--shadow);
+  transform-origin: calc(100% - 26px) calc(100% - 26px); transform: scale(.07); opacity: 0; border-radius: 48%; visibility: hidden; pointer-events: none;
+  transition: transform .42s cubic-bezier(.2,.85,.25,1), opacity .3s ease, border-radius .42s ease, visibility 0s linear .42s;}
+#sec-production .jm-win.open {transform: none; opacity: 1; border-radius: 16px; visibility: visible; pointer-events: auto; transition: transform .42s cubic-bezier(.2,.85,.25,1), opacity .2s ease, border-radius .42s ease, visibility 0s;}
+#sec-production .jm-head {display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line);}
+#sec-production .jm-head b {font-size: 15px;}
+#sec-production .jm-hint {flex: 1; font-size: 13px; color: var(--sodium); font-weight: 600;}
+#sec-production .jm-x {width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); cursor: pointer; font-size: 15px;}
+#sec-production .jm-view {position: relative; flex: 1; overflow: hidden; touch-action: none; cursor: grab;}
+#sec-production .jm-view:active {cursor: grabbing;}
+#sec-production .jm-win.placing .jm-view {cursor: crosshair;}
+#sec-production .jm-world {position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform;}
+#sec-production .jm-img {display: block; user-select: none; -webkit-user-drag: none; pointer-events: none;}
+#sec-production .jm-pins {position: absolute; inset: 0;}
+#sec-production .jm-pin {position: absolute; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: var(--text); transform-origin: 50% 100%;}
+#sec-production .jm-pin img {width: 92px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,.6));}
+#sec-production .jm-pin span {display: flex; flex-direction: column; align-items: center; padding: 3px 8px; border-radius: 8px; background: color-mix(in srgb, var(--asphalt) 88%, transparent); border: 1px solid var(--line); white-space: nowrap;}
+#sec-production .jm-pin b {font-size: 12px;}
+#sec-production .jm-pin small {font-size: 11px; color: var(--sodium); font-weight: 600;}
+#sec-production .jm-zoom {position: absolute; right: 10px; bottom: 10px; display: flex; flex-direction: column; gap: 6px;}
+#sec-production .jm-zoom button {width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 20px; cursor: pointer;}
+#sec-production .jm-empty {position: absolute; left: 50%; top: 14px; transform: translateX(-50%); padding: 8px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: 13px; max-width: 80%; text-align: center;}
+@media (prefers-reduced-motion: reduce) {
+#sec-production .jm-win, #sec-production .jm-win.open, #sec-production .jm-btn {transition: none;}
+}
+@media (max-width: 760px) {
+#sec-production .jm-win {height: min(520px, calc(100dvh - var(--head-h) - 30px));}
+}
+#sec-production #focus {padding-bottom: 92px;}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -4410,6 +4494,22 @@ i18n({
     "pm.loggedIn": "Logged in", "pm.loggedOut": "Logged out", "pm.ghTokenBad": "GitHub refused the save: log in again", "pm.ghSaveFail": "Couldn't save to GitHub, will retry", "pm.ghLoadFail": "Couldn't load from GitHub", "pm.ghLoadedPM": "Loaded your data from GitHub",
     "pm.ncSubtitle": "Club + warehouse", "pm.ncPop": "Popularity", "pm.ncPopShort": "Popularity", "pm.ncGoods": "Sell goods value", "pm.ncGoodsShort": "Goods",
     "pm.ncPriv": "Private / Invite Only", "pm.ncPub": "Full public lobby (+50%)", "pm.ncOpenPage": "Open the Nightclub page", "pm.locPick": "Which one in the game?",
+    "pm.agOpenTag": "Open", "pm.agSub": "The office safe and the Security Contracts. The safe fills while you play, like the Nightclub's.",
+    "pm.agNotOwned": "Tick it if you own an Agency: the safe and the Security Contracts show up.", "pm.agPinBtn": "Place on the map",
+    "pm.agSafe": "Office safe", "pm.agNow": "In the safe now", "pm.agPaused": "Turn on “In game” (top) and the safe fills while you play.", "pm.agFullHint": "The safe is full: empty it in the game.",
+    "pm.agLeft": m => `Full in ${m}.`, "pm.agNoPay": "No income yet: it starts after the first 5 Security Contracts.",
+    "pm.agContracts": "Security Contracts done", "pm.agPerDay": "Into the safe per in-game day (48 min)", "pm.agTyped": "typed",
+    "pm.agMaxed": "Most it can get: $20,000 a day.", "pm.agNext": o => `${o.k} more contract(s) and it becomes ${o.v} a day.`,
+    "pm.agFromGame": "As in the game", "pm.agPdReset": v => `Use the computed value (${v})`,
+    "pm.agDone": "I finished a contract", "pm.agDoneToast": n => `Security Contract #${n} counted; I'll ring in 5 minutes.`,
+    "pm.agScHint": "Press it after each contract: it counts it (so the safe pays more) and rings when you can take the next one. The contracts themselves are random.",
+    "pm.agPay": "Pay per contract", "pm.agCdLbl": "Wait between two contracts",
+    "pm.agCdIn": m => `next contract in ${m}`, "pm.agCdReady": "you can take the next contract", "pm.agCdDone": "Agency: you can take the next Security Contract",
+    "pm.agSafeFull": "Agency: the safe is full ($250,000)", "pm.agSafeNear": m => `Agency: the safe is full in ${m}`,
+    "pm.jmOpen": "Job Manager map", "pm.jmTitle": "Job Manager map", "pm.jmEmpty": "Pick your Agency's area and it shows up here.",
+    "pm.jmPlace": "Tap the map where your Agency is", "pm.jmPlaced": "Pin moved.",
+    "pm.at1t": "Agency", "pm.at1b": "Tick that you own it and pick its area.", "pm.at2t": "The safe", "pm.at2b": "How much is in it, how many Security Contracts you did and what it pays a day. Type or slide the values from the game.",
+    "pm.at3t": "Security Contracts", "pm.at3b": "Press after each contract: it counts it and rings when you can take the next one.", "pm.at4t": "The map", "pm.at4b": "Here is the Job Manager map, with your Agency on it.",
     "pm.jobsSub": "Your heists and jobs. Money Fronts is ready; the others come next.", "pm.soon2": "Coming soon",
     "pm.frontsCard": "Hands On Car Wash, Higgins Helitours and Smoke on the Water: Heat, laundering missions and the bonuses they give your other businesses.",
     "pm.frontsOwned": n => `${n} of 3 owned`, "pm.frontsOpen": "Open Money Fronts",
@@ -4589,6 +4689,22 @@ i18n({
     "pm.loggedIn": "Ai intrat în cont", "pm.loggedOut": "Ai ieșit din cont", "pm.ghTokenBad": "GitHub a refuzat salvarea: intră din nou în cont", "pm.ghSaveFail": "Nu s-a putut salva în GitHub, reîncerc", "pm.ghLoadFail": "Nu s-a putut încărca din GitHub", "pm.ghLoadedPM": "Datele tale au fost încărcate din GitHub",
     "pm.ncSubtitle": "Club + depozit", "pm.ncPop": "Popularitate", "pm.ncPopShort": "Popularitate", "pm.ncGoods": "Valoare sell goods", "pm.ncGoodsShort": "Goods",
     "pm.ncPriv": "Privat / Invite Only", "pm.ncPub": "Lobby public plin (+50%)", "pm.ncOpenPage": "Deschide pagina Nightclub", "pm.locPick": "Care e, din joc?",
+    "pm.agOpenTag": "Deschide", "pm.agSub": "Seiful din birou și Security Contracts. Seiful se umple cât joci, ca la Nightclub.",
+    "pm.agNotOwned": "Bifează dacă ai un Agency: apar seiful și Security Contracts.", "pm.agPinBtn": "Pune pe hartă",
+    "pm.agSafe": "Seiful din birou", "pm.agNow": "Acum în seif", "pm.agPaused": "Pornește „În joc” (sus) și seiful se umple cât joci.", "pm.agFullHint": "Seiful e plin: golește-l în joc.",
+    "pm.agLeft": m => `Plin în ${m}.`, "pm.agNoPay": "Încă nu primește nimic: pornește după primele 5 Security Contracts.",
+    "pm.agContracts": "Security Contracts făcute", "pm.agPerDay": "Intră în seif pe zi din joc (48 min)", "pm.agTyped": "scris de mână",
+    "pm.agMaxed": "Maximul posibil: 20.000 $ pe zi.", "pm.agNext": o => `Încă ${o.k} contract(e) și devine ${o.v} pe zi.`,
+    "pm.agFromGame": "Ca în joc", "pm.agPdReset": v => `Folosește valoarea calculată (${v})`,
+    "pm.agDone": "Am terminat un contract", "pm.agDoneToast": n => `Security Contract nr. ${n} numărat; sun peste 5 minute.`,
+    "pm.agScHint": "Apasă după fiecare contract: îl numără (deci seiful primește mai mult) și sună când poți lua următorul. Contractele în sine sunt aleatorii.",
+    "pm.agPay": "Plata pe contract", "pm.agCdLbl": "Pauza dintre două contracte",
+    "pm.agCdIn": m => `următorul contract în ${m}`, "pm.agCdReady": "poți lua următorul contract", "pm.agCdDone": "Agency: poți lua următorul Security Contract",
+    "pm.agSafeFull": "Agency: seiful e plin (250.000 $)", "pm.agSafeNear": m => `Agency: seiful se umple în ${m}`,
+    "pm.jmOpen": "Harta Job Manager", "pm.jmTitle": "Harta Job Manager", "pm.jmEmpty": "Alege zona Agency-ului tău și apare aici.",
+    "pm.jmPlace": "Atinge harta unde e Agency-ul tău", "pm.jmPlaced": "Pinul a fost mutat.",
+    "pm.at1t": "Agency", "pm.at1b": "Bifează că îl ai și alege-i zona.", "pm.at2t": "Seiful", "pm.at2b": "Cât e în el, câte Security Contracts ai făcut și cât primește pe zi. Scrie sau trage valorile din joc.",
+    "pm.at3t": "Security Contracts", "pm.at3b": "Apasă după fiecare contract: îl numără și sună când poți lua următorul.", "pm.at4t": "Harta", "pm.at4b": "Aici e harta Job Manager, cu Agency-ul tău pe ea.",
     "pm.jobsSub": "Jafurile și misiunile tale. Money Fronts e gata; celelalte urmează.", "pm.soon2": "În curând",
     "pm.frontsCard": "Hands On Car Wash, Higgins Helitours și Smoke on the Water: Heat, misiunile de spălare și bonusurile pe care le dau celorlalte afaceri.",
     "pm.frontsOwned": n => `deții ${n} din 3`, "pm.frontsOpen": "Deschide Money Fronts",
@@ -4917,9 +5033,11 @@ function defaultState() {
   ALL.forEach(d => biz[d.id] = defaultBiz(d));
   return { v: 5, inGame: false, lastTick: Date.now(), sideOpen: true, sound: true, notify: false, biz, notes: [],
            catOrder: CATEGORIES.map(c => c.id), bizOrder: MC.map(d => d.id), mapStyle: "satellite", mapV: 2,
-           hidden: { cats: {}, biz: {} }, boost: { biz: null, until: 0, last: null }, fronts: defaultFronts() };
+           hidden: { cats: {}, biz: {} }, boost: { biz: null, until: 0, last: null }, fronts: defaultFronts(), jobs: defaultJobs() };
 }
 // idea 63: Money Fronts (Higgins Helitours "owned" is the hangar's heli switch, shared with the Hangar)
+// idea 67: Job Manager businesses (kept apart from S.biz, so they never show on the Production Manager map)
+function defaultJobs() { return { agency: { owned: false, loc: "", pin: null, contracts: 0, perDay: null, safe: 0, cd: null, alert: null } }; }
 function defaultFronts() { return { wash: { owned: false, heat: 0, laund: 0, fired: {} }, smoke: { owned: false, heat: 0, laund: 0, fired: {} }, heli: { heat: 0, laund: 0, fired: {} } }; }
 let S = defaultState();
 
@@ -4963,6 +5081,8 @@ function mergeState(data) {
   out.bizOrder = fixOrder(data.bizOrder, MC.map(d => d.id));
   const hg = out.biz.hangar;
   if (hg) { hg.per = { ...(hg.per || {}) }; hg.staff = { last: null, remind: true, fired: {}, ...(hg.staff || {}) }; hg.fired = { ...(hg.fired || {}) }; hg.cd = { ...(hg.cd || {}) }; hg.cdPick = { type: "narcotics", n: 1, ...(hg.cdPick || {}) }; }
+  const dj = defaultJobs(), sj = data.jobs || {};
+  out.jobs = {}; Object.keys(dj).forEach(k => out.jobs[k] = { ...dj[k], ...(sj[k] || {}) });
   const df = defaultFronts(), sf = data.fronts || {};
   out.fronts = {}; Object.keys(df).forEach(k => out.fronts[k] = { ...df[k], ...(sf[k] || {}), fired: { ...((sf[k] || {}).fired || {}) } });
   const bk = out.biz.bunker;
@@ -5159,6 +5279,7 @@ function syncStatus() {
 }
 const KIND_OF = { low: "warn", empty: "bad", full: "full", nearfull: "full" };
 function checkAlerts(fromProduction) {
+  checkAgency();
   PROD.forEach(d => {
     const b = S.biz[d.id];
     const st = status(d.id), prev = lastSt[d.id];
@@ -5385,6 +5506,7 @@ function muttText() {
 function liveTimers() {
   document.querySelectorAll("[data-live-timer]").forEach(el => {
     const [id, k] = el.dataset.liveTimer.split(":");
+    if (id === "agency") { el.textContent = agCdText(); el.closest(".ag-cd")?.classList.toggle("ready", agCdLeft() === 0); return; }
     if (k.startsWith("cd-")) { el.textContent = hgCdText(k.slice(3)); el.closest(".hg-cd-line")?.classList.toggle("ready", hgCdLeft(k.slice(3)) === 0); return; }
     el.textContent = k === "rooster" ? roosterText() : k === "staff" ? staffText(id) : k === "boost" ? (mansionOn(id) ? t("boostLeft", fmtTime((S.boost.until - Date.now()) / 60000)) : t("boostOff")) : muttText();
   });
@@ -5518,13 +5640,55 @@ function hangarPageHtml() {
    A laundering mission adds 10% Heat to its front; at 100% the front is raided. One legal job brings Heat back to 0.
    15 laundering missions at a front double what it pays into the Car Wash safe. Sources: gtaboom.com, GTA Wiki (oct. 2026).
    ====================================================================== */
+/* ======================================================================
+   Agency (idea 67). The office safe gets more for every Security Contract done: +$500 per in-game day for every 5,
+   up to $20,000 a day (about 200 contracts); it holds $250,000 and fills, like the Nightclub's, only while you play
+   (an in-game day = 48 minutes). 5 minutes between two Security Contracts.
+   Sources: gtaboss.gg, consolepulse.com, oldgrumpygamers.com (oct. 2026); the daily amount can be typed from the game.
+   ====================================================================== */
+// [area, price, x, y on the map (0..1)]: read on the Atlas map; the pin can be moved by hand
+const AG_LOCS = [["Little Seoul", 2010000, 0.3867, 0.7457], ["Vespucci Canals", 2145000, 0.3383, 0.7560], ["Rockford Hills", 2415000, 0.3710, 0.6930], ["Hawick", 2830000, 0.5050, 0.6920]];
+const AG_CAP = 250000, AG_MAX_DAY = 20000, AG_FULL_AT = 200, AG_CD = 5;
+const ag = () => S.jobs.agency;
+const agCalc = n => Math.min(AG_MAX_DAY, 500 * Math.floor(Math.max(0, n) / 5));
+const agPerDay = () => ag().perDay != null ? ag().perDay : agCalc(ag().contracts);
+function advanceAgency(dt) {
+  const a = ag();
+  if (!a.owned || a.safe >= AG_CAP) return;
+  a.safe = Math.min(AG_CAP, a.safe + agPerDay() * dt / 48);
+}
+const agLeft = () => { const a = ag(), pd = agPerDay(); return a.safe >= AG_CAP ? 0 : pd > 0 ? (AG_CAP - a.safe) / pd * 48 : Infinity; };
+const agCdLeft = () => { const c = ag().cd; return c ? Math.max(0, c.at + AG_CD * 60000 - Date.now()) / 60000 : null; };
+function agCdText() {
+  const l = agCdLeft();
+  if (l === null) return "";
+  if (l <= 0) return t("agCdReady");
+  const sec = Math.ceil(l * 60);
+  return t("agCdIn", Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0"));
+}
+function checkAgency() {
+  const a = ag();
+  if (!a.owned) return;
+  const go = msg => Notes.add(msg, "ok", { chime: true, desktop: true, go: "agency" });
+  if (a.cd && !a.cd.fired && agCdLeft() === 0) { a.cd.fired = true; go(t("agCdDone")); save(); }
+  if (a.cd && a.cd.fired && Date.now() - a.cd.at > 20 * 60000) { a.cd = null; save(); }   // the "ready" line goes away after a while
+  const st = a.safe >= AG_CAP - 1 ? "full" : S.inGame && agLeft() <= 30 ? "near" : null;
+  if (st !== a.alert) {
+    if (st === "full") go(t("agSafeFull"));
+    else if (st === "near") go(t("agSafeNear", fmtTime(agLeft())));
+    a.alert = st; save();
+  }
+}
+
 // idea 64: the page is split in two big cards, HEISTS and JOBS; Money Fronts is a card like the others (but it opens)
-const HEISTS = ["cayo", "cluckin", "casino", "doomsday", "kortz"], JOBS = ["agency", "autoshop", "bail", "dre", "garment", "fronts"];
+// idea 67: Dr. Dre Contract goes with the heists (not a heist as such, but played like one); Agency now opens its page
+const HEISTS = ["cayo", "cluckin", "casino", "doomsday", "kortz", "dre"], JOBS = ["agency", "autoshop", "bail", "garment", "fronts"];
 const JOB_NAMES = { agency: "Agency", autoshop: "Auto Shop", bail: "Bail Office", cayo: "Cayo Perico Heist", cluckin: "Cluckin' Bell Farm Raid", casino: "Diamond Casino Heist",
   doomsday: "Doomsday Heist", dre: "Dr. Dre Contract", garment: "Garment Factory", kortz: "Kortz Center Heist", fronts: "Money Fronts" };
 const FRONTS = [["wash", "Hands On Car Wash", 1000000], ["heli", "Higgins Helitours", 900000], ["smoke", "Smoke on the Water", 850000]];
 const frontOwned = k => k === "heli" ? !!S.biz.hangar.heli : !!S.fronts[k].owned;
 function jobCardHtml(k) {
+  if (k === "agency") return `<a class="job-card open" href="#agency" title="Agency"><span class="soon-tag on">${ag().owned ? money(ag().safe) : t("agOpenTag")}</span><img src="${JOB_IMG.agency}" alt="Agency"></a>`;
   if (k === "fronts") return `<a class="job-card open" href="#fronts" title="${t("frontsOpen")}"><span class="soon-tag on">${t("frontsOwned", FRONTS.filter(([f]) => frontOwned(f)).length)}</span><img src="${JOB_IMG.fronts}" alt="Money Fronts"></a>`;
   return `<div class="job-card soon" aria-disabled="true"><span class="soon-tag">${t("soon2")}</span><img src="${JOB_IMG[k]}" alt="${JOB_NAMES[k]}" loading="lazy"></div>`;
 }
@@ -5533,6 +5697,168 @@ function jobsHtml() {
   return `<div class="focus-head"><div><h2>Job Manager</h2><p class="muted">${t("jobsSub")}</p></div></div>
     <div class="job-sects">${sect("heists", JOB_IMG.heists, "Heists", HEISTS)}${sect("jobs", JOB_IMG.jobs, "Jobs", JOBS)}</div>`;
 }
+function agencyHtml() {
+  const a = ag(), pd = agPerDay(), calc = agCalc(a.contracts), left = agLeft(), n = a.contracts;
+  const head = `<div class="focus-head"><img class="ag-logo" src="${JOB_IMG.agency}" alt=""><div><h2>Agency${a.loc ? " · " + escapeHtml(a.loc) : ""}</h2><p class="muted">${t("agSub")}</p></div><a class="btn" href="#jobs">← Job Manager</a></div>`;
+  const top = `<section class="adv-card ag-top">
+      <label class="toggle row"><input type="checkbox" data-ag="own" ${a.owned ? "checked" : ""}> <span>${t("owned")}</span></label>
+      ${a.owned ? `<label class="ceo-pick"><span>${t("locPick")}</span><select data-ag="loc"><option value="">—</option>${AG_LOCS.map(([n, p]) => `<option value="${n}" ${a.loc === n ? "selected" : ""}>${n} · ${money(p)}</option>`).join("")}</select></label>
+      ${a.loc ? `<button class="btn small" data-ag="pin">📍 ${t("agPinBtn")}</button>` : ""}` : `<p class="hint">${t("agNotOwned")}</p>`}</section>`;
+  if (!a.owned) return head + top;
+  return head + top + `<div class="adv-grid2 ag-grid">
+    <section class="adv-card ag-safe"><h4>${t("agSafe")}</h4>
+      <div class="bar-cap"><span>${t("agNow")}</span><b class="${a.safe >= AG_CAP - 1 ? "full" : ""}">${money(a.safe)} / ${money(AG_CAP)}</b></div>
+      <div class="ag-bar"><i style="width:${(a.safe / AG_CAP * 100).toFixed(2)}%"></i></div>
+      <p class="hint">${!S.inGame ? t("agPaused") : a.safe >= AG_CAP - 1 ? t("agFullHint") : pd > 0 ? t("agLeft", fmtTime(left)) : t("agNoPay")}</p>
+      <div class="ag-row"><label class="val-in"><span>${t("safeIn")}</span><span class="dollar">$</span><input type="number" min="0" max="${AG_CAP}" step="1000" inputmode="numeric" data-ag="safe" value="${Math.round(a.safe)}"></label>
+        <button class="btn small" data-ag="collect">${t("bagCollect")}</button></div>
+      <input type="range" class="ag-range" min="0" max="${AG_CAP}" step="500" data-ag="safeR" value="${Math.round(a.safe)}" aria-label="${t("agSafe")}">
+      <div class="ag-sep"></div>
+      <div class="q-label">${t("agContracts")}</div>
+      <div class="ag-row"><input class="ag-n" type="number" min="0" max="999" step="1" inputmode="numeric" data-ag="n" value="${n}" aria-label="${t("agContracts")}">
+        <button class="btn small" data-ag="minus">−1</button><button class="btn small" data-ag="plus">+1</button></div>
+      <input type="range" class="ag-range" min="0" max="${AG_FULL_AT + 1}" step="1" data-ag="nR" value="${Math.min(n, AG_FULL_AT + 1)}" aria-label="${t("agContracts")}">
+      <div class="kv"><span>${t("agPerDay")}</span><b>${money(pd)}${a.perDay != null ? ` <small class="muted">(${t("agTyped")})</small>` : ""}</b></div>
+      <div class="ag-bar thin"><i style="width:${(pd / AG_MAX_DAY * 100).toFixed(2)}%"></i></div>
+      <p class="hint">${calc >= AG_MAX_DAY ? t("agMaxed") : t("agNext", { k: 5 - n % 5, v: money(calc + 500) })}</p>
+      <label class="val-in"><span>${t("agFromGame")}</span><span class="dollar">$</span><input type="number" min="0" max="${AG_MAX_DAY}" step="100" inputmode="numeric" data-ag="pd" value="${a.perDay != null ? a.perDay : ""}" placeholder="${calc}"></label>
+      ${a.perDay != null ? `<button class="btn ghost small" data-ag="pdReset">${t("agPdReset", money(calc))}</button>` : ""}
+    </section>
+    <section class="adv-card ag-sc"><h4>Security Contracts</h4>
+      <button class="btn primary ag-done" data-ag="done">✅ ${t("agDone")}</button>
+      ${a.cd ? `<div class="club-line ag-cd ${agCdLeft() === 0 ? "ready" : ""}"><span>🔔</span><b data-live-timer="agency:cd">${agCdText()}</b><button class="btn ghost small" data-ag="cdX" title="${t("hgCdStop")}" aria-label="${t("hgCdStop")}">✕</button></div>` : ""}
+      <p class="hint">${t("agScHint")}</p>
+      <div class="kv"><span>${t("agPay")}</span><b>$31,000 – $70,000</b></div>
+      <div class="kv"><span>${t("agCdLbl")}</span><b>${AG_CD} min</b></div>
+    </section></div>`;
+}
+function bindAgency(root) {
+  const a = ag();
+  const done = () => { save(true); ghMarkDirty(); syncStatus(); const sc = focusEl.scrollTop; focusEl._last = null; renderFocus(); focusEl.scrollTop = sc; jmRender(); };
+  const q = k => root.querySelector(`[data-ag="${k}"]`), on = (k, ev, fn) => { const el = q(k); if (el) el[ev] = fn; };
+  on("own", "onchange", e => { a.owned = e.target.checked; done(); });
+  on("loc", "onchange", e => { a.loc = e.target.value; a.pin = null; done(); });
+  on("pin", "onclick", () => jmOpen("agency"));
+  const num = (v, max) => Math.max(0, Math.min(max, Math.round(parseFloat(v) || 0)));
+  on("safe", "onchange", e => { a.safe = num(e.target.value, AG_CAP); a.alert = null; done(); });
+  on("safeR", "oninput", e => { q("safe").value = e.target.value; });
+  on("safeR", "onchange", e => { a.safe = num(e.target.value, AG_CAP); a.alert = null; done(); });
+  on("collect", "onclick", () => { const had = a.safe; a.safe = 0; a.alert = null; done(); toast(t("bagCollected", money(had)), { label: t("undo"), run: () => { a.safe = had; done(); } }); });
+  on("n", "onchange", e => { a.contracts = num(e.target.value, 999); done(); });
+  on("nR", "oninput", e => { q("n").value = e.target.value; });
+  on("nR", "onchange", e => { a.contracts = num(e.target.value, 999); done(); });
+  on("minus", "onclick", () => { a.contracts = Math.max(0, a.contracts - 1); done(); });
+  on("plus", "onclick", () => { a.contracts++; done(); });
+  on("pd", "onchange", e => { a.perDay = e.target.value === "" ? null : num(e.target.value, AG_MAX_DAY); done(); });
+  on("pdReset", "onclick", () => { a.perDay = null; done(); });
+  // one click after a Security Contract: +1 to the count (and so to the safe) and the 5-minute bell for the next one
+  on("done", "onclick", () => { a.contracts++; a.cd = { at: Date.now(), fired: false }; done(); toast(t("agDoneToast", a.contracts), { label: t("undo"), run: () => { a.contracts = Math.max(0, a.contracts - 1); a.cd = null; done(); } }); });
+  on("cdX", "onclick", () => { a.cd = null; done(); });
+}
+
+/* ======================================================================
+   Job Manager's own map (idea 67): a round button at the bottom right grows into a medium window with the map and the
+   places of the Job Manager businesses (the Agency once its area is picked); ✕ shrinks it back into the button.
+   ====================================================================== */
+const jm = { btn: null, win: null, view: null, world: null, open: false, cam: { s: 0.3, x: 0, y: 0 }, placing: null, ptrs: new Map(), moved: false };
+const JM_ICON = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z"/><path d="M9 4v13.5M15 6.5V20"/></svg>`;
+function jmPlaces() {
+  const out = [], a = ag();
+  if (a.owned && a.loc) {
+    const L = AG_LOCS.find(l => l[0] === a.loc), p = a.pin || (L && { x: L[2], y: L[3] });
+    if (p) out.push({ id: "agency", x: p.x, y: p.y, img: JOB_IMG.agency, label: "Agency · " + a.loc, sub: money(a.safe) });
+  }
+  return out;
+}
+function jmInit() {
+  if (jm.btn) return;
+  const host = focusEl.parentNode;
+  jm.btn = Object.assign(document.createElement("button"), { type: "button", className: "jm-btn", innerHTML: JM_ICON });
+  jm.win = document.createElement("div");
+  jm.win.className = "jm-win"; jm.win.setAttribute("role", "dialog"); jm.win.setAttribute("aria-modal", "false");
+  jm.win.innerHTML = `<div class="jm-head"><b class="jm-title"></b><span class="jm-hint"></span><button type="button" class="jm-x">✕</button></div>
+    <div class="jm-view"><div class="jm-world"><img class="jm-img" draggable="false" alt=""><div class="jm-pins"></div></div>
+      <div class="jm-zoom"><button type="button" data-z="1">+</button><button type="button" data-z="-1">−</button></div><div class="jm-empty" hidden></div></div>`;
+  host.append(jm.btn, jm.win);
+  jm.view = jm.win.querySelector(".jm-view"); jm.world = jm.win.querySelector(".jm-world");
+  jm.btn.onclick = () => jmOpen();
+  jm.win.querySelector(".jm-x").onclick = jmClose;
+  jm.win.querySelectorAll("[data-z]").forEach(b => b.onclick = () => { const r = jmSize(); jmZoom(+b.dataset.z > 0 ? 1.35 : 1 / 1.35, r.width / 2, r.height / 2); });
+  addEventListener("keydown", e => { if (e.key === "Escape" && jm.open) jmClose(); });
+  // pan with a finger or the mouse, pinch or wheel to zoom; a tap (no move) places the pin when asked
+  const v = jm.view;
+  v.addEventListener("pointerdown", e => { if (e.target.closest("button, .jm-pin")) return; v.setPointerCapture(e.pointerId); jm.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); jm.moved = false; });
+  v.addEventListener("pointermove", e => {
+    const p = jm.ptrs.get(e.pointerId); if (!p) return;
+    if (jm.ptrs.size === 2) {
+      const [a, b] = [...jm.ptrs.values()], d0 = Math.hypot(a.x - b.x, a.y - b.y);
+      p.x = e.clientX; p.y = e.clientY;
+      const [c, d] = [...jm.ptrs.values()], d1 = Math.hypot(c.x - d.x, c.y - d.y), r = v.getBoundingClientRect();
+      if (d0 > 0) jmZoom(d1 / d0, (c.x + d.x) / 2 - r.left, (c.y + d.y) / 2 - r.top);
+      jm.moved = true; return;
+    }
+    const dx = e.clientX - p.x, dy = e.clientY - p.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) jm.moved = true;
+    p.x = e.clientX; p.y = e.clientY;
+    jm.cam.x += dx; jm.cam.y += dy; jmApply();
+  });
+  const up = e => {
+    const was = jm.ptrs.has(e.pointerId); jm.ptrs.delete(e.pointerId);
+    if (was && !jm.moved && jm.placing && e.type === "pointerup") {
+      const r = v.getBoundingClientRect(), x = (e.clientX - r.left - jm.cam.x) / (MAP_W * jm.cam.s), y = (e.clientY - r.top - jm.cam.y) / (MAP_H * jm.cam.s);
+      if (x > 0 && x < 1 && y > 0 && y < 1) { ag().pin = { x, y }; jm.placing = null; save(true); ghMarkDirty(); jmRender(); toast(t("jmPlaced")); }
+    }
+  };
+  v.addEventListener("pointerup", up); v.addEventListener("pointercancel", up);
+  v.addEventListener("wheel", e => { e.preventDefault(); const r = v.getBoundingClientRect(); jmZoom(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+}
+// sizes from the layout (clientWidth), not getBoundingClientRect: the window is still scaled while it grows
+const jmSize = () => ({ width: jm.view.clientWidth, height: jm.view.clientHeight });
+function jmMinS() { const r = jmSize(); return Math.max(r.width / MAP_W, r.height / MAP_H) * 0.6; }
+function jmZoom(f, cx, cy) {
+  const c = jm.cam, s = Math.max(jmMinS(), Math.min(1.2, c.s * f)), k = s / c.s;
+  c.x = cx - (cx - c.x) * k; c.y = cy - (cy - c.y) * k; c.s = s; jmApply();
+}
+function jmApply() {
+  const c = jm.cam;
+  jm.world.style.transform = `translate(${c.x}px, ${c.y}px) scale(${c.s})`;
+  jm.world.querySelectorAll(".jm-pin").forEach(p => p.style.transform = `translate(-50%, -100%) scale(${1 / c.s})`);
+}
+// centre on the places (or on Los Santos), about 1,000 map pixels across
+function jmFit() {
+  const r = jmSize(), pl = jmPlaces();
+  const cx = pl.length ? pl.reduce((s, p) => s + p.x, 0) / pl.length : 0.44, cy = pl.length ? pl.reduce((s, p) => s + p.y, 0) / pl.length : 0.72;
+  jm.cam.s = Math.max(jmMinS(), r.width / 1000);
+  jm.cam.x = r.width / 2 - cx * MAP_W * jm.cam.s; jm.cam.y = r.height / 2 - cy * MAP_H * jm.cam.s;
+  jmApply();
+}
+function jmRender() {
+  if (!jm.win) return;
+  const img = jm.win.querySelector(".jm-img");
+  const want = srcFor(myStyle(), "s");
+  if (!img.src.endsWith(want)) { img.src = want; img.style.width = MAP_W + "px"; img.style.height = MAP_H + "px"; }
+  jm.view.style.background = MAP_STYLES[myStyle()].water;
+  jm.win.querySelector(".jm-title").textContent = t("jmTitle");
+  jm.win.querySelector(".jm-x").setAttribute("aria-label", t("close"));
+  jm.btn.title = jm.btn.ariaLabel = t("jmOpen");
+  jm.win.querySelector(".jm-hint").textContent = jm.placing ? t("jmPlace") : "";
+  jm.win.classList.toggle("placing", !!jm.placing);
+  const pl = jmPlaces(), empty = jm.win.querySelector(".jm-empty");
+  empty.hidden = !!pl.length; empty.textContent = t("jmEmpty");
+  jm.win.querySelector(".jm-pins").innerHTML = pl.map(p => `<a class="jm-pin" href="#${p.id}" style="left:${p.x * MAP_W}px;top:${p.y * MAP_H}px">
+      <img src="${p.img}" alt=""><span><b>${escapeHtml(p.label)}</b><small>${p.sub}</small></span></a>`).join("");
+  jm.win.querySelectorAll(".jm-pin").forEach(a => a.onclick = () => jmClose());
+  jmApply();
+}
+function jmShow(on) { jmInit(); jm.btn.classList.toggle("on", on); if (on) jmRender(); else if (jm.open) jmClose(); }   // render early: the map picture is loaded before it opens
+function jmOpen(placing) {
+  jmInit(); jm.placing = placing || null;
+  jm.open = true; jm.win.classList.add("open"); jm.btn.classList.add("hid");
+  jmRender();
+  requestAnimationFrame(() => jmFit());
+}
+function jmClose() { if (!jm.win) return; jm.open = false; jm.placing = null; jm.win.classList.remove("open"); jm.btn.classList.remove("hid"); }
+
 function heatBoxes(h) { return `<div class="heat" role="img" aria-label="Heat ${h * 10}%">${Array.from({ length: 10 }, (_, i) => `<i class="${i < h ? (h >= 8 ? "hot" : "on") : ""}"></i>`).join("")}</div>`; }
 function frontsHtml() {
   const tie = { wash: ["cash", "frontWash"], smoke: ["weed", "frontSmoke"], heli: ["hangar", "frontHeli"] };
@@ -6137,6 +6463,7 @@ function tick() {
       const dt = (now - S.lastTick) / 60000;
       PROD.forEach(d => advance(d.id, dt));
       advanceNight(dt);
+      advanceAgency(dt);
     }
     S.lastTick = now;
   }
@@ -7713,6 +8040,7 @@ const fq = sel => focusEl.querySelector(sel);
 const PAGE_TOURS = {
   mc: [{ k: "mt1" }, { k: "mt2", target: () => fq(".mcb-grid") || fq(".mcb") }, { k: "mt3", target: () => fq(".mcb .segbar") }, { k: "mt4", target: () => ingameEl }],
   bunker: [{ k: "bt1" }, { k: "bt2", target: () => fq(".bk-laptop") }, { k: "bt3", target: () => fq(".bk-plan") }, { k: "bt4", target: () => { const r = fq(".adv-range"); return r ? r.closest(".adv-card") : null; } }, { k: "bt5", target: () => ingameEl }],
+  agency: [{ k: "at1" }, { k: "at2", target: () => fq(".ag-safe") }, { k: "at3", target: () => fq(".ag-sc") }, { k: "at4", target: () => document.querySelector("#sec-production .jm-btn") }],
   jobs: [{ k: "jt1" }, { k: "jt2", target: () => fq(".job-sect.heists") }, { k: "jt3", target: () => fq('.job-card.open') }],
   fronts: [{ k: "ft1" }, { k: "ft2", target: () => fq(".mf-card") }, { k: "ft3", target: () => fq(".mf-card .heat") }],
   hangar: [{ k: "ht1" }, { k: "ht2", target: () => fq(".adv-card") }, { k: "ht3", target: () => fq(".hg-cd") }, { k: "ht4", target: () => fq(".hg-tiers") }],
@@ -7924,6 +8252,10 @@ function renderFocus() {
       bindBunker(focusEl, re);
       bindBoost(focusEl, "bunker", re);
     }
+  } else if (VIEW === "agency") {
+    const html = agencyHtml(), key = html.replace(/data-live-timer="[^"]*">[^<]*</g, "");
+    if (key === focusEl._last) return;
+    focusEl._last = key; focusEl.innerHTML = html; bindAgency(focusEl);
   } else if (VIEW === "jobs" || VIEW === "fronts") {
     const html = VIEW === "jobs" ? jobsHtml() : frontsHtml();
     if (html === focusEl._last) return;
@@ -8177,6 +8509,7 @@ const HELP = {
 function boot() {
   syncStatus();
   tbRight.style.display = jobView() ? "none" : "";
+  jmShow(jobPage());
   ROOT.classList.toggle("focus", !!VIEW);
   sideBtn.hidden = headStat.hidden = !!VIEW;
   if (!VIEW) { if (!imgW) setMapStyle(S.mapStyle, true); else renderStyleList(); }
@@ -8187,12 +8520,14 @@ function boot() {
   applyLang();
 }
 // the map, the MC page (#mc), the Nightclub page (#night) and the Bunker page (#bunker) are one section
-const jobView = () => VIEW === "jobs" || VIEW === "fronts";
+const jobView = () => VIEW === "jobs" || VIEW === "fronts";            // pages where "In game" has no meaning
+const jobPage = () => jobView() || VIEW === "agency";                   // the Job Manager pages (they get the job map)
 function setView(v) {
   v = v || null;
   if (v === VIEW) return;
   VIEW = v;
   tbRight.style.display = jobView() ? "none" : "";
+  jmShow(jobPage());
   focusEl._last = null;
   closeQuick(); closeFlyout(); closeWin();
   ROOT.classList.toggle("focus", !!VIEW);
