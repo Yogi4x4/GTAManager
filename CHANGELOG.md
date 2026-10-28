@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.23.0 (2026-10-28)
+* Vehicle Manager:
+  * Change: the car cards are as see-through as the Home cards, so the background shows behind them.
+* Guided tours:
+  * Fix: the tour window no longer covers what it shows: it takes the free place next to the lit-up part (below, above, at the side or in a corner), on every page, also on phones (it used to stay at the bottom of the screen).
+
+### v0.22.1 (2026-10-28)
+* Job Manager:
+  * Fix: on a PC, dragging on the Job Manager map no longer selects the pin's text or drags it along with the mouse (the map got stuck).
+  * Change: the map works like the Production Manager map: drag the Agency pin to move it, then Move / Cancel; click or tap the pin for its small window (office safe, Security Contracts, Open Agency); double click or double tap zooms in.
+  * Change: Place on the map opens the map on the pin, which pulses until you drag it.
+
 ### v0.22.0 (2026-10-28)
 * Look:
   * Add: backgrounds on every page, not only Home (⋮ → Backgrounds): pick which ones are shown, how often the picture changes (never, every 1 to 60 minutes, with a soft fade) and whether it shows on every page. A new Los Santos day-and-night picture.
