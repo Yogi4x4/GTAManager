@@ -1,6 +1,72 @@
 {
- "list": [
-  { "file": "bg/los_santos_poster.webp", "name": "Los Santos", "pos": "center 35%" },
-  { "file": "bg/los_santos_zi_noapte.webp", "name": "Los Santos, zi și noapte", "pos": "center 55%" }
+ "version": "0.22",
+ "files": [
+  {
+   "path": "CHANGELOG.md"
+  },
+  {
+   "path": "sw.js"
+  },
+  {
+   "path": "manifest.webmanifest"
+  },
+  {
+   "path": "index.html"
+  },
+  {
+   "path": "bg/backgrounds.json"
+  },
+  {
+   "path": "bg/los_santos_poster.webp"
+  },
+  {
+   "path": "bg/los_santos_zi_noapte.webp"
+  },
+  {
+   "path": "icon-192.png"
+  },
+  {
+   "path": "icon-512.png"
+  },
+  {
+   "path": "apple-touch-icon.png"
+  },
+  {
+   "path": "favicon.ico"
+  },
+  {
+   "path": "favicon-32.png"
+  },
+  {
+   "path": "maps/map_atlas.webp"
+  },
+  {
+   "path": "maps/map_atlas_s.webp"
+  },
+  {
+   "path": "maps/map_dark.webp"
+  },
+  {
+   "path": "maps/map_dark_s.webp"
+  },
+  {
+   "path": "maps/map_road.webp"
+  },
+  {
+   "path": "maps/map_road_s.webp"
+  },
+  {
+   "path": "maps/map_satellite.webp"
+  },
+  {
+   "path": "maps/map_satellite_s.webp"
+  },
+  {
+   "path": "GTA_V_Manager.html"
+  },
+  {
+   "path": ".github/workflows/weekly.yml",
+   "optional": true
+  }
  ]
 }
