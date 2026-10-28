@@ -5,7 +5,13 @@
   },
   {
     "name": "Apartment Del Perro Ap 7",
-    "slots": 10
+    "slots": 10,
+    "levels": [
+      {
+        "name": "1",
+        "slots": 10
+      }
+    ]
   },
   {
     "name": "Arcade",
