@@ -1,7 +1,21 @@
 [
   {
     "name": "Agency",
-    "slots": 21
+    "slots": 20,
+    "levels": [
+      {
+        "name": "-1",
+        "slots": 1
+      },
+      {
+        "name": "-2",
+        "slots": 10
+      },
+      {
+        "name": "-3",
+        "slots": 9
+      }
+    ]
   },
   {
     "name": "Apartment Del Perro Ap 7",
