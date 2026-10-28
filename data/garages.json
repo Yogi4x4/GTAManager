@@ -33,7 +33,13 @@
   },
   {
     "name": "Arcade",
-    "slots": 10
+    "slots": 10,
+    "levels": [
+      {
+        "name": "P",
+        "slots": 10
+      }
+    ]
   },
   {
     "name": "Arena Workshop",
