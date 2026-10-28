@@ -1,0 +1,6 @@
+{
+ "list": [
+  { "file": "bg/los_santos_poster.webp", "name": "Los Santos", "pos": "center 35%" },
+  { "file": "bg/los_santos_zi_noapte.webp", "name": "Los Santos, zi și noapte", "pos": "center 55%" }
+ ]
+}
