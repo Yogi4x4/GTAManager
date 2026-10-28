@@ -37,7 +37,29 @@
   },
   {
     "name": "Arena Workshop",
-    "slots": 30
+    "slots": 29,
+    "levels": [
+      {
+        "name": "G",
+        "slots": 9
+      },
+      {
+        "name": "G (Special Vehicle)",
+        "slots": 1
+      },
+      {
+        "name": "B1",
+        "slots": 9
+      },
+      {
+        "name": "B1 (Special Vehicle)",
+        "slots": 1
+      },
+      {
+        "name": "B2",
+        "slots": 9
+      }
+    ]
   },
   {
     "name": "Auto Shop",
