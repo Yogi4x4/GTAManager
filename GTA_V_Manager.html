@@ -423,6 +423,9 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 /* self-update progress (0.18) */
 .upd-prog { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--bg3); border: 1px solid var(--border); font-size: 14px; line-height: 1.5; }
 .upd-prog .bad-txt { color: var(--bad); }
+/* idea 69: unsaved changes question */
+.guard-dlg { max-width: 420px; }
+.guard-dlg .upd-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 </style>
 </head>
 <body>
@@ -531,7 +534,7 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.20";
+const APP_VERSION = "0.21";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -587,7 +590,7 @@ i18n({
     customHint: "Text colors adjust automatically so everything stays readable.",
     markRead: "Mark all read", clearAll: "Clear", noNotes: "No notifications yet.", open: "Open",
     m_notes: "Notifications", m_sound: "🔊 Sound", m_testSound: "🎵 Test the sound", m_desktop: "🖥 Desktop notifications",
-    m_account: "Account", m_login: "🔑 Log in", m_logout: "⏏ Log out", m_help: "❓ Help", m_tour: "🧭 Guided tour", m_look: "Look", m_anim: "✨ Animations", m_about: "ℹ️ About & changelog", m_install: "📲 Install as an app", appInstalled: "GTA V Manager is installed: open it from its icon.", inst_here: "On this device", inst_other: "Other devices",
+    m_account: "Account", m_login: "🔑 Log in", m_logout: "⏏ Log out", m_help: "❓ Help", m_tour: "🧭 Guided tour", m_look: "Look", m_anim: "✨ Animations", guardTitle: "Unsaved changes", guardText: "You changed something in this window and didn't save it.", guardSave: "Save", guardDrop: "Discard changes", guardStay: "Stay here", m_about: "ℹ️ About & changelog", m_install: "📲 Install as an app", appInstalled: "GTA V Manager is installed: open it from its icon.", inst_here: "On this device", inst_other: "Other devices",
     inst_ios: "<b>iPhone / iPad:</b> in Safari (or Chrome), tap <b>Share</b> (the square with the arrow), then <b>Add to Home Screen</b>.",
     inst_android: "<b>Android:</b> open the browser menu (<b>⋮</b> in Chrome, <b>≡</b> in Samsung Internet or Firefox) and tap <b>Install app</b> or <b>Add to Home screen</b>.",
     inst_desktop: "<b>Windows / Linux / ChromeOS, Chrome or Edge:</b> click the install icon at the right end of the address bar, or menu <b>⋮</b> / <b>…</b> → <b>Install</b> (Chrome: Cast, save and share → Install page as app; Edge: Apps → Install this site as an app).",
@@ -619,7 +622,7 @@ i18n({
     customHint: "Culorile textului se ajustează automat ca totul să rămână lizibil.",
     markRead: "Marchează citite", clearAll: "Șterge", noNotes: "Nicio notificare încă.", open: "Deschide",
     m_notes: "Notificări", m_sound: "🔊 Sunet", m_testSound: "🎵 Testează sunetul", m_desktop: "🖥 Notificări pe desktop",
-    m_account: "Cont", m_login: "🔑 Intră în cont", m_logout: "⏏ Ieși din cont", m_help: "❓ Ajutor", m_tour: "🧭 Tur ghidat", m_look: "Aspect", m_anim: "✨ Animații", m_about: "ℹ️ Despre și istoric", m_install: "📲 Instalează ca aplicație", appInstalled: "GTA V Manager e instalat: deschide-l de pe iconița lui.", inst_here: "Pe acest dispozitiv", inst_other: "Pe alte dispozitive",
+    m_account: "Cont", m_login: "🔑 Intră în cont", m_logout: "⏏ Ieși din cont", m_help: "❓ Ajutor", m_tour: "🧭 Tur ghidat", m_look: "Aspect", m_anim: "✨ Animații", guardTitle: "Modificări nesalvate", guardText: "Ai schimbat ceva în fereastra asta și n-ai salvat.", guardSave: "Salvează", guardDrop: "Renunță la modificări", guardStay: "Rămân aici", m_about: "ℹ️ Despre și istoric", m_install: "📲 Instalează ca aplicație", appInstalled: "GTA V Manager e instalat: deschide-l de pe iconița lui.", inst_here: "Pe acest dispozitiv", inst_other: "Pe alte dispozitive",
     inst_ios: "<b>iPhone / iPad:</b> în Safari (sau Chrome) apasă <b>Distribuie</b> (pătratul cu săgeata), apoi <b>Adaugă pe ecranul principal</b>.",
     inst_android: "<b>Android:</b> deschide meniul browserului (<b>⋮</b> în Chrome, <b>≡</b> în Samsung Internet sau Firefox) și apasă <b>Instalează aplicația</b> sau <b>Adaugă pe ecranul de pornire</b>.",
     inst_desktop: "<b>Windows / Linux / ChromeOS, Chrome sau Edge:</b> apasă iconița de instalare din dreapta barei de adresă, sau meniul <b>⋮</b> / <b>…</b> → <b>Instalează</b> (Chrome: Proiectează, salvează și distribuie → Instalează pagina ca aplicație; Edge: Aplicații → Instalează site-ul ca aplicație).",
@@ -671,9 +674,36 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") Pop.close(); });
 // any element with data-close closes its dialog
-document.addEventListener("click", e => { const c = e.target.closest("[data-close]"); if (c) c.closest("dialog").close(); });
-// clicking the dark backdrop closes a dialog (not the tour)
-document.addEventListener("click", e => { if (e.target.tagName === "DIALOG" && e.target.id !== "tourLayer" && !e.target.dataset.sticky) e.target.close(); });
+/* idea 69: a window marked data-guard that has changes not saved yet doesn't close by itself (click outside, ✕ or Esc):
+   it asks Save / Discard / Stay. The page that owns the window sets dlg.guardSave = () => true when saved. */
+const Guard = {
+  dirty: d => d && d.dataset.guard !== undefined && d.dataset.dirty === "1",
+  clean(d) { if (d) delete d.dataset.dirty; },
+  dlg: null,
+  ask(d) {
+    if (!this.dlg) {
+      this.dlg = document.createElement("dialog");
+      this.dlg.className = "dlg guard-dlg"; this.dlg.dataset.sticky = "1";
+      document.body.appendChild(this.dlg);
+    }
+    const g = this.dlg;
+    g.innerHTML = `<div class="dlg-head"><h2>${t("guardTitle")}</h2></div><div class="dlg-body"><p>${t("guardText")}</p>
+      <div class="upd-btns"><button class="btn primary" data-g="save">${t("guardSave")}</button><button class="btn" data-g="drop">${t("guardDrop")}</button><button class="btn ghost" data-g="stay">${t("guardStay")}</button></div></div>`;
+    g.querySelector('[data-g="save"]').onclick = async () => { g.close(); if (d.guardSave && await d.guardSave() === true) { this.clean(d); if (d.open) d.close(); } };
+    g.querySelector('[data-g="drop"]').onclick = () => { g.close(); this.clean(d); d.close(); };
+    g.querySelector('[data-g="stay"]').onclick = () => g.close();
+    g.addEventListener("cancel", e => { e.preventDefault(); g.close(); }, { once: true });
+    g.showModal();
+  },
+  close(d) { if (this.dirty(d)) this.ask(d); else d.close(); }
+};
+document.addEventListener("input", e => { const d = e.target.closest && e.target.closest("dialog[data-guard]"); if (d) d.dataset.dirty = "1"; }, true);
+document.addEventListener("change", e => { const d = e.target.closest && e.target.closest("dialog[data-guard]"); if (d && !e.target.matches("[data-no-dirty]")) d.dataset.dirty = "1"; }, true);
+document.addEventListener("close", e => { if (e.target.tagName === "DIALOG") Guard.clean(e.target); }, true);
+document.addEventListener("cancel", e => { if (Guard.dirty(e.target)) { e.preventDefault(); Guard.ask(e.target); } }, true);   // Esc
+document.addEventListener("click", e => { const c = e.target.closest("[data-close]"); if (c) Guard.close(c.closest("dialog")); });
+// clicking the dark backdrop closes a dialog (not the tour); with unsaved changes it asks first
+document.addEventListener("click", e => { if (e.target.tagName === "DIALOG" && e.target.id !== "tourLayer" && !e.target.dataset.sticky) Guard.close(e.target); });
 
 /* ---------- theme picker ---------- */
 const ThemePicker = {
@@ -809,6 +839,42 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.21.0",
+  "date": "2026-10-28",
+  "en": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Change: the Agency page is now two small cards: Security Contracts (the office safe and the contracts, as before) and Dr. Dre Contract.",
+     "Add: the Dr. Dre Contract page (also from the HEISTS card): the 13 missions by stage with ticks and a short tip each for the fastest way, the fastest order, progress, what the finale pays now ($1,099,800 on the week's first finale, then $900,000) and a bell when it can be replayed (about 48 minutes). The two setups are done once and skipped on replays."
+    ]
+   },
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Fix: the garage and car windows no longer close on a click outside while they have unsaved changes; a click outside, ✕ or Esc asks Save / Discard / Stay.",
+     "Add: a vehicle type of your own (e.g. a bicycle): ➕ Another type… in the car window, with a name and an emoji; it shows on the card and in the type filter."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Schimbă: pagina Agency are acum două carduri mici: Security Contracts (seiful din birou și contractele, ca înainte) și Dr. Dre Contract.",
+     "Adaugă: pagina Dr. Dre Contract (și din cardul HEISTS): cele 13 misiuni pe etape, cu bife și câte un sfat pentru varianta cea mai rapidă, ordinea cea mai rapidă, progresul, cât plătește acum finala (1.099.800 $ la prima finală din săptămână, apoi 900.000 $) și clopoțel când se poate relua (cam 48 de minute). Cele două pregătiri se fac o dată și se sar la reluare."
+    ]
+   },
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Repară: ferestrele de garaj și de mașină nu se mai închid la un click în afară când au modificări nesalvate; click în afară, ✕ sau Esc întreabă Salvează / Renunță / Rămân.",
+     "Adaugă: un tip de vehicul al tău (ex. bicicletă): ➕ Alt tip… în fereastra mașinii, cu nume și emoji; apare pe card și în filtrul de tip."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.20.0",
   "date": "2026-10-28",
@@ -1947,6 +2013,8 @@ const ROUTES = {
   jobs:       { sec: "production", title: "Job Manager",            view: "jobs" },
   fronts:     { sec: "production", title: "Money Fronts",           view: "fronts" },
   agency:     { sec: "production", title: "Agency",                 view: "agency" },
+  security:   { sec: "production", title: "Security Contracts",     view: "security" },
+  dre:        { sec: "production", title: "Dr. Dre Contract",       view: "dre" },
   export:     { sec: "export",     title: "Vehicle Export Tracker" }
 };
 const SECTIONS = {};
@@ -2520,6 +2588,11 @@ Section({
 #sec-vehicles .af-chip b {font-size: 11px; opacity: .7;}
 #sec-vehicles .af-chip:hover b {opacity: 1;}
 #sec-vehicles .af-clear {background: none; border-color: var(--border); color: var(--muted); font-weight: 500;}
+#sec-vehicles .vt-new {display: grid; grid-template-columns: 64px 1fr; gap: 6px; margin-top: 6px;}
+#sec-vehicles .vt-new #vtNewIcon {text-align: center; font-size: 18px;}
+#sec-vehicles .vt-sug {grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px;}
+#sec-vehicles .vt-sug button {width: 34px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); cursor: pointer; font-size: 17px; line-height: 1;}
+#sec-vehicles .vt-sug button:hover {border-color: var(--accent);}
 
 #sec-vehicles { min-height: calc(100vh - var(--header-h)); margin: 0; }
 .vm-garages .lbl { margin-left: 2px; }
@@ -2616,7 +2689,7 @@ Section({
 </div>
 
 
-<dialog id="carDlg" data-sticky="1">
+<dialog id="carDlg" data-sticky="1" data-guard>
   <div class="dlg-header"><h3 id="carDlgTitle"></h3><button class="ghost" data-close style="padding:4px 10px">✕</button></div>
   <div class="dlg-body">
     <div class="form-grid">
@@ -2634,6 +2707,12 @@ Section({
       <div class="form-group">
         <label data-i18n="vm.vType"></label>
         <select id="vtype"><option value="car" data-i18n="vm.vt_car"></option><option value="moto" data-i18n="vm.vt_moto"></option><option value="plane" data-i18n="vm.vt_plane"></option><option value="heli" data-i18n="vm.vt_heli"></option><option value="boat" data-i18n="vm.vt_boat"></option><option value="yacht" data-i18n="vm.vt_yacht"></option><option value="other" data-i18n="vm.vt_other"></option></select>
+      
+        <div id="vtNewBox" class="vt-new" hidden>
+          <input id="vtNewIcon" maxlength="8" placeholder="🚲" aria-label="Emoji" data-i18n-title="vm.vtNewIcon">
+          <input id="vtNewName" maxlength="30" data-i18n-ph="vm.vtNewName">
+          <div class="vt-sug"><button type="button" data-vtico="🚲">🚲</button><button type="button" data-vtico="🛴">🛴</button><button type="button" data-vtico="🛵">🛵</button><button type="button" data-vtico="🚜">🚜</button><button type="button" data-vtico="🚚">🚚</button><button type="button" data-vtico="🚌">🚌</button><button type="button" data-vtico="🏎️">🏎️</button><button type="button" data-vtico="🚂">🚂</button><button type="button" data-vtico="🛸">🛸</button><button type="button" data-vtico="🚀">🚀</button></div>
+        </div>
       </div>
       <div class="form-group">
         <label data-i18n="vm.classType"></label>
@@ -2711,7 +2790,7 @@ Section({
   </div>
 </dialog>
 
-<dialog id="garageDlg">
+<dialog id="garageDlg" data-guard>
   <div class="dlg-header"><h3 data-i18n="vm.manageGaragesH"></h3><button class="ghost" data-close style="padding:4px 10px">✕</button></div>
   <div class="dlg-body">
     <div class="form-grid edit-only" style="margin-bottom:14px">
@@ -2758,7 +2837,7 @@ i18n({
     "vm.modeNowLocal": "You're now editing your own copy",
     "vm.bannerText": "An example collection (one Auto Shop garage). Your own collection starts empty and is saved in this browser.", "vm.createOwn": "Create my own collection", "vm.openOwn": n => `Open my collection (${n})`, "vm.previewTag": "Preview",
     "vm.createConfirm": n => `Start a new, empty collection?\n\nThe ${n} vehicles and the garages saved in this browser will be deleted. To keep a backup, export them first from this menu.`, "vm.createdOwn": "Your collection is ready: add your first garage, then your vehicles", "vm.backPreview": "👁 See the example collection",
-    "vm.vType": "Vehicle type", "vm.allTypes": "All types", "vm.vt_car": "Car", "vm.vt_moto": "Motorcycle", "vm.vt_plane": "Plane", "vm.vt_heli": "Helicopter", "vm.vt_boat": "Boat", "vm.vt_yacht": "Yacht", "vm.vt_other": "Other",
+    "vm.vType": "Vehicle type", "vm.allTypes": "All types", "vm.vt_car": "Car", "vm.vtNewOpt": "➕ Another type…", "vm.vtNewName": "Type name (e.g. Bicycle)", "vm.vtNewIcon": "Emoji for the type", "vm.vtNewNeed": "Write the name of the new type.", "vm.vt_moto": "Motorcycle", "vm.vt_plane": "Plane", "vm.vt_heli": "Helicopter", "vm.vt_boat": "Boat", "vm.vt_yacht": "Yacht", "vm.vt_other": "Other",
     "vm.notifications": "Notifications", "vm.markRead": "Mark all read", "vm.clearAll": "Clear", "vm.noNotes": "No notifications yet",
     "vm.loginBtn": "🔑 Log in", "vm.loginTitle": "Log in", "vm.loginIntro": "Log in to keep the same data on every device. It is saved to the project on GitHub.",
     "vm.loginAs": u => `Logged in as <b>${u}</b>.`, "vm.logoutBtn": "Log out", "vm.loggedIn": "Logged in", "vm.garageNowFull": g => `Garage “${g}” is now full`,
@@ -2843,7 +2922,7 @@ i18n({
     "vm.modeNowLocal": "Acum editezi copia ta",
     "vm.bannerText": "O colecție de exemplu (un garaj Auto Shop). Colecția ta pornește goală și se salvează în acest browser.", "vm.createOwn": "Creează colecția mea", "vm.openOwn": n => `Deschide colecția mea (${n})`, "vm.previewTag": "Previzualizare",
     "vm.createConfirm": n => `Pornești o colecție nouă, goală?\n\nCele ${n} vehicule și garajele salvate în acest browser vor fi șterse. Ca să păstrezi o copie, exportă-le întâi din acest meniu.`, "vm.createdOwn": "Colecția ta e gata: adaugă primul garaj, apoi vehiculele", "vm.backPreview": "👁 Vezi colecția de exemplu",
-    "vm.vType": "Tip vehicul", "vm.allTypes": "Toate tipurile", "vm.vt_car": "Mașină", "vm.vt_moto": "Motocicletă", "vm.vt_plane": "Avion", "vm.vt_heli": "Elicopter", "vm.vt_boat": "Barcă", "vm.vt_yacht": "Iaht", "vm.vt_other": "Altele",
+    "vm.vType": "Tip vehicul", "vm.allTypes": "Toate tipurile", "vm.vt_car": "Mașină", "vm.vtNewOpt": "➕ Alt tip…", "vm.vtNewName": "Numele tipului (ex. Bicicletă)", "vm.vtNewIcon": "Emoji pentru tip", "vm.vtNewNeed": "Scrie numele tipului nou.", "vm.vt_moto": "Motocicletă", "vm.vt_plane": "Avion", "vm.vt_heli": "Elicopter", "vm.vt_boat": "Barcă", "vm.vt_yacht": "Iaht", "vm.vt_other": "Altele",
     "vm.notifications": "Notificări", "vm.markRead": "Marchează citite", "vm.clearAll": "Șterge", "vm.noNotes": "Nicio notificare încă",
     "vm.loginBtn": "🔑 Intră în cont", "vm.loginTitle": "Intră în cont", "vm.loginIntro": "Intră în cont ca să ai aceleași date pe orice dispozitiv. Se salvează în proiectul de pe GitHub.",
     "vm.loginAs": u => `Conectat ca <b>${u}</b>.`, "vm.logoutBtn": "Ieși din cont", "vm.loggedIn": "Ai intrat în cont", "vm.garageNowFull": g => `Garajul „${g}” s-a umplut`,
@@ -2963,6 +3042,23 @@ Section({
     const VT_ICON = { car: "🚗", moto: "🏍️", plane: "✈️", heli: "🚁", boat: "🚤", yacht: "🛥️", other: "🔧" };
     // older entries without a type are cars (or motorcycles by class)
     const vehType = c => c.type || (/motorcycle/i.test(c.cls || "") ? "moto" : "car");
+    /* idea 70: a type the game list doesn't have (e.g. a bicycle) is the car's own: type = its name, typeIcon = an emoji.
+       The list of such types comes from the cars themselves, so nothing else needs saving. */
+    const VT_BUILT = Object.keys(VT_ICON);
+    const customTypes = () => { const m = new Map(); cars.forEach(c => { if (c.type && !VT_BUILT.includes(c.type) && !m.has(c.type)) m.set(c.type, c.typeIcon || "🔧"); }); return [...m].sort((a, b) => byName(a[0], b[0])); };
+    const vtIcon = vt => VT_ICON[vt] || (customTypes().find(x => x[0] === vt) || [])[1] || "🔧";
+    const vtLabel = vt => VT_BUILT.includes(vt) ? T("vt_" + vt) : vt;
+    function fillTypeOptions() {
+      const own = customTypes();
+      [["fType", false], ["vtype", true]].forEach(([id, add]) => {
+        const sel = byId(id), cur = sel.value;
+        sel.querySelectorAll("option[data-own]").forEach(o => o.remove());
+        const opt = (v, txt) => { const o = Object.assign(document.createElement("option"), { value: v, textContent: txt }); o.dataset.own = "1"; sel.add(o); };
+        own.forEach(([n, ic]) => opt(n, ic + " " + n));
+        if (add) opt("__new", T("vtNewOpt"));
+        sel.value = [...sel.options].some(o => o.value === cur) ? cur : sel.options[0].value;
+      });
+    }
     const T = (k, a) => t("vm." + k, a);
     const byName = (a, b) => a.localeCompare(b, "ro");
 
@@ -3412,6 +3508,8 @@ Section({
     }
     byId("garage").oninput = () => { updateGarageInfo(); updateLevelPicker(); };
     byId("vtype").addEventListener("change", updateGarageInfo);
+    byId("vtype").addEventListener("change", () => { const nw = byId("vtype").value === "__new"; byId("vtNewBox").hidden = !nw; if (nw) byId("vtNewName").focus(); });
+    el.querySelectorAll("[data-vtico]").forEach(b => b.onclick = () => { byId("vtNewIcon").value = b.dataset.vtico; carDlg.dataset.dirty = "1"; });
 
     /* ---------- filters ---------- */
     el.querySelectorAll(".filters img.chip-icon").forEach(img => img.src = BADGE_ICONS[img.dataset.icon] || "");
@@ -3423,6 +3521,7 @@ Section({
       fb.innerHTML = opts(T("allBrands"), [...new Set(cars.map(x => x.brand).filter(Boolean))].sort(byName));
       [fg.value, fc.value, fb.value] = cur;
       fillSpots();
+      fillTypeOptions();
       byId("garageList").innerHTML = allGarageNames().map(n => { const o = occupancy(n);
         return `<option value="${esc(n)}" label="${o.slots != null ? `${o.occ}/${o.slots}${o.occ >= o.slots ? " ⚠" : ""}` : o.occ}"></option>`; }).join("");
     }
@@ -3490,7 +3589,9 @@ Section({
       byId("carDlgTitle").textContent = c ? T("editCar") : T("addCar");
       FIELDS.forEach(f => byId(f).value = c ? c[f] || "" : "");
       CHECKS.forEach(f => byId(f).checked = !!(c && c[f]));
+      fillTypeOptions();
       byId("vtype").value = c ? vehType(c) : "car";
+      byId("vtNewBox").hidden = true; byId("vtNewName").value = ""; byId("vtNewIcon").value = "";
       byId("imaniType").disabled = !(c && c.imani);
       byId("imaniType").value = (c && c.imaniType) || "";
       byId("image").value = "";
@@ -3511,7 +3612,15 @@ Section({
       let img = null;
       const f = byId("image").files[0];
       if (f) { try { img = await compressImage(f); } catch (e) { notify(T("imgError"), "bad"); img = ""; } }
-      const car = { id: old ? old.id : nextCarId++, type: byId("vtype").value };
+      let type = byId("vtype").value, typeIcon = null;
+      if (type === "__new") {
+        type = byId("vtNewName").value.trim();
+        if (!type) { notify(T("vtNewNeed"), "warn"); byId("vtNewName").focus(); return; }
+        const same = customTypes().find(x => x[0].toLowerCase() === type.toLowerCase());
+        if (same) [type, typeIcon] = same; else typeIcon = byId("vtNewIcon").value.trim() || "🔧";
+      } else if (!VT_BUILT.includes(type)) typeIcon = vtIcon(type);
+      const car = { id: old ? old.id : nextCarId++, type };
+      if (typeIcon) car.typeIcon = typeIcon;
       FIELDS.forEach(k => car[k] = byId(k).value.trim());
       if (!byId("spotLevel").hidden) car.spot = byId("spotLevel").value;
       CHECKS.forEach(k => car[k] = byId(k).checked);
@@ -3579,7 +3688,7 @@ Section({
           ${c.image ? `<img class="car-img" loading="lazy" alt="${esc(`${c.brand || ""} ${c.model || ""}`)}" src="${c.image}">` : `<div class="no-img">${T("noImage")}</div>`}
           <div class="info">
             <h3>${c.brand ? ff("fBrand", c.brand, esc(c.brand), c.brand) : ""} ${esc(c.model || "")}</h3>
-            <div class="small">${ff("fType", vt, `<span class="vt-ico">${VT_ICON[vt]}</span>`, T("vt_" + vt))}${c.cls ? ff("fClass", c.cls, esc(c.cls), c.cls) : "—"}</div>
+            <div class="small">${ff("fType", vt, `<span class="vt-ico">${vtIcon(vt)}</span>`, vtLabel(vt))}${c.cls ? ff("fClass", c.cls, esc(c.cls), c.cls) : "—"}</div>
             <div class="small" style="margin:3px 0">${c.garage ? ff("fGarage", c.garage, esc(c.garage), c.garage) : "—"} • ${c.garage && c.spot ? ff("fSpot", JSON.stringify([c.garage, c.spot]), esc(c.spot), c.garage + " · " + c.spot) : esc(c.spot || "—")}</div>
             ${c.notes ? `<div class="small" style="margin-top:2px;font-style:italic">${esc(c.notes)}</div>` : ""}
             <div class="badges">${badges}</div>
@@ -3609,7 +3718,10 @@ Section({
 
     /* ---------- garage manager ---------- */
     function openGarages() { clearGarageForm(); renderGarageTable(); garageDlg.showModal(); }
-    function clearGarageForm() { editGarageName = null; byId("gNameInput").value = ""; byId("gSlotsInput").value = ""; renderLevels([]); setKindForm(""); byId("gSaveBtn").textContent = T("saveGarage"); }
+    // idea 69: the form counts as changed only after the user types (filling it here doesn't)
+    garageDlg.guardSave = () => saveGarage();
+    carDlg.guardSave = async () => { await saveCar(); return !carDlg.open; };
+    function clearGarageForm() { Guard.clean(garageDlg); editGarageName = null; byId("gNameInput").value = ""; byId("gSlotsInput").value = ""; renderLevels([]); setKindForm(""); byId("gSaveBtn").textContent = T("saveGarage"); }
     function renderGarageTable() {
       const known = new Map(garages.map(g => [g.name, g]));
       const rows = allGarageNames().map(n => ({ name: n, slots: known.has(n) ? known.get(n).slots : null, defined: known.has(n) }));
@@ -3633,6 +3745,7 @@ Section({
       renderLevels(g && g.levels ? g.levels : []);
       setKindForm(g && g.kind);
       byId("gSaveBtn").textContent = T("updateBtn");
+      Guard.clean(garageDlg);
       renderGarageTable();
       byId(g ? "gNameInput" : "gSlotsInput").focus();   // garages without slots: straight to the slots field
     }
@@ -3640,13 +3753,13 @@ Section({
       const hangar = byId("gKindInput").value === "hangar";
       const levels = hangar ? [] : readLevels(), name = byId("gNameInput").value.trim();
       const slots = hangar ? HANGAR_SLOTS : levels.length ? levels.reduce((s, l) => s + l.slots, 0) : parseInt(byId("gSlotsInput").value, 10);
-      if (!name) { notify(T("enterGarageName"), "warn"); return; }
-      if (!slots || slots < 1) { notify(T("enterSlots"), "warn"); return; }
+      if (!name) { notify(T("enterGarageName"), "warn"); return false; }
+      if (!slots || slots < 1) { notify(T("enterSlots"), "warn"); return false; }
       const oldName = editGarageName, renamed = oldName !== null && oldName !== name;
       const clash = garages.find(g => g.name.toLowerCase() === name.toLowerCase() && g.name !== oldName);
       if (clash) {
-        if (renamed) { if (!confirm(T("mergeGarage", { from: oldName, to: clash.name }))) return; }
-        else if (oldName === null && !confirm(T("similarGarage"))) return;
+        if (renamed) { if (!confirm(T("mergeGarage", { from: oldName, to: clash.name }))) return false; }
+        else if (oldName === null && !confirm(T("similarGarage"))) return false;
       }
       if (oldName !== null) { garages = garages.filter(g => g.name !== oldName); await dbDelete(GARAGES, oldName); }
       const finalName = clash && renamed ? clash.name : name;
@@ -3658,6 +3771,7 @@ Section({
       garages.sort((a, b) => byName(a.name, b.name));
       clearGarageForm(); refreshAll(); renderGarageTable();
       showStatus(moved ? T("garageSavedMoved", moved) : T("garageSaved"));
+      return true;
     }
     async function deleteGarage(name) {
       const inside = cars.filter(c => c.garage === name);
@@ -4249,6 +4363,37 @@ Section({
 #sec-production .jm-win {height: min(520px, calc(100dvh - var(--head-h) - 30px));}
 }
 #sec-production #focus {padding-bottom: 92px;}
+#sec-production .ag-hub {display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px;}
+#sec-production .ag-tile {display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text); transition: border-color .15s, transform .15s;}
+#sec-production .ag-tile:hover {border-color: var(--sodium); transform: translateY(-2px);}
+#sec-production .ag-tile h4 {margin: 0 0 4px;}
+#sec-production .ag-tile p {margin: 0; font-size: 13.5px;}
+#sec-production .ag-tile > div {flex: 1; min-width: 0;}
+#sec-production .ag-ico {font-size: 34px; width: 72px; text-align: center;}
+#sec-production .ag-tile-img {width: 72px; height: auto;}
+#sec-production .ag-go {font-size: 26px; color: var(--muted);}
+#sec-production .dre-back {display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap;}
+#sec-production .dre-top {margin-bottom: 14px;}
+#sec-production .dre-pay {display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0;}
+#sec-production .dre-pay > div {display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 10px; background: var(--asphalt); border: 1px solid var(--line);}
+#sec-production .dre-pay b {font-size: 20px;}
+#sec-production .dre-pay b.hot {color: var(--sodium);}
+#sec-production .dre-pay small {font-size: 12px;}
+#sec-production .dre-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; align-items: start;}
+#sec-production .dre-grp h4 {display: flex; justify-content: space-between; align-items: baseline;}
+#sec-production .dre-grp.complete {border-color: color-mix(in srgb, var(--ok) 55%, var(--line));}
+#sec-production .dre-grp.off {opacity: .75;}
+#sec-production .dre-gh {margin: 0 0 6px;}
+#sec-production .dre-step {display: flex; gap: 10px; align-items: flex-start; padding: 8px 6px; border-radius: 8px; cursor: pointer;}
+#sec-production .dre-step:hover {background: color-mix(in srgb, var(--sodium) 8%, transparent);}
+#sec-production .dre-step input {margin-top: 3px; width: 18px; height: 18px; accent-color: var(--ok); flex: none;}
+#sec-production .dre-step span {display: flex; flex-direction: column; gap: 2px;}
+#sec-production .dre-step small {color: var(--muted); font-size: 12.5px; line-height: 1.4;}
+#sec-production .dre-step.done b {text-decoration: line-through; color: var(--muted);}
+@media (max-width: 760px) {
+#sec-production .dre-pay {grid-template-columns: 1fr;}
+#sec-production .dre-back {margin-left: 0;}
+}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -4494,6 +4639,7 @@ i18n({
     "pm.loggedIn": "Logged in", "pm.loggedOut": "Logged out", "pm.ghTokenBad": "GitHub refused the save: log in again", "pm.ghSaveFail": "Couldn't save to GitHub, will retry", "pm.ghLoadFail": "Couldn't load from GitHub", "pm.ghLoadedPM": "Loaded your data from GitHub",
     "pm.ncSubtitle": "Club + warehouse", "pm.ncPop": "Popularity", "pm.ncPopShort": "Popularity", "pm.ncGoods": "Sell goods value", "pm.ncGoodsShort": "Goods",
     "pm.ncPriv": "Private / Invite Only", "pm.ncPub": "Full public lobby (+50%)", "pm.ncOpenPage": "Open the Nightclub page", "pm.locPick": "Which one in the game?",
+    "pm.agHubSub": "Your Agency: the Security Contracts with the office safe, and Dr. Dre's VIP Contract.", "pm.agTileSc": "The office safe and the Security Contracts.", "pm.ah1t": "Agency", "pm.ah1b": "Tick that you own it and pick its area.", "pm.ah2t": "Two parts", "pm.ah2b": "Security Contracts (the safe) and Dr. Dre Contract. Tap one to open it.", "pm.dreSub": "Dr. Dre's VIP Contract, run from your Agency's computer: 13 missions, solo or with up to 3 friends.", "pm.dreProg": "Done", "pm.drePayNow": "The finale pays now", "pm.dreWeekFree": "first finale this week: bonus", "pm.dreWeekUsed": "weekly bonus used (new on Thursday)", "pm.dreReplay": "Can be replayed", "pm.dreReady": "now", "pm.dreFinales": n => n ? `finished ${n} time(s)` : "not done yet", "pm.dreFinaleBtn": "I finished the finale", "pm.dreFinaleToast": v => `Dr. Dre Contract done: ${v}. The list starts again, and I'll ring when it can be replayed.`, "pm.dreReset": "Clear the ticks", "pm.dreResetToast": "Ticks cleared.", "pm.dreReplayNote": "Dr. Dre Contract can be replayed (Agency computer)", "pm.dreHow": "Fastest: the three Leaks go in any order, so do Nightlife and South Central (easy shooting) first and keep High Society, the hardest finale, for when you are warmed up. Between missions step out of the Agency for Franklin's call, then back to the computer. On replays the two setups are skipped.", "pm.dreSetupDone": "Done once: on replays these two stay in the computer's Archive and are skipped.", "pm.dreSetupUndo": "Show them again", "pm.dreG_setup": "Setup (once)", "pm.dreG_night": "Nightlife Leak", "pm.dreG_high": "High Society Leak", "pm.dreG_south": "South Central Leak", "pm.dreG_end": "Finale", "pm.dreGh_night": "Easy: straight shooting.", "pm.dreGh_high": "Hardest finale: bring your best weapons and armour.", "pm.dreGh_south": "Lots of enemies, but simple.", "pm.dre_oncourse": "On Course", "pm.dreTip_oncourse": "Golf club meeting, mostly cutscenes. Ram the two runners with the cart until the bar fills, then the pier.", "pm.dre_datarec": "Setup: Data Recovery", "pm.dreTip_datarec": "Land on the marked skyscraper, grenade the door in the far left corner, hold the doorway, take the drive from a cabinet. Parachute down and hide to lose the cops.", "pm.dre_nclub": "The Nightclub", "pm.dreTip_nclub": "Go in loud and skip the cleaning van (it costs more time than it saves). The tape is in the round VIP room upstairs.", "pm.dre_marina": "The Marina", "pm.dreTip_marina": "Reach the yacht's bridge, then photograph the evidence in the cabin. Once the photo is sent it counts, even if you die after.", "pm.dre_nfinal": "Nightlife Leak (finale)", "pm.dreTip_nfinal": "Casino garage, lift to the penthouse; the DJ with the laptop is at the back. Fight down to the VIP area, take the laptop, leave.", "pm.dre_country": "The Country Club", "pm.dreTip_country": "Drop from the roof next to the keypad to avoid the cameras. Hack, then catch the limo driver right away instead of tailing.", "pm.dre_guest": "Guest List", "pm.dreTip_guest": "Clear the guards in the back yard, stun the lawyer (blue dot), put him in his own car's trunk, drive to the Agency.", "pm.dre_hfinal": "High Society Leak (finale)", "pm.dreTip_hfinal": "Hold a corner at the party and shoot the helicopter down there. If you steal the pursuers' car without killing them, no more spawn.", "pm.dre_davis": "Davis", "pm.dreTip_davis": "Drive Vernon's car, clear the area with the allies, take the white van, lose dealers and cops, drop it off.", "pm.dre_ballas": "The Ballas", "pm.dreTip_ballas": "After the fight ignore the police: follow Vernon into the garage, the cutscene clears your wanted level.", "pm.dre_sfinal": "South Central Leak (finale)", "pm.dreTip_sfinal": "Take the car outside the Agency, follow the two cars, clear the ambush, chase and drop the phone's owner, take his car back.", "pm.dre_studio": "Studio Time", "pm.dreTip_studio": "From the hallway marker. Damage to Dre's car has no penalty. Clear outside first, then the inside; watch your back.", "pm.dre_finale": "Don't F**k With Dre", "pm.dreTip_finale": "Target: Mirror Park railyard, far corner on the right edge. Then the airport hangar; wound him on the platform. Shorter than Studio Time.", "pm.dt1t": "Dr. Dre Contract", "pm.dt1b": "Tick the missions as you go; the finale button records the payout and starts the replay timer.", "pm.dt2t": "Pay and replay", "pm.dt2b": "$1,099,800 on the first finale of the week, then $900,000; replay about 48 minutes later.", "pm.dt3t": "The missions", "pm.dt3b": "Each with a short tip for the fastest way.",
     "pm.agOpenTag": "Open", "pm.agSub": "The office safe and the Security Contracts. The safe fills while you play, like the Nightclub's.",
     "pm.agNotOwned": "Tick it if you own an Agency: the safe and the Security Contracts show up.", "pm.agPinBtn": "Place on the map",
     "pm.agSafe": "Office safe", "pm.agNow": "In the safe now", "pm.agPaused": "Turn on “In game” (top) and the safe fills while you play.", "pm.agFullHint": "The safe is full: empty it in the game.",
@@ -4689,6 +4835,7 @@ i18n({
     "pm.loggedIn": "Ai intrat în cont", "pm.loggedOut": "Ai ieșit din cont", "pm.ghTokenBad": "GitHub a refuzat salvarea: intră din nou în cont", "pm.ghSaveFail": "Nu s-a putut salva în GitHub, reîncerc", "pm.ghLoadFail": "Nu s-a putut încărca din GitHub", "pm.ghLoadedPM": "Datele tale au fost încărcate din GitHub",
     "pm.ncSubtitle": "Club + depozit", "pm.ncPop": "Popularitate", "pm.ncPopShort": "Popularitate", "pm.ncGoods": "Valoare sell goods", "pm.ncGoodsShort": "Goods",
     "pm.ncPriv": "Privat / Invite Only", "pm.ncPub": "Lobby public plin (+50%)", "pm.ncOpenPage": "Deschide pagina Nightclub", "pm.locPick": "Care e, din joc?",
+    "pm.agHubSub": "Agency-ul tău: Security Contracts cu seiful din birou și VIP Contract-ul lui Dr. Dre.", "pm.agTileSc": "Seiful din birou și Security Contracts.", "pm.ah1t": "Agency", "pm.ah1b": "Bifează că îl ai și alege-i zona.", "pm.ah2t": "Două părți", "pm.ah2b": "Security Contracts (seiful) și Dr. Dre Contract. Apasă una ca s-o deschizi.", "pm.dreSub": "VIP Contract-ul lui Dr. Dre, pornit din computerul Agency: 13 misiuni, solo sau cu până la 3 prieteni.", "pm.dreProg": "Făcute", "pm.drePayNow": "Finala plătește acum", "pm.dreWeekFree": "prima finală din săptămână: bonus", "pm.dreWeekUsed": "bonusul săptămânii folosit (nou joi)", "pm.dreReplay": "Se poate relua", "pm.dreReady": "acum", "pm.dreFinales": n => n ? (n === 1 ? "terminat o dată" : `terminat de ${n} ori`) : "încă nefăcut", "pm.dreFinaleBtn": "Am terminat finala", "pm.dreFinaleToast": v => `Dr. Dre Contract gata: ${v}. Lista începe din nou și sun când se poate relua.`, "pm.dreReset": "Șterge bifele", "pm.dreResetToast": "Bifele au fost șterse.", "pm.dreReplayNote": "Dr. Dre Contract se poate relua (computerul din Agency)", "pm.dreHow": "Cel mai rapid: cele trei Leak-uri merg în orice ordine, așa că fă întâi Nightlife și South Central (trageri simple) și lasă High Society, finala cea mai grea, la urmă. Între misiuni ieși din Agency pentru apelul lui Franklin, apoi înapoi la computer. La reluare, cele două pregătiri se sar.", "pm.dreSetupDone": "Făcute o dată: la reluare rămân în Arhiva computerului și se sar.", "pm.dreSetupUndo": "Arată-le din nou", "pm.dreG_setup": "Pregătire (o singură dată)", "pm.dreG_night": "Nightlife Leak", "pm.dreG_high": "High Society Leak", "pm.dreG_south": "South Central Leak", "pm.dreG_end": "Finala", "pm.dreGh_night": "Ușor: doar trageri.", "pm.dreGh_high": "Cea mai grea finală: ia cele mai bune arme și armură.", "pm.dreGh_south": "Mulți inamici, dar simplu.", "pm.dre_oncourse": "On Course", "pm.dreTip_oncourse": "Întâlnirea de la clubul de golf, mai mult filmări. Lovește cu căruciorul cei doi fugari până se umple bara, apoi pe debarcader.", "pm.dre_datarec": "Setup: Data Recovery", "pm.dreTip_datarec": "Aterizezi pe zgârie-norul marcat, arunci o grenadă la ușa din colțul din stânga, aperi intrarea, iei hard-diskul dintr-un dulap. Coboară cu parașuta și ascunde-te ca să scapi de poliție.", "pm.dre_nclub": "The Nightclub", "pm.dreTip_nclub": "Intră direct, fără duba de curățenie (pierzi mai mult timp decât câștigi). Caseta e în camera VIP rotundă de sus.", "pm.dre_marina": "The Marina", "pm.dreTip_marina": "Ajungi pe puntea de comandă a iahtului, apoi fotografiezi dovada din cabină. După ce poza e trimisă, contează chiar dacă mori.", "pm.dre_nfinal": "Nightlife Leak (finală)", "pm.dreTip_nfinal": "Garajul cazinoului, liftul spre penthouse; DJ-ul cu laptopul e în spate. Lupți până jos în zona VIP, iei laptopul, pleci.", "pm.dre_country": "The Country Club", "pm.dreTip_country": "Sari de pe acoperiș lângă tastatură ca să eviți camerele. Spargi codul, apoi prinzi direct șoferul limuzinei în loc s-o urmărești.", "pm.dre_guest": "Guest List", "pm.dreTip_guest": "Curăță paznicii din curtea din spate, imobilizezi avocatul (punct albastru) cu stun gun, îl pui în portbagajul mașinii lui, mergi la Agency.", "pm.dre_hfinal": "High Society Leak (finală)", "pm.dreTip_hfinal": "Ține un colț la petrecere și doboară elicopterul acolo. Dacă le furi mașina urmăritorilor fără să-i omori, nu mai apar alții.", "pm.dre_davis": "Davis", "pm.dreTip_davis": "Conduci mașina lui Vernon, cureți zona cu aliații, iei duba albă, scapi de dealeri și poliție, o lași la marcaj.", "pm.dre_ballas": "The Ballas", "pm.dreTip_ballas": "După luptă ignoră poliția: urmează-l pe Vernon în garaj, filmarea îți șterge stelele.", "pm.dre_sfinal": "South Central Leak (finală)", "pm.dreTip_sfinal": "Iei mașina din fața Agency, urmărești cele două mașini, cureți ambuscada, îl prinzi pe cel cu telefonul și aduci mașina lui înapoi.", "pm.dre_studio": "Studio Time", "pm.dreTip_studio": "De la marcajul din hol. Avariile la mașina lui Dre nu contează. Curăță întâi afară, apoi înăuntru; atenție la spate.", "pm.dre_finale": "Don't F**k With Dre", "pm.dreTip_finale": "Ținta: depoul feroviar Mirror Park, colțul îndepărtat pe marginea din dreapta. Apoi hangarul de la aeroport; rănește-l pe platformă. Mai scurtă decât Studio Time.", "pm.dt1t": "Dr. Dre Contract", "pm.dt1b": "Bifează misiunile pe măsură ce le faci; butonul de finală notează plata și pornește timerul de reluare.", "pm.dt2t": "Plata și reluarea", "pm.dt2b": "1.099.800 $ la prima finală din săptămână, apoi 900.000 $; reluare după aproximativ 48 de minute.", "pm.dt3t": "Misiunile", "pm.dt3b": "Fiecare cu un sfat scurt pentru varianta cea mai rapidă.",
     "pm.agOpenTag": "Deschide", "pm.agSub": "Seiful din birou și Security Contracts. Seiful se umple cât joci, ca la Nightclub.",
     "pm.agNotOwned": "Bifează dacă ai un Agency: apar seiful și Security Contracts.", "pm.agPinBtn": "Pune pe hartă",
     "pm.agSafe": "Seiful din birou", "pm.agNow": "Acum în seif", "pm.agPaused": "Pornește „În joc” (sus) și seiful se umple cât joci.", "pm.agFullHint": "Seiful e plin: golește-l în joc.",
@@ -5037,7 +5184,8 @@ function defaultState() {
 }
 // idea 63: Money Fronts (Higgins Helitours "owned" is the hangar's heli switch, shared with the Hangar)
 // idea 67: Job Manager businesses (kept apart from S.biz, so they never show on the Production Manager map)
-function defaultJobs() { return { agency: { owned: false, loc: "", pin: null, contracts: 0, perDay: null, safe: 0, cd: null, alert: null } }; }
+function defaultJobs() { return { agency: { owned: false, loc: "", pin: null, contracts: 0, perDay: null, safe: 0, cd: null, alert: null },
+  dre: { setupDone: false, done: {}, finales: [], replayFired: true } }; }
 function defaultFronts() { return { wash: { owned: false, heat: 0, laund: 0, fired: {} }, smoke: { owned: false, heat: 0, laund: 0, fired: {} }, heli: { heat: 0, laund: 0, fired: {} } }; }
 let S = defaultState();
 
@@ -5279,7 +5427,7 @@ function syncStatus() {
 }
 const KIND_OF = { low: "warn", empty: "bad", full: "full", nearfull: "full" };
 function checkAlerts(fromProduction) {
-  checkAgency();
+  checkAgency(); checkDre();
   PROD.forEach(d => {
     const b = S.biz[d.id];
     const st = status(d.id), prev = lastSt[d.id];
@@ -5506,6 +5654,7 @@ function muttText() {
 function liveTimers() {
   document.querySelectorAll("[data-live-timer]").forEach(el => {
     const [id, k] = el.dataset.liveTimer.split(":");
+    if (id === "dre") { const l = dreReplayLeft(); el.textContent = l > 0 ? fmtTime(l) : t("dreReady"); return; }
     if (id === "agency") { el.textContent = agCdText(); el.closest(".ag-cd")?.classList.toggle("ready", agCdLeft() === 0); return; }
     if (k.startsWith("cd-")) { el.textContent = hgCdText(k.slice(3)); el.closest(".hg-cd-line")?.classList.toggle("ready", hgCdLeft(k.slice(3)) === 0); return; }
     el.textContent = k === "rooster" ? roosterText() : k === "staff" ? staffText(id) : k === "boost" ? (mansionOn(id) ? t("boostLeft", fmtTime((S.boost.until - Date.now()) / 60000)) : t("boostOff")) : muttText();
@@ -5680,6 +5829,100 @@ function checkAgency() {
   }
 }
 
+/* ======================================================================
+   Dr. Dre Contract (idea 68). 13 missions: On Course and Data Recovery once (later in the Agency computer's Archive),
+   then the three Data Leaks in any order (3 missions each), Studio Time and the finale. The finale pays $900,000
+   ($1,099,800 on the leader's first finale of the weekly period, reset on Thursday); it can be replayed about one in-game
+   day (48 min) later. Source: gtaboss.gg walkthrough (aug. 2026, after the July 2026 rebalance); tips paraphrased.
+   ====================================================================== */
+const DRE_STEPS = [
+  ["setup", ["oncourse", "datarec"]],
+  ["night", ["nclub", "marina", "nfinal"]],
+  ["high", ["country", "guest", "hfinal"]],
+  ["south", ["davis", "ballas", "sfinal"]],
+  ["end", ["studio", "finale"]]
+];
+const DRE_PAY = 900000, DRE_PAY_WEEK = 1099800, DRE_REPLAY = 48;
+const dre = () => S.jobs.dre;
+// the GTA Online week starts on Thursday (10:00 UTC)
+function weekStart(now = Date.now()) {
+  const d = new Date(now), back = (d.getUTCDay() - 4 + 7) % 7;
+  let t0 = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - back, 10);
+  if (t0 > now) t0 -= 7 * 864e5;
+  return t0;
+}
+const dreLast = () => { const f = dre().finales; return f.length ? f[f.length - 1] : 0; };
+const dreBonusUsed = () => dreLast() >= weekStart();
+const dreReplayLeft = () => { const l = dreLast(); return l ? Math.max(0, l + DRE_REPLAY * 60000 - Date.now()) / 60000 : 0; };
+const dreList = () => DRE_STEPS.filter(([g]) => g !== "setup" || !dre().setupDone).flatMap(([, ks]) => ks);
+const dreCount = () => { const l = dreList(); return [l.filter(k => dre().done[k]).length, l.length]; };
+function checkDre() {
+  const d = dre();
+  if (!d.replayFired && dreLast() && dreReplayLeft() === 0) { d.replayFired = true; Notes.add(t("dreReplayNote"), "ok", { chime: true, desktop: true, go: "dre" }); save(); }
+}
+function dreHtml() {
+  const d = dre(), [n, all] = dreCount(), week = dreBonusUsed(), left = dreReplayLeft();
+  const step = k => `<label class="dre-step ${d.done[k] ? "done" : ""}"><input type="checkbox" data-dre="${k}" ${d.done[k] ? "checked" : ""}>
+      <span><b>${t("dre_" + k)}</b><small>${t("dreTip_" + k)}</small></span></label>`;
+  const groups = DRE_STEPS.map(([g, ks]) => {
+    if (g === "setup" && d.setupDone) return `<section class="adv-card dre-grp off"><h4>${t("dreG_setup")}</h4><p class="hint">${t("dreSetupDone")}</p>
+      <button class="btn ghost small" data-dre-a="setupUndo">${t("dreSetupUndo")}</button></section>`;
+    const c = ks.filter(k => d.done[k]).length;
+    return `<section class="adv-card dre-grp ${c === ks.length ? "complete" : ""}"><h4>${t("dreG_" + g)} <small class="muted">${c}/${ks.length}</small></h4>
+      ${g !== "setup" && g !== "end" ? `<p class="hint dre-gh">${t("dreGh_" + g)}</p>` : ""}${ks.map(step).join("")}</section>`;
+  }).join("");
+  return `<div class="focus-head"><img class="ag-logo" src="${JOB_IMG.dre}" alt=""><div><h2>Dr. Dre Contract</h2><p class="muted">${t("dreSub")}</p></div>
+      <div class="dre-back"><a class="btn" href="#agency">← Agency</a><a class="btn ghost" href="#jobs">Job Manager</a></div></div>
+    <section class="adv-card dre-top">
+      <div class="dre-prog"><div class="kv"><span>${t("dreProg")}</span><b>${n} / ${all}</b></div><div class="ag-bar"><i style="width:${(n / all * 100).toFixed(1)}%"></i></div></div>
+      <div class="dre-pay">
+        <div><small>${t("drePayNow")}</small><b class="${week ? "" : "hot"}">${money(week ? DRE_PAY : DRE_PAY_WEEK)}</b><small class="muted">${week ? t("dreWeekUsed") : t("dreWeekFree")}</small></div>
+        <div><small>${t("dreReplay")}</small><b>${!dreLast() ? "—" : left > 0 ? `<span data-live-timer="dre:replay">${fmtTime(left)}</span>` : t("dreReady")}</b><small class="muted">${t("dreFinales", d.finales.length)}</small></div>
+      </div>
+      <div class="btn-row"><button class="btn primary" data-dre-a="finale">🏁 ${t("dreFinaleBtn")}</button>${n ? `<button class="btn ghost small" data-dre-a="reset">${t("dreReset")}</button>` : ""}</div>
+      <p class="hint">${t("dreHow")}</p>
+    </section>
+    <div class="dre-grid">${groups}</div>`;
+}
+function bindDre(root) {
+  const d = dre();
+  const done = () => { save(true); ghMarkDirty(); syncStatus(); const sc = focusEl.scrollTop; focusEl._last = null; renderFocus(); focusEl.scrollTop = sc; };
+  root.querySelectorAll("[data-dre]").forEach(el => el.onchange = () => {
+    const k = el.dataset.dre;
+    if (el.checked) d.done[k] = true; else delete d.done[k];
+    if (k === "datarec" && el.checked && d.done.oncourse) d.setupDone = true;   // the two setups are done once for good
+    if (k === "finale" && el.checked) return finale();
+    done();
+  });
+  const finale = () => {
+    const before = { done: { ...d.done }, setupDone: d.setupDone, finales: [...d.finales], replayFired: d.replayFired };
+    const pay = dreBonusUsed() ? DRE_PAY : DRE_PAY_WEEK;
+    d.finales.push(Date.now()); d.setupDone = true; d.done = {}; d.replayFired = false;
+    done();
+    toast(t("dreFinaleToast", money(pay)), { label: t("undo"), run: () => { Object.assign(d, before); done(); } });
+  };
+  const a = k => root.querySelector(`[data-dre-a="${k}"]`);
+  if (a("finale")) a("finale").onclick = finale;
+  if (a("reset")) a("reset").onclick = () => { const had = { ...d.done }; d.done = {}; done(); toast(t("dreResetToast"), { label: t("undo"), run: () => { d.done = had; done(); } }); };
+  if (a("setupUndo")) a("setupUndo").onclick = () => { d.setupDone = false; done(); };
+}
+// idea 68: the Agency page = two small cards
+function agencyHubHtml() {
+  const a = ag(), [n, all] = dreCount();
+  const top = `<section class="adv-card ag-top">
+      <label class="toggle row"><input type="checkbox" data-ag="own" ${a.owned ? "checked" : ""}> <span>${t("owned")}</span></label>
+      ${a.owned ? `<label class="ceo-pick"><span>${t("locPick")}</span><select data-ag="loc"><option value="">—</option>${AG_LOCS.map(([nm, p]) => `<option value="${nm}" ${a.loc === nm ? "selected" : ""}>${nm} · ${money(p)}</option>`).join("")}</select></label>
+      ${a.loc ? `<button class="btn small" data-ag="pin">📍 ${t("agPinBtn")}</button>` : ""}` : `<p class="hint">${t("agNotOwned")}</p>`}</section>`;
+  return `<div class="focus-head"><img class="ag-logo" src="${JOB_IMG.agency}" alt=""><div><h2>Agency${a.loc ? " · " + escapeHtml(a.loc) : ""}</h2><p class="muted">${t("agHubSub")}</p></div><a class="btn" href="#jobs">← Job Manager</a></div>
+    ${top}
+    <div class="ag-hub">
+      <a class="adv-card ag-tile" href="#security"><span class="ag-ico">🛡️</span><div><h4>Security Contracts</h4>
+        <p>${a.owned ? `${t("agContracts")}: <b>${a.contracts}</b> · ${t("agNow")}: <b>${money(a.safe)}</b>` : t("agTileSc")}</p>
+        ${a.cd ? `<p class="muted"><span data-live-timer="agency:cd">${agCdText()}</span></p>` : ""}</div><span class="ag-go">›</span></a>
+      <a class="adv-card ag-tile" href="#dre"><img class="ag-tile-img" src="${JOB_IMG.dre}" alt=""><div><h4>Dr. Dre Contract</h4>
+        <p>${t("dreProg")}: <b>${n} / ${all}</b> · ${dreBonusUsed() ? t("dreWeekUsed") : t("dreWeekFree")}</p></div><span class="ag-go">›</span></a>
+    </div>`;
+}
 // idea 64: the page is split in two big cards, HEISTS and JOBS; Money Fronts is a card like the others (but it opens)
 // idea 67: Dr. Dre Contract goes with the heists (not a heist as such, but played like one); Agency now opens its page
 const HEISTS = ["cayo", "cluckin", "casino", "doomsday", "kortz", "dre"], JOBS = ["agency", "autoshop", "bail", "garment", "fronts"];
@@ -5688,6 +5931,7 @@ const JOB_NAMES = { agency: "Agency", autoshop: "Auto Shop", bail: "Bail Office"
 const FRONTS = [["wash", "Hands On Car Wash", 1000000], ["heli", "Higgins Helitours", 900000], ["smoke", "Smoke on the Water", 850000]];
 const frontOwned = k => k === "heli" ? !!S.biz.hangar.heli : !!S.fronts[k].owned;
 function jobCardHtml(k) {
+  if (k === "dre") { const [n, all] = dreCount(); return `<a class="job-card open" href="#dre" title="Dr. Dre Contract"><span class="soon-tag on">${n} / ${all}</span><img src="${JOB_IMG.dre}" alt="Dr. Dre Contract"></a>`; }
   if (k === "agency") return `<a class="job-card open" href="#agency" title="Agency"><span class="soon-tag on">${ag().owned ? money(ag().safe) : t("agOpenTag")}</span><img src="${JOB_IMG.agency}" alt="Agency"></a>`;
   if (k === "fronts") return `<a class="job-card open" href="#fronts" title="${t("frontsOpen")}"><span class="soon-tag on">${t("frontsOwned", FRONTS.filter(([f]) => frontOwned(f)).length)}</span><img src="${JOB_IMG.fronts}" alt="Money Fronts"></a>`;
   return `<div class="job-card soon" aria-disabled="true"><span class="soon-tag">${t("soon2")}</span><img src="${JOB_IMG[k]}" alt="${JOB_NAMES[k]}" loading="lazy"></div>`;
@@ -5699,13 +5943,13 @@ function jobsHtml() {
 }
 function agencyHtml() {
   const a = ag(), pd = agPerDay(), calc = agCalc(a.contracts), left = agLeft(), n = a.contracts;
-  const head = `<div class="focus-head"><img class="ag-logo" src="${JOB_IMG.agency}" alt=""><div><h2>Agency${a.loc ? " · " + escapeHtml(a.loc) : ""}</h2><p class="muted">${t("agSub")}</p></div><a class="btn" href="#jobs">← Job Manager</a></div>`;
+  const head = `<div class="focus-head"><img class="ag-logo" src="${JOB_IMG.agency}" alt=""><div><h2>Security Contracts</h2><p class="muted">${t("agSub")}</p></div><a class="btn" href="#agency">← Agency</a></div>`;
   const top = `<section class="adv-card ag-top">
       <label class="toggle row"><input type="checkbox" data-ag="own" ${a.owned ? "checked" : ""}> <span>${t("owned")}</span></label>
       ${a.owned ? `<label class="ceo-pick"><span>${t("locPick")}</span><select data-ag="loc"><option value="">—</option>${AG_LOCS.map(([n, p]) => `<option value="${n}" ${a.loc === n ? "selected" : ""}>${n} · ${money(p)}</option>`).join("")}</select></label>
       ${a.loc ? `<button class="btn small" data-ag="pin">📍 ${t("agPinBtn")}</button>` : ""}` : `<p class="hint">${t("agNotOwned")}</p>`}</section>`;
   if (!a.owned) return head + top;
-  return head + top + `<div class="adv-grid2 ag-grid">
+  return head + `<div class="adv-grid2 ag-grid">
     <section class="adv-card ag-safe"><h4>${t("agSafe")}</h4>
       <div class="bar-cap"><span>${t("agNow")}</span><b class="${a.safe >= AG_CAP - 1 ? "full" : ""}">${money(a.safe)} / ${money(AG_CAP)}</b></div>
       <div class="ag-bar"><i style="width:${(a.safe / AG_CAP * 100).toFixed(2)}%"></i></div>
@@ -8040,7 +8284,9 @@ const fq = sel => focusEl.querySelector(sel);
 const PAGE_TOURS = {
   mc: [{ k: "mt1" }, { k: "mt2", target: () => fq(".mcb-grid") || fq(".mcb") }, { k: "mt3", target: () => fq(".mcb .segbar") }, { k: "mt4", target: () => ingameEl }],
   bunker: [{ k: "bt1" }, { k: "bt2", target: () => fq(".bk-laptop") }, { k: "bt3", target: () => fq(".bk-plan") }, { k: "bt4", target: () => { const r = fq(".adv-range"); return r ? r.closest(".adv-card") : null; } }, { k: "bt5", target: () => ingameEl }],
-  agency: [{ k: "at1" }, { k: "at2", target: () => fq(".ag-safe") }, { k: "at3", target: () => fq(".ag-sc") }, { k: "at4", target: () => document.querySelector("#sec-production .jm-btn") }],
+  agency: [{ k: "ah1" }, { k: "ah2", target: () => fq(".ag-hub") }, { k: "at4", target: () => document.querySelector("#sec-production .jm-btn") }],
+  security: [{ k: "at1" }, { k: "at2", target: () => fq(".ag-safe") }, { k: "at3", target: () => fq(".ag-sc") }],
+  dre: [{ k: "dt1" }, { k: "dt2", target: () => fq(".dre-top") }, { k: "dt3", target: () => fq(".dre-grid") }],
   jobs: [{ k: "jt1" }, { k: "jt2", target: () => fq(".job-sect.heists") }, { k: "jt3", target: () => fq('.job-card.open') }],
   fronts: [{ k: "ft1" }, { k: "ft2", target: () => fq(".mf-card") }, { k: "ft3", target: () => fq(".mf-card .heat") }],
   hangar: [{ k: "ht1" }, { k: "ht2", target: () => fq(".adv-card") }, { k: "ht3", target: () => fq(".hg-cd") }, { k: "ht4", target: () => fq(".hg-tiers") }],
@@ -8252,10 +8498,11 @@ function renderFocus() {
       bindBunker(focusEl, re);
       bindBoost(focusEl, "bunker", re);
     }
-  } else if (VIEW === "agency") {
-    const html = agencyHtml(), key = html.replace(/data-live-timer="[^"]*">[^<]*</g, "");
+  } else if (VIEW === "agency" || VIEW === "security" || VIEW === "dre") {
+    const html = VIEW === "agency" ? agencyHubHtml() : VIEW === "security" ? agencyHtml() : dreHtml(), key = html.replace(/data-live-timer="[^"]*">[^<]*</g, "");
     if (key === focusEl._last) return;
-    focusEl._last = key; focusEl.innerHTML = html; bindAgency(focusEl);
+    focusEl._last = key; focusEl.innerHTML = html;
+    if (VIEW === "dre") bindDre(focusEl); else bindAgency(focusEl);
   } else if (VIEW === "jobs" || VIEW === "fronts") {
     const html = VIEW === "jobs" ? jobsHtml() : frontsHtml();
     if (html === focusEl._last) return;
@@ -8520,8 +8767,8 @@ function boot() {
   applyLang();
 }
 // the map, the MC page (#mc), the Nightclub page (#night) and the Bunker page (#bunker) are one section
-const jobView = () => VIEW === "jobs" || VIEW === "fronts";            // pages where "In game" has no meaning
-const jobPage = () => jobView() || VIEW === "agency";                   // the Job Manager pages (they get the job map)
+const jobView = () => ["jobs", "fronts", "agency", "dre"].includes(VIEW);            // pages where "In game" has no meaning
+const jobPage = () => jobView() || ["agency", "security", "dre"].includes(VIEW);                   // the Job Manager pages (they get the job map)
 function setView(v) {
   v = v || null;
   if (v === VIEW) return;

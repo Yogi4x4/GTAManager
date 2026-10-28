@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.21.0 (2026-10-28)
+* Job Manager:
+  * Change: the Agency page is now two small cards: Security Contracts (the office safe and the contracts, as before) and Dr. Dre Contract.
+  * Add: the Dr. Dre Contract page (also from the HEISTS card): the 13 missions by stage with ticks and a short tip each for the fastest way, the fastest order, progress, what the finale pays now ($1,099,800 on the week's first finale, then $900,000) and a bell when it can be replayed (about 48 minutes). The two setups are done once and skipped on replays.
+* Vehicle Manager:
+  * Fix: the garage and car windows no longer close on a click outside while they have unsaved changes; a click outside, ✕ or Esc asks Save / Discard / Stay.
+  * Add: a vehicle type of your own (e.g. a bicycle): ➕ Another type… in the car window, with a name and an emoji; it shows on the card and in the type filter.
+
 ### v0.20.0 (2026-10-28)
 * Job Manager:
   * Add: the Agency page (from the Agency card): owned, area (4 Agencies with prices), the office safe and the Security Contracts.
