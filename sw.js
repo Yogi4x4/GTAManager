@@ -3,9 +3,9 @@
      so a new version shows up at once, with no Ctrl+F5; offline, the last copy is used.
    - Pictures, icons and fonts are kept and refreshed in the background.
    - GitHub saving (api.github.com, raw.githubusercontent.com) is never touched. */
-const VERSION = "0.21";
+const VERSION = "0.22";
 const CACHE = "gtam-" + VERSION;
-const CORE = ["./GTA_V_Manager.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./favicon-32.png", "./home_bg.webp"];
+const CORE = ["./GTA_V_Manager.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./favicon-32.png", "./bg/los_santos_poster.webp"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(CORE.map(u => c.add(new Request(u, { cache: "reload" })).catch(() => {})))).then(() => self.skipWaiting()));

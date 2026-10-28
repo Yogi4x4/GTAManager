@@ -248,6 +248,13 @@ body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); 
 .mi.on::after { content: "✓"; margin-left: auto; color: var(--accent); font-weight: 700; }
 .pop-head { padding: 6px 10px 2px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .pop-head:not(:first-child) { margin-top: 4px; padding-top: 8px; border-top: 1px solid var(--border); }
+/* idea 71: a menu line with its own small menu under it */
+.mi.has-sub::after { content: ""; margin-left: auto; width: 7px; height: 7px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: translateY(-2px) rotate(45deg); transition: transform .15s; }
+.mi-group.open > .mi.has-sub::after { transform: translateY(2px) rotate(-135deg); }
+.mi-sub { display: none; margin: 2px 0 4px 10px; padding-left: 6px; border-left: 2px solid var(--border); }
+.mi-group.open > .mi-sub { display: block; }
+@media (hover: hover) and (pointer: fine) { .mi-group:hover > .mi-sub { display: block; } .mi-group:hover > .mi.has-sub::after { transform: translateY(2px) rotate(-135deg); } }
+.mi-sub .pop-head { padding-top: 4px; margin-top: 0; border-top: 0; }
 .pop-note { padding: 2px 10px 6px; font-size: 12px; color: var(--muted); white-space: normal; }
 .pop-note b { color: var(--text); font-weight: 600; }
 @media (max-width: 760px) {
@@ -426,6 +433,35 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 /* idea 69: unsaved changes question */
 .guard-dlg { max-width: 420px; }
 .guard-dlg .upd-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+/* idea 72: backgrounds behind the pages (bg.js). Home keeps its light veil; the other pages get a stronger one so cards and text stay readable.
+   The veils are made from the theme's own background colour, so every theme (light ones too) fits by itself. */
+#bgLayer { position: fixed; inset: 0; z-index: -3; pointer-events: none; display: none; background: var(--bg); }
+html[data-bg="home"] #bgLayer, html[data-bg="page"] #bgLayer { display: block; }
+.bg-pic { position: absolute; inset: 0; background: center / cover no-repeat; opacity: 0; transition: opacity 1.4s ease; }
+.bg-pic.on { opacity: 1; }
+#bgLayer::after { content: ""; position: absolute; inset: 0; }
+html[data-bg="home"] #bgLayer::after { background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 35%, transparent) 0%, color-mix(in srgb, var(--bg) 55%, transparent) 45%, color-mix(in srgb, var(--bg) 92%, transparent) 100%); }
+html[data-bg="page"] #bgLayer::after { background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 70%, transparent) 0%, color-mix(in srgb, var(--bg) 82%, transparent) 60%, color-mix(in srgb, var(--bg) 90%, transparent) 100%); }
+@media (prefers-reduced-motion: reduce) { .bg-pic { transition: none; } }
+.bg-dlg .dlg-body { display: flex; flex-direction: column; gap: 10px; }
+.bg-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.bg-row select { height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg2); color: var(--text); font: inherit; }
+.bg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 4px; }
+.bg-item { margin: 0; border-radius: 10px; border: 1px solid var(--border); background: var(--bg2); overflow: hidden; }
+.bg-item.now { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.bg-item.off .bg-thumb { opacity: .35; filter: grayscale(.7); }
+.bg-thumb { aspect-ratio: 16 / 9; background: var(--bg3) center / cover no-repeat; }
+.bg-item figcaption { display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 13px; min-height: 34px; }
+.bg-item figcaption label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.bg-item figcaption small { margin-left: auto; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bg-item figcaption .btn { height: 28px; padding: 0 6px; }
+.bg-add { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding-top: 10px; border-top: 1px solid var(--border); }
+.bg-note { margin: 0; font-size: 13px; color: var(--muted); }
+.bg-msg { margin: 0; font-size: 13px; font-weight: 600; }
+.bg-msg.ok { color: var(--ok, var(--accent)); } .bg-msg.bad { color: var(--bad); } .bg-msg.warn { color: var(--warn); }
+/* the sections paint their own plain background; with a background picture they let it show through */
+html[data-bg="page"] :is(#sec-vehicles, #sec-production, #sec-export) { background: transparent; }
 </style>
 </head>
 <body>
@@ -534,7 +570,7 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.21";
+const APP_VERSION = "0.22";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -839,6 +875,58 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.22.0",
+  "date": "2026-10-28",
+  "en": [
+   {
+    "area": "Look",
+    "items": [
+     "Add: backgrounds on every page, not only Home (⋮ → Backgrounds): pick which ones are shown, how often the picture changes (never, every 1 to 60 minutes, with a soft fade) and whether it shows on every page. A new Los Santos day-and-night picture.",
+     "Add: your own background (logged in): the window says the right format (landscape, ideally 16:9, at least 1280 px wide); the picture is cut to 16:9, made smaller and saved only in your own repository."
+    ]
+   },
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Change: in the ⋮ menu, the Cars and Garages import / export take one line, Import/Export, which opens by itself under the mouse (a tap on a phone)."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Fix: the Job Manager map no longer leaves empty blocks on Android phones.",
+     "Change: the Agency pin looks like the Production Manager pins (round, with the office safe ring, the name and the safe under it).",
+     "Change: placing the pin: move the map under the circle in the middle and press Put it here.",
+     "Add: the four map styles (Satellite, Atlas, Road, Dark) in the Job Manager map."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Aspect",
+    "items": [
+     "Adaugă: fundaluri pe toate paginile, nu doar pe Acasă (⋮ → Fundaluri): alegi care se folosesc, cât de des se schimbă poza (niciodată, de la 1 la 60 de minute, cu trecere lină) și dacă apare pe toate paginile. O poză nouă cu Los Santos zi și noapte.",
+     "Adaugă: fundalul tău (când ești logat): fereastra spune formatul potrivit (orizontal, ideal 16:9, cel puțin 1280 px lățime); poza se taie la 16:9, se micșorează și se salvează doar în repository-ul tău."
+    ]
+   },
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Schimbă: în meniul ⋮, importul / exportul de mașini și garaje ocupă un singur rând, Import/Export, care se deschide singur sub mouse (pe telefon, cu o atingere)."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Repară: harta Job Manager nu mai lasă bucăți goale pe telefoanele Android.",
+     "Schimbă: pinul Agency arată ca pinurile din Production Manager (rotund, cu inelul seifului, numele și suma dedesubt).",
+     "Schimbă: plasarea pinului: muți harta sub cercul din mijloc și apeși Pune aici.",
+     "Adaugă: cele patru stiluri de hartă (Satelit, Atlas, Drumuri, Întunecat) în harta Job Manager."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.21.0",
   "date": "2026-10-28",
@@ -2073,7 +2161,7 @@ const Router = {
       { label: t("m_sound"), on: Notes.sound, keep: true, act: () => { Notes.sound = !Notes.sound; LS.set("gtaSound", Notes.sound ? "1" : "0"); if (Notes.sound) Notes.chime("info"); } },
       { label: t("m_testSound"), act: () => { const was = Notes.sound; Notes.sound = true; Notes.chime("warn"); Notes.sound = was; }, keep: true });
     if ("Notification" in window) items.push({ label: t("m_desktop"), on: Notes.desktop, keep: true, act: () => Notes.toggleDesktop().then(() => this.renderMore()) });
-    items.push({ head: t("m_look") }, { label: t("m_anim"), on: document.documentElement.dataset.anim !== "off", keep: true, act: () => {
+    items.push({ head: t("m_look") }, { label: t("m_bg"), act: () => Bg.open() }, { label: t("m_anim"), on: document.documentElement.dataset.anim !== "off", keep: true, act: () => {
       const off = document.documentElement.dataset.anim !== "off";
       if (off) document.documentElement.dataset.anim = "off"; else delete document.documentElement.dataset.anim;
       LS.set("gtaAnim", off ? "0" : "1");
@@ -2091,6 +2179,11 @@ const Router = {
     items.push({ label: t("m_about"), act: openAbout });
     const list = $("#moreList");
     list.innerHTML = "";
+    this.fillMenu(list, items);
+  },
+  // idea 71: an item with sub: [...] is one short line; its own items open under it (by themselves under the mouse, with a tap on a phone)
+  subOpen: {},
+  fillMenu(list, items) {
     items.forEach(it => {
       if (it.head) { const h = document.createElement("div"); h.className = "pop-head"; h.textContent = it.head; list.appendChild(h); return; }
       if (it.html) { list.insertAdjacentHTML("beforeend", it.html); return; }
@@ -2098,6 +2191,16 @@ const Router = {
       b.className = "mi" + (it.on ? " on" : "") + (it.cls ? " " + it.cls : "");
       b.setAttribute("role", "menuitem");
       b.textContent = it.label;
+      if (it.sub) {
+        const g = document.createElement("div"), box = document.createElement("div"), key = it.key || it.label;
+        g.className = "mi-group" + (this.subOpen[key] ? " open" : "");
+        box.className = "mi-sub"; box.setAttribute("role", "group");
+        b.classList.add("has-sub"); b.setAttribute("aria-haspopup", "true"); b.setAttribute("aria-expanded", !!this.subOpen[key]);
+        b.onclick = ev => { ev.stopPropagation(); this.subOpen[key] = !g.classList.contains("open"); g.classList.toggle("open", this.subOpen[key]); b.setAttribute("aria-expanded", this.subOpen[key]); };
+        g.append(b, box); list.appendChild(g);
+        this.fillMenu(box, it.sub);
+        return;
+      }
       b.onclick = ev => { ev.stopPropagation(); if (it.keep) { it.act(); this.renderMore(); } else { Pop.close(); it.act(); } };
       list.appendChild(b);
     });
@@ -2162,16 +2265,186 @@ if (!LS.raw("gtaGuideSeen")) {
   document.querySelector(".tb-right").prepend(b);
 }
 i18n({ en: { m_guideShort: "Start here" }, ro: { m_guideShort: "Începe aici" } });
+/* ======================================================================
+   Backgrounds (idea 72): several pictures behind the pages, changing by themselves.
+   - Offered with the app: bg/backgrounds.json + bg/*.webp (from the original repository, updated with the app).
+   - Your own: ⋮ → Backgrounds → Add; cut to 16:9, made smaller, saved only in your own repository
+     (data/bg/*.webp + data/backgrounds.json, which updates never touch). Visitors of your page see them too.
+   - Settings per device (gtaBg): which ones are off, how often they change, on every page or only Home.
+   ====================================================================== */
+i18n({
+  en: {
+    close: "Close", m_bg: "🖼 Backgrounds", bgTitle: "Backgrounds", bgAll: "On every page (not only Home)", bgEvery: "Change the picture",
+    bgNever: "never", bgMin: n => `every ${n} min`, bgHour: "every hour", bgUse: "Shown", bgOwn: "yours", bgDel: "Delete",
+    bgDelAsk: "Delete this background from your repository?", bgAdd: "➕ Add your own background",
+    bgFormat: "Landscape picture, ideally 16:9 (for example 1920 × 1080), at least 1280 pixels wide. JPG, PNG or WebP. It is cut to 16:9 and made smaller by itself (WebP, about 300 KB), then saved only in your own repository.",
+    bgLogin: "Log in to add your own backgrounds.", bgSmall: (w, h) => `This picture is ${w} × ${h}: too small. It needs to be at least 1280 pixels wide.`,
+    bgTall: (w, h) => `This picture is ${w} × ${h}: it stands upright. Use a landscape (wide) picture, ideally 16:9.`,
+    bgBad: "This file can't be read as a picture.", bgSaving: "Saving to your repository…", bgSaved: "Saved. It shows here right away; on your page online in about a minute.",
+    bgFail: why => `Couldn't save it (${why}). Try again.`, bgNone: "No background is on. Tick at least one.", bgLast: "This is the last one shown: tick another one first.",
+    bgOffline: "The list of backgrounds couldn't be loaded; the one built in is shown."
+  },
+  ro: {
+    close: "Închide", m_bg: "🖼 Fundaluri", bgTitle: "Fundaluri", bgAll: "Pe toate paginile (nu doar pe Acasă)", bgEvery: "Schimbă poza",
+    bgNever: "niciodată", bgMin: n => `la ${n} min`, bgHour: "la o oră", bgUse: "Folosit", bgOwn: "al tău", bgDel: "Șterge",
+    bgDelAsk: "Ștergi acest fundal din repository-ul tău?", bgAdd: "➕ Adaugă fundalul tău",
+    bgFormat: "Poză orizontală, ideal 16:9 (de exemplu 1920 × 1080), de cel puțin 1280 de pixeli lățime. JPG, PNG sau WebP. Se taie singură la 16:9 și se micșorează (WebP, cam 300 KB), apoi se salvează doar în repository-ul tău.",
+    bgLogin: "Intră în cont ca să adaugi fundaluri proprii.", bgSmall: (w, h) => `Poza are ${w} × ${h}: e prea mică. Trebuie să aibă cel puțin 1280 de pixeli lățime.`,
+    bgTall: (w, h) => `Poza are ${w} × ${h}: e în picioare. Folosește o poză orizontală (lată), ideal 16:9.`,
+    bgBad: "Fișierul nu poate fi citit ca poză.", bgSaving: "Se salvează în repository-ul tău…", bgSaved: "Salvat. Apare aici imediat; pe pagina ta online în cam un minut.",
+    bgFail: why => `Nu s-a putut salva (${why}). Încearcă din nou.`, bgNone: "Niciun fundal nu e bifat. Bifează cel puțin unul.", bgLast: "E ultimul folosit: bifează întâi altul.",
+    bgOffline: "Lista de fundaluri nu s-a putut încărca; se arată cel inclus."
+  }
+});
+const Bg = {
+  KEY: "gtaBg",
+  EVERY: [0, 1, 5, 15, 30, 60],
+  // the one built in, used when bg/backgrounds.json can't be read (page opened from a file, no connection yet)
+  DEF: [{ file: "bg/los_santos_poster.webp", name: "Los Santos", pos: "center 35%" }],
+  offered: [], own: [], local: {},   // local: pictures just added, shown from memory until GitHub Pages publishes them
+  cfg: null, cur: null, timer: 0, side: 0,
+  get list() { return [...this.offered, ...this.own]; },
+  on() { const off = this.cfg.off || []; return this.list.filter(b => !off.includes(b.file)); },
+  async init() {
+    this.cfg = { all: true, every: 15, off: [], ...(LS.get(this.KEY, {}) || {}) };
+    const layer = document.createElement("div");
+    layer.id = "bgLayer"; layer.setAttribute("aria-hidden", "true");
+    layer.innerHTML = `<div class="bg-pic"></div><div class="bg-pic"></div>`;
+    document.body.prepend(layer);
+    this.layer = layer;
+    Bus.on("route", () => this.place());
+    this.offered = await this.read("bg/backgrounds.json") || this.DEF;
+    this.own = (await this.read("data/backgrounds.json") || []).map(b => ({ ...b, own: true }));
+    this.place(); this.show(true);
+  },
+  async read(path) {
+    if (location.protocol === "file:") return null;
+    try {
+      const r = await fetch(path + "?v=" + Math.floor(Date.now() / 300000), { cache: "no-cache" });
+      if (!r.ok) return null;
+      const j = await r.json();
+      return Array.isArray(j.list) ? j.list.filter(b => b && b.file) : null;
+    } catch (e) { return null; }
+  },
+  save() { LS.set(this.KEY, this.cfg); },
+  // Home always; the other pages only when "on every page" is ticked
+  place() {
+    const sec = document.body.dataset.sec || "home";
+    document.documentElement.dataset.bg = sec === "home" ? "home" : this.cfg.all ? "page" : "none";
+  },
+  // the picture for this moment: the same one on every page and after a reload, the next one after each interval
+  pick() {
+    const on = this.on();
+    if (!on.length) return null;
+    const ev = this.cfg.every;
+    return ev ? on[Math.floor(Date.now() / (ev * 60000)) % on.length] : on[0];
+  },
+  src(b) { return this.local[b.file] || b.file; },
+  show(first) {
+    clearTimeout(this.timer);
+    const b = this.pick();
+    if (b && (!this.cur || this.cur.file !== b.file || first)) {
+      const pics = this.layer.querySelectorAll(".bg-pic"), next = pics[this.side ^ 1], prev = pics[this.side];
+      const put = () => { next.style.backgroundImage = `url("${this.src(b)}")`; next.style.backgroundPosition = b.pos || "center"; next.classList.add("on"); prev.classList.remove("on"); this.side ^= 1; };
+      // wait for the picture, so the change is a fade and never a blank moment
+      const im = new Image(); im.onload = put; im.onerror = () => { if (first) put(); }; im.src = this.src(b);
+      this.cur = b;
+    }
+    if (!b) this.layer.querySelectorAll(".bg-pic").forEach(p => p.classList.remove("on"));
+    const ev = this.cfg.every;
+    if (b && ev) { const ms = ev * 60000; this.timer = setTimeout(() => this.show(), ms - Date.now() % ms + 50); }
+  },
+  /* ---------- the window ---------- */
+  dlg: null, msg: "",
+  open() {
+    Pop.close();
+    if (!this.dlg) {
+      this.dlg = document.createElement("dialog");
+      this.dlg.className = "dlg wide bg-dlg";
+      document.body.appendChild(this.dlg);
+      this.dlg.addEventListener("click", e => { if (e.target === this.dlg) this.dlg.close(); });
+    }
+    this.msg = ""; this.render();
+    if (!this.dlg.open) this.dlg.showModal();
+  },
+  render() {
+    const d = this.dlg, c = this.cfg, off = c.off || [];
+    const opt = n => `<option value="${n}" ${c.every === n ? "selected" : ""}>${n === 0 ? t("bgNever") : n === 60 ? t("bgHour") : t("bgMin", n)}</option>`;
+    d.innerHTML = `<div class="dlg-head"><h2>${t("bgTitle")}</h2><button class="tb-btn icon" data-close aria-label="${t("close")}">✕</button></div>
+      <div class="dlg-body">
+        <label class="bg-row"><input type="checkbox" data-b="all" ${c.all ? "checked" : ""}> <span>${t("bgAll")}</span></label>
+        <label class="bg-row"><span>${t("bgEvery")}</span> <select data-b="every">${this.EVERY.map(opt).join("")}</select></label>
+        <div class="bg-grid">${this.list.map(b => `<figure class="bg-item ${off.includes(b.file) ? "off" : ""} ${this.cur && this.cur.file === b.file ? "now" : ""}">
+            <div class="bg-thumb" style="background-image:url('${esc(this.src(b))}');background-position:${esc(b.pos || "center")}"></div>
+            <figcaption><label><input type="checkbox" data-use="${esc(b.file)}" ${off.includes(b.file) ? "" : "checked"}> ${t("bgUse")}</label>
+              ${b.own ? `<small>${t("bgOwn")}</small>${Auth.on ? `<button class="btn ghost" data-del="${esc(b.file)}" title="${t("bgDel")}" aria-label="${t("bgDel")}">🗑</button>` : ""}` : `<small>${esc(b.name || "")}</small>`}</figcaption></figure>`).join("")}</div>
+        <div class="bg-add">
+          ${Auth.on ? `<button class="btn" data-b="add">${t("bgAdd")}</button><input type="file" accept="image/jpeg,image/png,image/webp" hidden data-b="file">` : `<p class="bg-note">${t("bgLogin")}</p>`}
+          <p class="bg-note">${t("bgFormat")}</p>
+          ${this.msg ? `<p class="bg-msg ${this.msgKind || ""}" role="status">${esc(this.msg)}</p>` : ""}
+        </div>
+      </div>`;
+    const q = s => d.querySelector(s);
+    q("[data-close]").onclick = () => d.close();
+    q('[data-b="all"]').onchange = e => { c.all = e.target.checked; this.save(); this.place(); };
+    q('[data-b="every"]').onchange = e => { c.every = +e.target.value; this.save(); this.show(); this.render(); };
+    d.querySelectorAll("[data-use]").forEach(x => x.onchange = () => {
+      const f = x.dataset.use, set = new Set(off);
+      if (x.checked) set.delete(f);
+      else if (this.on().length <= 1) { x.checked = true; this.say(t("bgLast"), "warn"); return; }
+      else set.add(f);
+      c.off = [...set]; this.save(); this.show(); this.render();
+    });
+    d.querySelectorAll("[data-del]").forEach(x => x.onclick = () => this.remove(x.dataset.del));
+    if (Auth.on) { const inp = q('[data-b="file"]'); q('[data-b="add"]').onclick = () => inp.click(); inp.onchange = () => { if (inp.files[0]) this.add(inp.files[0]); inp.value = ""; }; }
+  },
+  say(m, kind) { this.msg = m; this.msgKind = kind; this.render(); },
+  // check the picture, cut it to 16:9 around the middle, at most 1920 × 1080, WebP (JPEG where the browser can't make WebP)
+  async add(file) {
+    let im;
+    try { im = await createImageBitmap(file); } catch (e) { this.say(t("bgBad"), "bad"); return; }
+    const w = im.width, h = im.height;
+    if (w / h < 1.3) { this.say(t("bgTall", w, h), "bad"); return; }
+    if (w < 1280) { this.say(t("bgSmall", w, h), "bad"); return; }
+    let cw = w, ch = Math.round(w * 9 / 16);
+    if (ch > h) { ch = h; cw = Math.round(h * 16 / 9); }
+    const ow = Math.min(1920, cw), oh = Math.round(ow * 9 / 16);
+    const cv = Object.assign(document.createElement("canvas"), { width: ow, height: oh });
+    cv.getContext("2d").drawImage(im, (w - cw) / 2, (h - ch) / 2, cw, ch, 0, 0, ow, oh);
+    let blob = await new Promise(ok => cv.toBlob(ok, "image/webp", 0.82));
+    if (!blob || blob.type !== "image/webp") blob = await new Promise(ok => cv.toBlob(ok, "image/jpeg", 0.85));
+    const ext = blob.type === "image/webp" ? "webp" : "jpg", path = `data/bg/bg_${Date.now().toString(36)}.${ext}`;
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    this.say(t("bgSaving"));
+    try {
+      await GH.put(path, { b64: b64of(bytes), message: "Add a background (GTA Manager)" });
+      this.local[path] = URL.createObjectURL(blob);
+      this.own.push({ file: path, name: file.name.replace(/\.[^.]+$/, ""), own: true });
+      await this.saveOwn();
+      this.show(); this.say(t("bgSaved"), "ok");
+    } catch (e) { this.say(t("bgFail", e.message === "token" ? "token" : e.message), "bad"); }
+  },
+  async remove(file) {
+    if (!confirm(t("bgDelAsk"))) return;
+    try {
+      await GH.del(file);
+      this.own = this.own.filter(b => b.file !== file);
+      this.cfg.off = (this.cfg.off || []).filter(f => f !== file); this.save();
+      await this.saveOwn();
+      if (this.cur && this.cur.file === file) this.cur = null;
+      this.show(); this.say("");
+    } catch (e) { this.say(t("bgFail", e.message), "bad"); }
+  },
+  saveOwn() { return GH.put("data/backgrounds.json", JSON.stringify({ list: this.own.map(({ file, name, pos }) => ({ file, name, pos })) }, null, 1)); }
+};
+Bg.init();
 </script>
 
 <main id="sections">
 <style>
 /* ======================== Home ======================== */
-/* the Los Santos poster behind the page (home_bg.webp next to the page), darkened so text stays readable */
+/* the backgrounds behind the page come from bg.js (idea 72) */
 #sec-home { position: relative; isolation: isolate; }
-#sec-home::before { content: ""; position: fixed; inset: 0; z-index: -1;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 35%, transparent) 0%, color-mix(in srgb, var(--bg) 55%, transparent) 45%, color-mix(in srgb, var(--bg) 92%, transparent) 100%),
-              url("home_bg.webp") center 35% / cover no-repeat, var(--bg); }
 #sec-home .wrap { position: relative; max-width: 1100px; margin: 0 auto; padding: 8px 20px 48px; }
 #sec-home .lead, #sec-home footer { color: color-mix(in srgb, var(--text) 82%, transparent); text-shadow: 0 1px 8px rgba(0,0,0,.7); }
 #sec-home h1 { text-shadow: 0 2px 18px rgba(0,0,0,.65), 0 0 22px color-mix(in srgb, var(--glow) 45%, transparent); }
@@ -2873,7 +3146,7 @@ i18n({
     "vm.ghDisconnectConfirm": "Remove the token from this browser? The page becomes view-only.",
     "vm.ghUnsaved": "Changes are still being saved to GitHub.", "vm.noCarsView": "No cars published yet.",
     "vm.themeTitle": "Theme", "vm.themes": "Themes", "vm.customTheme": "Custom", "vm.bgColor": "Background", "vm.accentColor": "Accent", "vm.titleFont": "Title font", "vm.customHint": "Text colors adjust automatically so everything stays readable.",
-    "vm.dataMenuTitle": "Import / Export", "vm.menuCars": "Cars", "vm.menuGarages": "Garages", "vm.importNote": "Import replaces all existing data. Export a backup first.",
+    "vm.dataMenuTitle": "Import/Export", "vm.menuCars": "Cars", "vm.menuGarages": "Garages", "vm.importNote": "Import replaces all existing data. Export a backup first.",
     "vm.manufacturer": "Manufacturer", "vm.exPegassi": "e.g. Pegassi", "vm.exModel": "e.g. Oppressor MK II",
     "vm.classType": "Class / Type", "vm.exSuper": "e.g. Super", "vm.garage": "Garage", "vm.garageName": "Garage name",
     "vm.levelSpot": "Level / Spot", "vm.exSpot": "e.g. Garage B1 / Spot 3", "vm.notesOpt": "Notes (optional)",
@@ -2958,7 +3231,7 @@ i18n({
     "vm.ghDisconnectConfirm": "Ștergi token-ul din acest browser? Pagina devine doar pentru vizualizare.",
     "vm.ghUnsaved": "Modificările încă se salvează în GitHub.", "vm.noCarsView": "Nicio mașină publicată încă.",
     "vm.themeTitle": "Temă", "vm.themes": "Teme", "vm.customTheme": "Personalizat", "vm.bgColor": "Fundal", "vm.accentColor": "Accent", "vm.titleFont": "Font titlu", "vm.customHint": "Culorile textului se ajustează automat, ca totul să rămână lizibil.",
-    "vm.dataMenuTitle": "Import / Export", "vm.menuCars": "Mașini", "vm.menuGarages": "Garaje", "vm.importNote": "Importul înlocuiește toate datele existente. Fă întâi un export ca backup.",
+    "vm.dataMenuTitle": "Import/Export", "vm.menuCars": "Mașini", "vm.menuGarages": "Garaje", "vm.importNote": "Importul înlocuiește toate datele existente. Fă întâi un export ca backup.",
     "vm.manufacturer": "Producător", "vm.exPegassi": "ex: Pegassi", "vm.exModel": "ex: Oppressor MK II",
     "vm.classType": "Clasă / Gen", "vm.exSuper": "ex: Super", "vm.garage": "Garaj", "vm.garageName": "Nume garaj",
     "vm.levelSpot": "Nivel / Loc", "vm.exSpot": "ex: Garage B1 / Loc 3", "vm.notesOpt": "Note (opțional)",
@@ -3826,10 +4099,12 @@ Section({
 
     // ⋮ menu: backups and where the data comes from
     this.menu = () => {
-      const it = [{ head: T("menuCars") }, { label: T("exportCars"), act: () => { download(carsJson(), "Cars.json"); showStatus(T("carsExported")); } }];
-      if (canEdit()) it.push({ label: T("importCars"), act: () => byId("importCarsFile").click() });
-      it.push({ head: T("menuGarages") }, { label: T("exportGarages"), act: () => { download(garagesJson(), "Garages.json"); showStatus(T("garagesExported")); } });
-      if (canEdit()) it.push({ label: T("importGarages"), act: () => byId("importGaragesFile").click() }, { html: `<div class="pop-note" style="color:var(--warn)">${T("importNote")}</div>` });
+      // idea 71: the backups take one line, "Import / Export", with Cars and Garages under it
+      const sub = [{ head: T("menuCars") }, { label: T("exportCars"), act: () => { download(carsJson(), "Cars.json"); showStatus(T("carsExported")); } }];
+      if (canEdit()) sub.push({ label: T("importCars"), act: () => byId("importCarsFile").click() });
+      sub.push({ head: T("menuGarages") }, { label: T("exportGarages"), act: () => { download(garagesJson(), "Garages.json"); showStatus(T("garagesExported")); } });
+      if (canEdit()) sub.push({ label: T("importGarages"), act: () => byId("importGaragesFile").click() }, { html: `<div class="pop-note" style="color:var(--warn)">${T("importNote")}</div>` });
+      const it = [{ label: T("dataMenuTitle"), key: "vmData", sub }];
       it.push({ head: T("menuData") }, { html: `<div class="pop-note">${isOwner() ? T("ghStateEdit", esc(`${Auth.get().owner}/${Auth.get().repo}`)) : mode === "local" ? T("ghStateLocal") : T("ghStateView")}</div>` });
       if (isOwner()) it.push({ label: T("ghReload"), act: reload });
       else if (mode === "view") it.push({ label: T("createOwn"), act: goLocal });
@@ -4340,22 +4615,45 @@ Section({
 #sec-production .jm-win.open {transform: none; opacity: 1; border-radius: 16px; visibility: visible; pointer-events: auto; transition: transform .42s cubic-bezier(.2,.85,.25,1), opacity .2s ease, border-radius .42s ease, visibility 0s;}
 #sec-production .jm-head {display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line);}
 #sec-production .jm-head b {font-size: 15px;}
-#sec-production .jm-hint {flex: 1; font-size: 13px; color: var(--sodium); font-weight: 600;}
-#sec-production .jm-x {width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); cursor: pointer; font-size: 15px;}
+#sec-production .jm-x {width: 34px; height: 34px; margin-left: auto; border-radius: 9px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); cursor: pointer; font-size: 15px;}
 #sec-production .jm-view {position: relative; flex: 1; overflow: hidden; touch-action: none; cursor: grab;}
 #sec-production .jm-view:active {cursor: grabbing;}
-#sec-production .jm-win.placing .jm-view {cursor: crosshair;}
-#sec-production .jm-world {position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform;}
+#sec-production .jm-world {position: absolute; left: 0; top: 0; transform-origin: 0 0;}
+#sec-production .jm-world.glide {transition: transform .25s ease;}
 #sec-production .jm-img {display: block; user-select: none; -webkit-user-drag: none; pointer-events: none;}
 #sec-production .jm-pins {position: absolute; inset: 0;}
-#sec-production .jm-pin {position: absolute; display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: var(--text); transform-origin: 50% 100%;}
-#sec-production .jm-pin img {width: 92px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,.6));}
-#sec-production .jm-pin span {display: flex; flex-direction: column; align-items: center; padding: 3px 8px; border-radius: 8px; background: color-mix(in srgb, var(--asphalt) 88%, transparent); border: 1px solid var(--line); white-space: nowrap;}
-#sec-production .jm-pin b {font-size: 12px;}
-#sec-production .jm-pin small {font-size: 11px; color: var(--sodium); font-weight: 600;}
-#sec-production .jm-zoom {position: absolute; right: 10px; bottom: 10px; display: flex; flex-direction: column; gap: 6px;}
-#sec-production .jm-zoom button {width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 20px; cursor: pointer;}
-#sec-production .jm-empty {position: absolute; left: 50%; top: 14px; transform: translateX(-50%); padding: 8px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: 13px; max-width: 80%; text-align: center;}
+#sec-production .jm-pin {position: absolute; width: 0; height: 0; z-index: 2; text-decoration: none; color: var(--text);}
+#sec-production .jm-pb {position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -23px) scale(var(--inv, 1)); transform-origin: 50% 23px;}
+#sec-production .jm-pin .pin-disc {position: relative; display: block; width: 46px; height: 46px;}
+#sec-production .jm-pin .pin-disc svg.ring {position: absolute; inset: 0; transform: rotate(-90deg);}
+#sec-production .jm-pin .pin-disc .ico {position: absolute; inset: 6px; border-radius: 50%; box-shadow: 0 3px 10px rgba(0,0,0,.6);}
+#sec-production .jm-pin .pin-disc .ico svg {display: block; width: 100%; height: 100%;}
+#sec-production .jm-pin .pin-label {display: flex; flex-direction: column; align-items: center; margin-top: 2px; padding: 1px 7px 2px; border-radius: 5px; background: rgba(10,14,20,.82); font: 600 13px/1.25 var(--display); white-space: nowrap; color: #fff;}
+#sec-production .jm-pin .pin-label small {font: 600 11px/1.2 var(--body, inherit); color: var(--sodium);}
+#sec-production .jm-pin:hover .pin-label, #sec-production .jm-pin:focus-visible .pin-label {background: var(--sodium); color: var(--sodium-ink);}
+#sec-production .jm-pin:hover .pin-label small {color: inherit;}
+#sec-production .jm-win.placing .jm-pin {opacity: .45; pointer-events: none;}
+#sec-production .jm-target {display: none; position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; transform: translate(-50%, -50%); pointer-events: none; z-index: 3;
+  border-radius: 50%; border: 3px solid var(--sodium); box-shadow: 0 0 0 2px rgba(0,0,0,.55), inset 0 0 0 2px rgba(0,0,0,.55);}
+#sec-production .jm-target::before, #sec-production .jm-target::after {content: ""; position: absolute; left: 50%; top: 50%; background: var(--sodium); transform: translate(-50%, -50%); box-shadow: 0 0 0 1px rgba(0,0,0,.5);}
+#sec-production .jm-target::before {width: 2px; height: 70px;}
+#sec-production .jm-target::after {width: 70px; height: 2px;}
+#sec-production .jm-target i {position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); z-index: 1;}
+#sec-production .jm-win.placing .jm-target {display: block;}
+#sec-production .jm-place {display: none; position: absolute; left: 10px; right: 58px; bottom: 10px; z-index: 4; padding: 10px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 8px 22px var(--shadow);
+  align-items: center; gap: 10px; flex-wrap: wrap;}
+#sec-production .jm-win.placing .jm-place {display: flex;}
+#sec-production .jm-place .jm-hint {flex: 1 1 160px; font-size: 13px; font-weight: 600; color: var(--text);}
+#sec-production .jm-place > div {display: flex; gap: 6px; margin-left: auto;}
+#sec-production .jm-tools {position: absolute; left: 10px; top: 10px; z-index: 4; display: flex; align-items: flex-start; gap: 8px;}
+#sec-production .jm-lay {width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); cursor: pointer;}
+#sec-production .jm-lay.on {border-color: var(--sodium); color: var(--sodium);}
+#sec-production .jm-styles {display: flex; gap: 6px; padding: 6px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 8px 22px var(--shadow);}
+#sec-production .jm-styles[hidden] {display: none;}
+#sec-production .jm-styles button {display: flex; flex-direction: column; align-items: center; gap: 3px; width: 64px; padding: 3px; border: 2px solid transparent; border-radius: 9px; background: none; color: var(--text); font-size: 11px; cursor: pointer;}
+#sec-production .jm-styles button.on {border-color: var(--sodium);}
+#sec-production .jm-styles img {width: 56px; height: 56px; object-fit: cover; border-radius: 6px; display: block;}
+#sec-production .jm-empty {position: absolute; left: 50%; top: 58px; transform: translateX(-50%); padding: 8px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: 13px; max-width: 80%; text-align: center;}
 @media (prefers-reduced-motion: reduce) {
 #sec-production .jm-win, #sec-production .jm-win.open, #sec-production .jm-btn {transition: none;}
 }
@@ -4653,7 +4951,7 @@ i18n({
     "pm.agCdIn": m => `next contract in ${m}`, "pm.agCdReady": "you can take the next contract", "pm.agCdDone": "Agency: you can take the next Security Contract",
     "pm.agSafeFull": "Agency: the safe is full ($250,000)", "pm.agSafeNear": m => `Agency: the safe is full in ${m}`,
     "pm.jmOpen": "Job Manager map", "pm.jmTitle": "Job Manager map", "pm.jmEmpty": "Pick your Agency's area and it shows up here.",
-    "pm.jmPlace": "Tap the map where your Agency is", "pm.jmPlaced": "Pin moved.",
+    "pm.jmPlace": "Move the map until your Agency is in the circle", "pm.jmPlaced": "Pin moved.", "pm.jmHere": "Put it here", "pm.cancel": "Cancel", "pm.jmOff": "The circle is off the map. Move the map first.",
     "pm.at1t": "Agency", "pm.at1b": "Tick that you own it and pick its area.", "pm.at2t": "The safe", "pm.at2b": "How much is in it, how many Security Contracts you did and what it pays a day. Type or slide the values from the game.",
     "pm.at3t": "Security Contracts", "pm.at3b": "Press after each contract: it counts it and rings when you can take the next one.", "pm.at4t": "The map", "pm.at4b": "Here is the Job Manager map, with your Agency on it.",
     "pm.jobsSub": "Your heists and jobs. Money Fronts is ready; the others come next.", "pm.soon2": "Coming soon",
@@ -4849,7 +5147,7 @@ i18n({
     "pm.agCdIn": m => `următorul contract în ${m}`, "pm.agCdReady": "poți lua următorul contract", "pm.agCdDone": "Agency: poți lua următorul Security Contract",
     "pm.agSafeFull": "Agency: seiful e plin (250.000 $)", "pm.agSafeNear": m => `Agency: seiful se umple în ${m}`,
     "pm.jmOpen": "Harta Job Manager", "pm.jmTitle": "Harta Job Manager", "pm.jmEmpty": "Alege zona Agency-ului tău și apare aici.",
-    "pm.jmPlace": "Atinge harta unde e Agency-ul tău", "pm.jmPlaced": "Pinul a fost mutat.",
+    "pm.jmPlace": "Mută harta până când Agency-ul tău e în cerc", "pm.jmPlaced": "Pinul a fost mutat.", "pm.jmHere": "Pune aici", "pm.cancel": "Renunță", "pm.jmOff": "Cercul e în afara hărții. Mută întâi harta.",
     "pm.at1t": "Agency", "pm.at1b": "Bifează că îl ai și alege-i zona.", "pm.at2t": "Seiful", "pm.at2b": "Cât e în el, câte Security Contracts ai făcut și cât primește pe zi. Scrie sau trage valorile din joc.",
     "pm.at3t": "Security Contracts", "pm.at3b": "Apasă după fiecare contract: îl numără și sună când poți lua următorul.", "pm.at4t": "Harta", "pm.at4b": "Aici e harta Job Manager, cu Agency-ul tău pe ea.",
     "pm.jobsSub": "Jafurile și misiunile tale. Money Fronts e gata; celelalte urmează.", "pm.soon2": "În curând",
@@ -6004,15 +6302,23 @@ function bindAgency(root) {
    Job Manager's own map (idea 67): a round button at the bottom right grows into a medium window with the map and the
    places of the Job Manager businesses (the Agency once its area is picked); ✕ shrinks it back into the button.
    ====================================================================== */
-const jm = { btn: null, win: null, view: null, world: null, open: false, cam: { s: 0.3, x: 0, y: 0 }, placing: null, ptrs: new Map(), moved: false };
+const jm = { btn: null, win: null, view: null, world: null, open: false, cam: { s: 0.3, x: 0, y: 0 }, placing: null, ptrs: new Map(), moved: false, styles: false };
 const JM_ICON = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z"/><path d="M9 4v13.5M15 6.5V20"/></svg>`;
+const JM_LAYERS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>`;
+// idea 73: the Agency pin looks like the Production Manager pins: a round disc (Agency blue, the white "A" badge of the in-game blip)
+// with a ring that shows how full the office safe is, and the name under it
+const AG_ICO = `<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#1e63b4"/><path d="M17 6.5 26 10v6.2c0 5.4-3.8 9.4-9 11.3-5.2-1.9-9-5.9-9-11.3V10z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="m12.6 21.6 4.4-11 4.4 11M14.2 17.8h5.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 function jmPlaces() {
   const out = [], a = ag();
   if (a.owned && a.loc) {
     const L = AG_LOCS.find(l => l[0] === a.loc), p = a.pin || (L && { x: L[2], y: L[3] });
-    if (p) out.push({ id: "agency", x: p.x, y: p.y, img: JOB_IMG.agency, label: "Agency · " + a.loc, sub: money(a.safe) });
+    if (p) out.push({ id: "agency", x: p.x, y: p.y, ico: AG_ICO, frac: Math.min(1, (a.safe || 0) / AG_CAP), label: "Agency", sub: money(a.safe) });
   }
   return out;
+}
+function jmRing(frac) {
+  const C = 2 * Math.PI * 21;
+  return `<svg class="ring" viewBox="0 0 46 46"><circle cx="23" cy="23" r="21" fill="rgba(10,14,20,.85)" stroke="rgba(255,255,255,.15)" stroke-width="4"/><circle cx="23" cy="23" r="21" fill="none" stroke="${ringColor(frac)}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${C * frac} ${C}"/></svg>`;
 }
 function jmInit() {
   if (jm.btn) return;
@@ -6020,18 +6326,26 @@ function jmInit() {
   jm.btn = Object.assign(document.createElement("button"), { type: "button", className: "jm-btn", innerHTML: JM_ICON });
   jm.win = document.createElement("div");
   jm.win.className = "jm-win"; jm.win.setAttribute("role", "dialog"); jm.win.setAttribute("aria-modal", "false");
-  jm.win.innerHTML = `<div class="jm-head"><b class="jm-title"></b><span class="jm-hint"></span><button type="button" class="jm-x">✕</button></div>
+  jm.win.innerHTML = `<div class="jm-head"><b class="jm-title"></b><button type="button" class="jm-x">✕</button></div>
     <div class="jm-view"><div class="jm-world"><img class="jm-img" draggable="false" alt=""><div class="jm-pins"></div></div>
-      <div class="jm-zoom"><button type="button" data-z="1">+</button><button type="button" data-z="-1">−</button></div><div class="jm-empty" hidden></div></div>`;
+      <div class="jm-target" aria-hidden="true"><i></i></div>
+      <div class="jm-tools"><button type="button" class="jm-lay"></button><div class="jm-styles" hidden></div></div>
+      <div class="jm-zoom"><button type="button" data-z="1">+</button><button type="button" data-z="-1">−</button></div>
+      <div class="jm-empty" hidden></div>
+      <div class="jm-place"><span class="jm-hint"></span><div><button type="button" class="btn ghost small" data-jp="no"></button><button type="button" class="btn primary small" data-jp="ok"></button></div></div></div>`;
   host.append(jm.btn, jm.win);
   jm.view = jm.win.querySelector(".jm-view"); jm.world = jm.win.querySelector(".jm-world");
   jm.btn.onclick = () => jmOpen();
   jm.win.querySelector(".jm-x").onclick = jmClose;
   jm.win.querySelectorAll("[data-z]").forEach(b => b.onclick = () => { const r = jmSize(); jmZoom(+b.dataset.z > 0 ? 1.35 : 1 / 1.35, r.width / 2, r.height / 2); });
-  addEventListener("keydown", e => { if (e.key === "Escape" && jm.open) jmClose(); });
-  // pan with a finger or the mouse, pinch or wheel to zoom; a tap (no move) places the pin when asked
+  jm.win.querySelector(".jm-lay").onclick = () => { jm.styles = !jm.styles; jmRender(); };
+  jm.win.querySelector('[data-jp="ok"]').onclick = jmPlaceHere;
+  jm.win.querySelector('[data-jp="no"]').onclick = () => { jm.placing = null; jmRender(); };
+  addEventListener("keydown", e => { if (e.key === "Escape" && jm.open) { if (jm.placing) { jm.placing = null; jmRender(); } else jmClose(); } });
+  // pan with a finger or the mouse, pinch or wheel to zoom.
+  // Placing a pin (idea 73): the map moves under a fixed target in the middle; a tap only brings that spot under the target.
   const v = jm.view;
-  v.addEventListener("pointerdown", e => { if (e.target.closest("button, .jm-pin")) return; v.setPointerCapture(e.pointerId); jm.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); jm.moved = false; });
+  v.addEventListener("pointerdown", e => { if (e.target.closest("button, .jm-pin, .jm-styles, .jm-place")) return; v.setPointerCapture(e.pointerId); jm.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY }); jm.moved = false; });
   v.addEventListener("pointermove", e => {
     const p = jm.ptrs.get(e.pointerId); if (!p) return;
     if (jm.ptrs.size === 2) {
@@ -6041,20 +6355,29 @@ function jmInit() {
       if (d0 > 0) jmZoom(d1 / d0, (c.x + d.x) / 2 - r.left, (c.y + d.y) / 2 - r.top);
       jm.moved = true; return;
     }
+    // a finger always shakes a little: up to 10 px from where it went down is still a tap
+    if (Math.hypot(e.clientX - p.x0, e.clientY - p.y0) > 10) jm.moved = true;
     const dx = e.clientX - p.x, dy = e.clientY - p.y;
-    if (Math.abs(dx) + Math.abs(dy) > 3) jm.moved = true;
     p.x = e.clientX; p.y = e.clientY;
     jm.cam.x += dx; jm.cam.y += dy; jmApply();
   });
   const up = e => {
     const was = jm.ptrs.has(e.pointerId); jm.ptrs.delete(e.pointerId);
-    if (was && !jm.moved && jm.placing && e.type === "pointerup") {
-      const r = v.getBoundingClientRect(), x = (e.clientX - r.left - jm.cam.x) / (MAP_W * jm.cam.s), y = (e.clientY - r.top - jm.cam.y) / (MAP_H * jm.cam.s);
-      if (x > 0 && x < 1 && y > 0 && y < 1) { ag().pin = { x, y }; jm.placing = null; save(true); ghMarkDirty(); jmRender(); toast(t("jmPlaced")); }
+    if (was && !jm.moved && jm.placing && e.type === "pointerup" && !jm.ptrs.size) {
+      const r = v.getBoundingClientRect(), r2 = jmSize();
+      jm.cam.x += r2.width / 2 - (e.clientX - r.left); jm.cam.y += r2.height / 2 - (e.clientY - r.top);
+      jm.world.classList.add("glide"); jmApply(); setTimeout(() => jm.world.classList.remove("glide"), 260);
     }
   };
   v.addEventListener("pointerup", up); v.addEventListener("pointercancel", up);
   v.addEventListener("wheel", e => { e.preventDefault(); const r = v.getBoundingClientRect(); jmZoom(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+}
+// the map spot under the target (the middle of the view), as 0..1 of the map
+function jmCentre() { const r = jmSize(); return { x: (r.width / 2 - jm.cam.x) / (MAP_W * jm.cam.s), y: (r.height / 2 - jm.cam.y) / (MAP_H * jm.cam.s) }; }
+function jmPlaceHere() {
+  const { x, y } = jmCentre();
+  if (!(x > 0 && x < 1 && y > 0 && y < 1)) { toast(t("jmOff")); return; }
+  ag().pin = { x, y }; jm.placing = null; save(true); ghMarkDirty(); jmRender(); toast(t("jmPlaced"));
 }
 // sizes from the layout (clientWidth), not getBoundingClientRect: the window is still scaled while it grows
 const jmSize = () => ({ width: jm.view.clientWidth, height: jm.view.clientHeight });
@@ -6066,42 +6389,49 @@ function jmZoom(f, cx, cy) {
 function jmApply() {
   const c = jm.cam;
   jm.world.style.transform = `translate(${c.x}px, ${c.y}px) scale(${c.s})`;
-  jm.world.querySelectorAll(".jm-pin").forEach(p => p.style.transform = `translate(-50%, -100%) scale(${1 / c.s})`);
+  jm.world.style.setProperty("--inv", 1 / c.s);
 }
-// centre on the places (or on Los Santos), about 1,000 map pixels across
+// centre on the places (or on Los Santos), about 1,000 map pixels across; while placing, on the pin itself and closer
 function jmFit() {
   const r = jmSize(), pl = jmPlaces();
   const cx = pl.length ? pl.reduce((s, p) => s + p.x, 0) / pl.length : 0.44, cy = pl.length ? pl.reduce((s, p) => s + p.y, 0) / pl.length : 0.72;
-  jm.cam.s = Math.max(jmMinS(), r.width / 1000);
+  jm.cam.s = Math.max(jmMinS(), r.width / (jm.placing ? 600 : 1000));
   jm.cam.x = r.width / 2 - cx * MAP_W * jm.cam.s; jm.cam.y = r.height / 2 - cy * MAP_H * jm.cam.s;
   jmApply();
 }
 function jmRender() {
   if (!jm.win) return;
-  const img = jm.win.querySelector(".jm-img");
-  const want = srcFor(myStyle(), "s");
+  const img = jm.win.querySelector(".jm-img"), st = myStyle();
+  const want = srcFor(st, "s");
   if (!img.src.endsWith(want)) { img.src = want; img.style.width = MAP_W + "px"; img.style.height = MAP_H + "px"; }
-  jm.view.style.background = MAP_STYLES[myStyle()].water;
+  jm.view.style.background = MAP_STYLES[st].water;
   jm.win.querySelector(".jm-title").textContent = t("jmTitle");
   jm.win.querySelector(".jm-x").setAttribute("aria-label", t("close"));
   jm.btn.title = jm.btn.ariaLabel = t("jmOpen");
-  jm.win.querySelector(".jm-hint").textContent = jm.placing ? t("jmPlace") : "";
+  const lay = jm.win.querySelector(".jm-lay"); lay.innerHTML = JM_LAYERS; lay.title = lay.ariaLabel = t("mapStyle"); lay.classList.toggle("on", jm.styles);
+  const sl = jm.win.querySelector(".jm-styles");
+  sl.hidden = !jm.styles;
+  sl.innerHTML = Object.entries(MAP_STYLES).map(([id, m]) => `<button type="button" class="${st === id ? "on" : ""}" data-st="${id}"><img src="${m.thumb}" alt=""><span>${t("style_" + id)}</span></button>`).join("");
+  sl.querySelectorAll("[data-st]").forEach(b => b.onclick = () => { jm.styles = false; if (b.dataset.st !== myStyle()) setMapStyle(b.dataset.st); jmRender(); });
+  jm.win.querySelector(".jm-hint").textContent = t("jmPlace");
+  jm.win.querySelector('[data-jp="ok"]').textContent = t("jmHere");
+  jm.win.querySelector('[data-jp="no"]').textContent = t("cancel");
   jm.win.classList.toggle("placing", !!jm.placing);
   const pl = jmPlaces(), empty = jm.win.querySelector(".jm-empty");
-  empty.hidden = !!pl.length; empty.textContent = t("jmEmpty");
+  empty.hidden = !!pl.length || !!jm.placing; empty.textContent = t("jmEmpty");
   jm.win.querySelector(".jm-pins").innerHTML = pl.map(p => `<a class="jm-pin" href="#${p.id}" style="left:${p.x * MAP_W}px;top:${p.y * MAP_H}px">
-      <img src="${p.img}" alt=""><span><b>${escapeHtml(p.label)}</b><small>${p.sub}</small></span></a>`).join("");
-  jm.win.querySelectorAll(".jm-pin").forEach(a => a.onclick = () => jmClose());
+      <span class="jm-pb"><span class="pin-disc">${jmRing(p.frac)}<span class="ico">${p.ico}</span></span><span class="pin-label">${escapeHtml(p.label)}<small>${p.sub}</small></span></span></a>`).join("");
+  jm.win.querySelectorAll(".jm-pin").forEach(a => a.onclick = e => { if (jm.placing) { e.preventDefault(); return; } jmClose(); });
   jmApply();
 }
 function jmShow(on) { jmInit(); jm.btn.classList.toggle("on", on); if (on) jmRender(); else if (jm.open) jmClose(); }   // render early: the map picture is loaded before it opens
 function jmOpen(placing) {
-  jmInit(); jm.placing = placing || null;
+  jmInit(); jm.placing = placing || null; jm.styles = false;
   jm.open = true; jm.win.classList.add("open"); jm.btn.classList.add("hid");
   jmRender();
   requestAnimationFrame(() => jmFit());
 }
-function jmClose() { if (!jm.win) return; jm.open = false; jm.placing = null; jm.win.classList.remove("open"); jm.btn.classList.remove("hid"); }
+function jmClose() { if (!jm.win) return; jm.open = false; jm.placing = null; jm.styles = false; jm.win.classList.remove("open"); jm.btn.classList.remove("hid"); }
 
 function heatBoxes(h) { return `<div class="heat" role="img" aria-label="Heat ${h * 10}%">${Array.from({ length: 10 }, (_, i) => `<i class="${i < h ? (h >= 8 ? "hot" : "on") : ""}"></i>`).join("")}</div>`; }
 function frontsHtml() {
