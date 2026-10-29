@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.25.0 (2026-10-29)
+* Property Manager:
+  * Add: the Property Manager opens (Home card, pages menu): the three Mansions (Richman Villa, The Vinewood Residence, The Tongva Estate); adding one suggests the three, the ones you own greyed out with (Owned).
+  * Add: a page for each Mansion: the cars on show (the Car Podium, big, and the two driveway places under it), picked from the Vehicle Manager by garage and level, with the photo next to the mouse; the room upgrades; the AI Concierge production boost; everything a Mansion has, by area; the rules for owning several (one AI and one boost for all, Security Team and Art Studio count for all).
+  * Add: the Mansions you own are on the map (the same map as the Job Manager), with a pin you can drag.
+* Job Manager:
+  * Add: the Kortz Center Heist card says whether you can host it (a Mansion with the Art Studio) and opens the Property Manager.
+  * Fix: the In game switch now also shows on the Job Manager pages.
+
 ### v0.24.0 (2026-10-29)
 * Everywhere:
   * Add: the In game switch is on every page, at the same place as in the Production Manager (on narrow phones only its track shows).
