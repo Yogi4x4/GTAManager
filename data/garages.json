@@ -145,7 +145,13 @@
   },
   {
     "name": "Facility Tactical",
-    "slots": 5
+    "slots": 5,
+    "levels": [
+      {
+        "name": "1",
+        "slots": 5
+      }
+    ]
   },
   {
     "name": "Garment Factory",
