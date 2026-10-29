@@ -69,7 +69,13 @@
   },
   {
     "name": "Auto Shop",
-    "slots": 10
+    "slots": 10,
+    "levels": [
+      {
+        "name": "P",
+        "slots": 10
+      }
+    ]
   },
   {
     "name": "Bail Office",
