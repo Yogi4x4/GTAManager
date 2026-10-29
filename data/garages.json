@@ -135,7 +135,13 @@
   },
   {
     "name": "Facility Standard",
-    "slots": 7
+    "slots": 7,
+    "levels": [
+      {
+        "name": "1",
+        "slots": 7
+      }
+    ]
   },
   {
     "name": "Facility Tactical",
