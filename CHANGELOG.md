@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.26.0 (2026-10-30)
+* Everywhere:
+  * Add: every button has a short hint saying what it does: with a mouse, rest on the button for half a second; on a phone, hold it (the button is not pressed then, only the hint shows).
+* Job Manager:
+  * Fix: Dr. Dre Contract: Undo and Clear the ticks stopped working after the data was loaded from GitHub or changed in another tab (the page kept working on the old data). The same fix covers the Agency and Property Manager pages.
+  * Add: Dr. Dre Contract: "I didn't finish it" takes back the last recorded finale at any time (the weekly bonus and the replay timer come back), not only during the few seconds of the Undo message.
+  * Fix: the Job Manager map shows only the Job Manager places (the Agency), no more Mansions.
+* Property Manager:
+  * Fix: a Mansion's car picker no longer says there are no cars before you visit the Vehicle Manager: the cars start loading as soon as a property page opens, the picker says they are loading and fills itself when they arrive.
+  * Change: the Property Manager has its own map and title, with everything you own: the Mansions, the Agency and the Production Manager businesses placed on its map (each with a button to its page).
+  * Fix: the Mansion cards showed "Upgrades 4 / undefined".
+
 ### v0.25.0 (2026-10-29)
 * Property Manager:
   * Add: the Property Manager opens (Home card, pages menu): the three Mansions (Richman Villa, The Vinewood Residence, The Tongva Estate); adding one suggests the three, the ones you own greyed out with (Owned).

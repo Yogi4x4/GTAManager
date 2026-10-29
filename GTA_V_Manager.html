@@ -483,6 +483,14 @@ html[data-bg="page"] :is(#sec-vehicles, #sec-production, #sec-export) { backgrou
 .m-pick-list b {font-size: 13px;} .m-pick-list small {font-size: 11px; color: var(--muted);}
 .m-peek {position: absolute; z-index: 2; width: 260px; padding: 6px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg2); box-shadow: 0 12px 30px rgba(0,0,0,.5); pointer-events: none;}
 .m-peek img {width: 100%; border-radius: 6px; display: block;} .m-peek b {display: block; font-size: 13px; margin-top: 4px;}
+
+/* idea 83: the short hint over a button (mouse: rest on it; phone: hold it) */
+.hint-tip {position: fixed; inset: auto; margin: 0; z-index: 9999; max-width: min(300px, calc(100vw - 12px)); padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg2, #1b222c); color: var(--text); font: 500 13px/1.35 var(--body, system-ui, sans-serif); box-shadow: 0 6px 20px rgba(0,0,0,.45);
+  pointer-events: none; opacity: 0; transform: translateY(3px); transition: opacity .15s, transform .15s; overflow: visible;}
+.hint-tip.on {opacity: 1; transform: none;}
+.hint-tip:not(.on) {visibility: hidden;}
+@media (hover: none) { button, .btn, [role="button"], label.toggle, .chip, .sc-chip {-webkit-touch-callout: none; -webkit-user-select: none; user-select: none;} }
 </style>
 </head>
 <body>
@@ -591,7 +599,7 @@ html[data-bg="page"] :is(#sec-vehicles, #sec-production, #sec-export) { backgrou
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.25";
+const APP_VERSION = "0.26";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -896,6 +904,58 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.26.0",
+  "date": "2026-10-30",
+  "en": [
+   {
+    "area": "Everywhere",
+    "items": [
+     "Add: every button has a short hint saying what it does: with a mouse, rest on the button for half a second; on a phone, hold it (the button is not pressed then, only the hint shows)."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Fix: Dr. Dre Contract: Undo and Clear the ticks stopped working after the data was loaded from GitHub or changed in another tab (the page kept working on the old data). The same fix covers the Agency and Property Manager pages.",
+     "Add: Dr. Dre Contract: \"I didn't finish it\" takes back the last recorded finale at any time (the weekly bonus and the replay timer come back), not only during the few seconds of the Undo message.",
+     "Fix: the Job Manager map shows only the Job Manager places (the Agency), no more Mansions."
+    ]
+   },
+   {
+    "area": "Property Manager",
+    "items": [
+     "Fix: a Mansion's car picker no longer says there are no cars before you visit the Vehicle Manager: the cars start loading as soon as a property page opens, the picker says they are loading and fills itself when they arrive.",
+     "Change: the Property Manager has its own map and title, with everything you own: the Mansions, the Agency and the Production Manager businesses placed on its map (each with a button to its page).",
+     "Fix: the Mansion cards showed \"Upgrades 4 / undefined\"."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Peste tot",
+    "items": [
+     "Adaugă: fiecare buton are un text scurt care spune ce face: cu mouse-ul, ții cursorul pe buton o jumătate de secundă; pe telefon, ții degetul apăsat pe el (atunci butonul nu se apasă, apare doar textul)."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Repară: Dr. Dre Contract: Anulează și Șterge bifele nu mai mergeau după ce datele se încărcau de pe GitHub sau se schimbau în alt tab (pagina lucra pe datele vechi). Aceeași reparație acoperă paginile Agency și Property Manager.",
+     "Adaugă: Dr. Dre Contract: „Nu am terminat-o” anulează oricând ultima finală notată (revin bonusul săptămânii și timerul de reluare), nu doar în cele câteva secunde ale mesajului cu Anulează.",
+     "Repară: harta Job Manager arată doar locurile din Job Manager (Agency-ul), fără Mansion-uri."
+    ]
+   },
+   {
+    "area": "Property Manager",
+    "items": [
+     "Repară: la alegerea mașinii pentru un Mansion nu mai apare că nu ai mașini înainte să intri în Vehicle Manager: mașinile încep să se încarce cum deschizi o pagină de proprietate, fereastra spune că se încarcă și se completează singură.",
+     "Schimbă: Property Manager are harta și titlul lui, cu tot ce deții: Mansion-urile, Agency-ul și afacerile din Production Manager puse pe harta lui (fiecare cu un buton spre pagina lui).",
+     "Repară: cardurile Mansion-urilor arătau „Upgrade-uri 4 / undefined”."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.25.0",
   "date": "2026-10-29",
@@ -2679,6 +2739,201 @@ const Bg = {
   saveOwn() { return GH.put("data/backgrounds.json", JSON.stringify({ list: this.own.map(({ file, name, pos }) => ({ file, name, pos })) }, null, 1)); }
 };
 Bg.init();
+/* ======================================================================
+   Idea 83: a short hint on every button. With a mouse: rest on the button for half a second.
+   On a phone: hold it (a long press) and let go; the button is NOT pressed then, only the hint shows.
+   Where the text comes from, in this order: data-hint, the element's title (the browser's own slow tooltip
+   is kept away while ours shows), then the list below (CSS selector -> [English, Romanian]).
+   To add one: a line in HINTS. Pages with a drag on long press (Home cards, map pins) are left out.
+   ====================================================================== */
+const HINTS = [
+  // ---------- top bar and everywhere ----------
+  ["#topbar .ingame", "Switch on while you play GTA Online: the production timers run only then.", "Pornește-l cât joci GTA Online: timerele de producție merg doar atunci."],
+  ["#toastAct", "Takes back what you just did.", "Anulează ce ai făcut adineauri."],
+  ["[data-close], .jm-x, #wClose, [data-qt=\"close\"], .m-pick [data-x]", "Close this window.", "Închide fereastra."],
+  ["#tourNext", "Next step of the guide.", "Pasul următor din ghid."], ["#tourBack", "Previous step.", "Pasul de dinainte."], ["#tourSkip", "Close the guide (you can start it again with ?).", "Închide ghidul (îl pornești din nou cu ?)."],
+  ["[data-g=\"save\"]", "Keep your changes and close.", "Păstrează modificările și închide."], ["[data-g=\"drop\"]", "Close without keeping the changes.", "Închide fără să păstreze modificările."], ["[data-g=\"stay\"]", "Go back to the window and keep editing.", "Înapoi în fereastră, continui să modifici."],
+  ["[data-n=\"read\"]", "Mark every notification as read.", "Marchează toate notificările ca citite."], ["[data-n=\"clear\"]", "Delete all notifications.", "Șterge toate notificările."],
+  ["#updYes", "Copy the new version into your repository now.", "Copiază acum versiunea nouă în repository-ul tău."], ["#updReload", "Load the new version of the page.", "Încarcă versiunea nouă a paginii."],
+  ["#acctOut", "Log out on this device (your data stays on GitHub).", "Ieși din cont pe acest dispozitiv (datele rămân pe GitHub)."],
+  ["[data-b=\"add\"]", "Add a picture of your own as a background (wide, at least 1280 px).", "Adaugă o poză proprie ca fundal (lată, minim 1280 px)."],
+  ["#homeGuide", "A short guide to the whole app.", "Un ghid scurt pentru toată aplicația."], ["#homeVersion", "What's new in each version.", "Ce e nou în fiecare versiune."],
+  ["#sec-home .wk-more, #sec-home .wk-less", "Show more or fewer of this week's bonuses.", "Arată mai multe sau mai puține bonusuri din săptămâna asta."],
+
+  // ---------- Production Manager: list, quick panel, window ----------
+  ["#guideHint", "The guide: how this page works, step by step.", "Ghidul: cum merge pagina, pas cu pas."],
+  ["[data-num=\"floors\"] button", "How many floors your Nightclub warehouse has (each floor holds more goods).", "Câte etaje are depozitul Nightclub-ului (fiecare etaj ține mai multă marfă)."],
+  ["[data-num=\"hired\"] button", "How many technicians you hired (each one brings in one kind of goods).", "Câți tehnicieni ai angajat (fiecare aduce un fel de marfă)."],
+  [".box10 button", "Set the level as it is in the game (each box is 10%).", "Setează nivelul ca în joc (fiecare căsuță e 10%)."],
+  ["[data-bk=\"equip\"]", "Tick if you bought the Bunker's Equipment Upgrade.", "Bifează dacă ai Equipment Upgrade la Bunker."],
+  ["[data-bk=\"staff\"]", "Tick if you bought the Bunker's Staff Upgrade.", "Bifează dacă ai Staff Upgrade la Bunker."],
+  ["[data-chip=\"bed\"]", "Tick if you have the bed in the Nightclub office.", "Bifează dacă ai patul în biroul Nightclub-ului."],
+  ["#qOwn, [data-own], [data-mown=\"1\"]:not(input)", "Mark it as yours: it shows up on the map and its timers start.", "Marchează că îl ai: apare pe hartă și pornesc timerele."],
+  ["#qResupply, #wResupply, [data-res], [data-bk=\"resupply\"]", "You bought or stole supplies in the game: fills the supplies bar.", "Ai cumpărat sau furat provizii în joc: umple bara de provizii."],
+  ["#qSold, #wSold, [data-sold], [data-bk=\"sold\"]", "You sold the stock in the game: the stock goes back to 0.", "Ai vândut stocul în joc: stocul revine la 0."],
+  ["[data-qt=\"open\"]", "Open the big window with all the settings of this business.", "Deschide fereastra mare cu toate setările afacerii."],
+  ["#wPin", "Put this business's pin on the map (then drag it to its place).", "Pune pinul afacerii pe hartă (apoi trage-l la locul lui)."], ["#wPinDel", "Take the pin off the map.", "Scoate pinul de pe hartă."],
+  ["#wMode", "Switch between the simple view and the detailed one.", "Schimbă între varianta simplă și cea detaliată."],
+  ["#wStaff, [data-up^=\"staff\"]", "Tick if you bought the Staff Upgrade (faster production).", "Bifează dacă ai Staff Upgrade (producție mai rapidă)."],
+  ["#wEquip, [data-up^=\"equip\"]", "Tick if you bought the Equipment Upgrade (more money per unit).", "Bifează dacă ai Equipment Upgrade (mai mulți bani pe unitate)."],
+  ["[data-chip]", "Turn this upgrade on or off for this business.", "Pornește sau oprește upgrade-ul pentru afacerea asta."],
+  ["#oReset", "Put back the game's default numbers for this business.", "Pune la loc cifrele implicite din joc pentru afacere."],
+  ["[data-layer]", "Which pin stays on top when two pins overlap.", "Care pin stă deasupra când două pinuri se suprapun."],
+  ["[data-style], .jm-styles [data-st]", "Change how the map looks.", "Schimbă aspectul hărții."], [".jm-lay", "Map styles.", "Stilurile hărții."],
+  ["[data-z=\"1\"]", "Zoom in.", "Mărește harta."], ["[data-z=\"-1\"]", "Zoom out.", "Micșorează harta."],
+  ["[data-m=\"yes\"]", "Keep the pin where you dropped it.", "Lasă pinul unde l-ai pus."], ["[data-m=\"no\"]", "Put the pin back where it was.", "Pune pinul înapoi unde era."],
+  ["#pinYes", "Keep the pin where you dropped it.", "Lasă pinul unde l-ai pus."], ["#pinNo", "Put the pin back where it was.", "Pune pinul înapoi unde era."],
+  [".jm-btn", "Open the map with your places.", "Deschide harta cu locurile tale."], ["[data-jp=\"done\"]", "Stop placing the pin.", "Gata cu mutatul pinului."],
+
+  // ---------- boosts ----------
+  ["[data-boost=\"start\"], [data-mboost]:not([data-mboost=\"stop\"])", "You started the Mansion's AI Concierge boost on this business: production x3 for 24 hours (one business at a time).", "Ai pornit boost-ul AI Concierge din Mansion pe afacerea asta: producție x3 timp de 24 de ore (o singură afacere odată)."],
+  ["[data-boost=\"stop\"], [data-mboost=\"stop\"], [data-aboost=\"stop\"]", "Stop the boost before its time is up.", "Oprește boost-ul înainte să-i expire timpul."],
+  ["[data-aboost=\"start\"]", "You used the lab's own daily boost: the next 80 units are made twice as fast (once a day).", "Ai folosit boost-ul zilnic din laborator: următoarele 80 de unități se fac de două ori mai repede (o dată pe zi)."],
+  ["[data-acid=\"mutt\"]", "You called Mutt for supplies ($60,000): fills the supplies.", "L-ai sunat pe Mutt pentru provizii (60.000 $): umple proviziile."],
+
+  // ---------- Nightclub ----------
+  ["[data-a=\"opt\"]", "Puts your technicians on the goods that earn the most, from the businesses you own.", "Pune tehnicienii pe mărfurile care aduc cei mai mulți bani, din afacerile pe care le ai."],
+  ["[data-a=\"dj\"], #ncDj", "You did a DJ / promotion job: popularity +10%.", "Ai făcut o misiune de promovare: popularitatea crește cu 10%."],
+  ["[data-a=\"collect\"], #ncCollect, [data-act=\"bagCollect\"], [data-ag=\"collect\"]", "You took the money from the safe: it goes back to $0.", "Ai luat banii din seif: seiful revine la 0 $."],
+  ["[data-a=\"sold\"], #ncSold", "You sold the Nightclub goods: the crates go back to 0.", "Ai vândut marfa din Nightclub: lăzile revin la 0."],
+  ["[data-tech]", "Give this good a technician (or take him off it).", "Pune un tehnician pe marfa asta (sau ia-l de pe ea)."],
+
+  // ---------- MC Clubhouse bar ----------
+  ["[data-act=\"barDone\"]", "You resupplied the Clubhouse bar: the bar earnings start again and I ring when it runs out.", "Ai aprovizionat barul din Clubhouse: încasările pornesc din nou și sun când se termină."],
+  ["[data-act=\"barClear\"]", "Mark the bar as not resupplied.", "Marchează barul ca neaprovizionat."], ["[data-act=\"barUndo\"]", "Take back the last change to the bar.", "Anulează ultima schimbare la bar."],
+
+  // ---------- Bunker ----------
+  ["[data-bkmode]", "What the staff does: make stock, research, or both (half each).", "Ce face personalul: produce marfă, cercetare sau amândouă (jumătate fiecare)."],
+  ["[data-bk=\"sec\"]", "Tick if you bought the Bunker's Security Upgrade.", "Bifează dacă ai Security Upgrade la Bunker."],
+  ["[data-bk=\"done+\"]", "One more research project done.", "Încă un proiect de cercetare terminat."], ["[data-bk=\"done-\"]", "One project less.", "Un proiect mai puțin."],
+
+  // ---------- CEO warehouses, Hangar ----------
+  ["[data-ceo=\"+1\"], [data-ceo=\"+2\"], [data-ceo=\"+3\"], [data-hg=\"+1\"], [data-hg=\"+2\"], [data-hg=\"+4\"]", "Crates you just brought in (add them).", "Lăzile pe care tocmai le-ai adus (le adaugă)."],
+  ["[data-ceo=\"-1\"], [data-hg=\"-1\"]", "One crate less (if you counted one too many).", "O ladă mai puțin (dacă ai numărat una în plus)."],
+  ["[data-ceo=\"sold\"], [data-hg=\"sold\"]", "You sold everything in the warehouse: the crates go back to 0.", "Ai vândut tot din depozit: lăzile revin la 0."],
+  ["[data-ceo=\"send\"]", "You sent a staff member for a crate ($7,500): I ring when he is back.", "Ai trimis un angajat după o ladă (7.500 $): sun când se întoarce."],
+  ["[data-hg=\"send\"]", "You sent Rooster for cargo ($25,000): I ring when he is back.", "L-ai trimis pe Rooster după marfă (25.000 $): sun când se întoarce."],
+  ["[data-hgcd=\"start\"]", "Start the wait before you can source this cargo type again; I ring when it is over.", "Pornește așteptarea până poți aduce din nou marfa asta; sun când se termină."],
+  ["[data-hgk]", "Change the number of crates of this type.", "Schimbă numărul de lăzi de tipul ăsta."],
+  ["[data-ceo=\"spEdit\"]", "Change the special items in your warehouses.", "Modifică obiectele speciale din depozite."],
+  ["[data-ceo=\"addNext\"]", "Add one more CEO warehouse.", "Adaugă încă un depozit CEO."],
+
+  // ---------- Job Manager ----------
+  ["[data-mf=\"laund\"]", "You did a laundering mission: +1 Heat (10%), +1 towards the 15 for a doubled safe.", "Ai făcut o misiune de spălare: +1 Heat (10%), +1 spre cele 15 pentru seif dublu."],
+  ["[data-mf=\"legal\"]", "You did a legal job at this business: Heat goes back to 0.", "Ai făcut o misiune legală aici: Heat revine la 0."],
+  ["[data-mf=\"undo\"]", "Take back the last laundering mission.", "Anulează ultima misiune de spălare."],
+  ["[data-ag=\"done\"]", "You finished a Security Contract: +1 to the count and a reminder when the next one can start.", "Ai terminat un Security Contract: +1 la număr și un memento când poți începe următorul."],
+  ["[data-ag=\"plus\"]", "One Security Contract more.", "Un Security Contract în plus."], ["[data-ag=\"minus\"]", "One Security Contract less.", "Un Security Contract mai puțin."],
+  ["[data-ag=\"pdReset\"]", "Forget the number you typed and use the one worked out from your contracts.", "Uită cifra scrisă de tine și folosește-o pe cea calculată din contracte."],
+  ["[data-ag=\"pin\"], [data-mmap]", "Show this place on the map.", "Arată locul pe hartă."], ["[data-ag=\"pinReset\"], [data-mpinreset]", "Put the pin back at the game's own place.", "Pune pinul înapoi la locul din joc."],
+  ["[data-ag=\"cdX\"]", "Stop this reminder.", "Oprește mementoul."],
+  ["[data-sc]", "Pick the type and difficulty of the contract (it goes into your list when you press done).", "Alege tipul și dificultatea contractului (intră în listă când apeși că l-ai terminat)."],
+  ["[data-dre-a=\"finale\"]", "You finished the finale: records the payout, clears the ticks and starts the replay timer.", "Ai terminat finala: notează plata, șterge bifele și pornește timerul de reluare."],
+  ["[data-dre-a=\"reset\"]", "Untick all the missions.", "Debifează toate misiunile."], ["[data-dre-a=\"setupUndo\"]", "Show the two setup missions again.", "Arată din nou cele două misiuni de pregătire."],
+
+  // ---------- Property Manager ----------
+  ["[data-pick]", "Pick the car on show here, from your Vehicle Manager.", "Alege mașina expusă aici, din Vehicle Manager."], ["[data-clear]", "Leave this place empty.", "Lasă locul gol."],
+  [".m-pick [data-car]", "Put this car here.", "Pune mașina asta aici."],
+
+  // ---------- Vehicle Manager ----------
+  ["[data-act=\"newCar\"]", "Add a vehicle to your collection.", "Adaugă un vehicul în colecție."], ["[data-act=\"newGarage\"]", "Add a garage.", "Adaugă un garaj."],
+  ["[data-act=\"edit\"]", "Change this vehicle.", "Modifică vehiculul."], ["[data-act=\"del\"]", "Delete this vehicle.", "Șterge vehiculul."], ["[data-act=\"fav\"]", "Mark as favourite (or not).", "Marchează ca favorit (sau nu)."],
+  ["[data-act=\"gEdit\"]", "Change this garage.", "Modifică garajul."], ["[data-act=\"gDel\"]", "Delete this garage.", "Șterge garajul."],
+  ["[data-act=\"addLevel\"]", "Add a level (floor) to the garage.", "Adaugă un nivel (etaj) la garaj."], ["[data-act=\"delLevel\"]", "Remove this level.", "Scoate nivelul."],
+  ["[data-act=\"saveCar\"], [data-act=\"saveGarage\"]", "Save and close.", "Salvează și închide."],
+  ["[data-act=\"toggleFilters\"]", "Show or hide the filters.", "Arată sau ascunde filtrele."], ["[data-af]", "Remove this filter.", "Scoate filtrul."],
+  ["[data-act=\"goLocal\"]", "Start your own collection, saved in this browser.", "Pornește colecția ta, salvată în acest browser."],
+  ["[data-act=\"photoEdit\"]", "Crop, turn and adjust the photo.", "Decupează, rotește și ajustează poza."], ["[data-act=\"pePaste\"]", "Paste a picture you copied (or press Ctrl+V).", "Lipește o poză copiată (sau Ctrl+V)."],
+  ["[data-act=\"peRotL\"]", "Turn left.", "Rotește la stânga."], ["[data-act=\"peRotR\"]", "Turn right.", "Rotește la dreapta."], ["[data-act=\"peFlip\"]", "Mirror the picture.", "Oglindește poza."],
+  ["[data-act=\"peReset\"]", "Start the edit over.", "Ia editarea de la capăt."], ["[data-act=\"peApply\"]", "Use the edited picture.", "Folosește poza editată."], ["[data-act=\"peCancel\"]", "Close without changing the picture.", "Închide fără să schimbe poza."],
+  ["[data-ratio]", "Crop shape.", "Forma decupajului."], ["[data-vtico]", "Use this icon for your vehicle type.", "Folosește iconița pentru tipul tău de vehicul."],
+
+  [".veh-go", "Add the picked car to the Vehicle Warehouse.", "Adaugă mașina aleasă în Vehicle Warehouse."], [".veh-sug [data-p]", "Pick this car.", "Alege mașina asta."],
+  ["[role=\"menuitem\"].tab", "Open this business.", "Deschide afacerea."],
+  ["#loginForm [type=\"submit\"], [data-i18n=\"login\"]", "Log in: your data is then saved to your GitHub by itself.", "Intră în cont: datele se salvează apoi singure pe GitHub-ul tău."],
+  ["[data-i18n=\"setupBtn\"]", "Save this login for your copy (one account, yours).", "Salvează login-ul pentru copia ta (un singur cont, al tău)."],
+  ["[onclick=\"location.reload()\"]", "Load the page again.", "Încarcă pagina din nou."],
+  ["[data-st]", "Change how the map looks.", "Schimbă aspectul hărții."],
+  // ---------- Vehicle Export Tracker ----------
+  ["#tkAdd", "Add a car to the warehouse list.", "Adaugă o mașină în lista depozitului."], ["#tkEmpty", "Empty the warehouse list.", "Golește lista depozitului."],
+  ["#tkExport", "Download the list as a file (backup).", "Descarcă lista ca fișier (backup)."], ["#tkImport", "Load a list from a file.", "Încarcă o listă dintr-un fișier."],
+  ["#tkResetCols", "Show all the columns again.", "Arată din nou toate coloanele."],
+  ["[data-col]", "Show all cars, the ones you keep or the ones to sell.", "Arată toate mașinile, pe cele păstrate sau pe cele de vândut."], ["[data-rng]", "Show only one value range (Top, Mid, Standard).", "Arată doar o categorie de valoare (Top, Mid, Standard)."]
+];
+const Hint = {
+  tip: null, el: null, timer: 0, hideT: 0, eat: false, start: null,
+  CAND: "button, a.btn, [role=\"button\"], [role=\"radio\"], select, label.toggle, .chip, .sc-chip, [data-hint], [title], .ingame",
+  SKIP: "#sec-home .card, .jm-pin, #pins .pin, .jm-view, .pe-stage",
+  text(el) {
+    if (el.dataset.hint) return el.dataset.hint;
+    const tt = el.getAttribute("title") || el._hintTitle;
+    if (tt) return tt;
+    for (const [sel, en, ro] of HINTS) { try { if (el.matches(sel)) return lang === "ro" ? ro : en; } catch (e) {} }
+    return "";
+  },
+  find(t) {
+    const el = t && t.closest && t.closest(this.CAND);
+    if (!el || el.closest(this.SKIP) || el.disabled && !el.title) return null;
+    return this.text(el) ? el : null;
+  },
+  show(el) {
+    const txt = this.text(el); if (!txt) return;
+    if (!this.tip) {
+      this.tip = Object.assign(document.createElement("div"), { className: "hint-tip", role: "tooltip" });
+      if (this.tip.showPopover) this.tip.popover = "manual";   // in the top layer: also above open windows
+      document.body.appendChild(this.tip);
+    }
+    // keep the browser's own tooltip away while ours shows
+    if (el.hasAttribute("title")) { el._hintTitle = el.getAttribute("title"); el.removeAttribute("title"); }
+    this.el = el; this.tip.textContent = txt;
+    try { if (this.tip.showPopover && !this.tip.matches(":popover-open")) this.tip.showPopover(); } catch (e) {}
+    this.tip.classList.add("on");
+    const r = el.getBoundingClientRect(), w = this.tip.offsetWidth, h = this.tip.offsetHeight, W = innerWidth;
+    let top = r.top - h - 8; const below = top < 6;
+    if (below) top = r.bottom + 8;
+    const left = Math.min(Math.max(6, r.left + r.width / 2 - w / 2), W - w - 6);
+    this.tip.style.left = left + "px"; this.tip.style.top = top + "px";
+    this.tip.classList.toggle("below", below);
+  },
+  hide() {
+    clearTimeout(this.timer); clearTimeout(this.hideT);
+    if (this.el && this.el._hintTitle) { this.el.setAttribute("title", this.el._hintTitle); this.el._hintTitle = null; }
+    this.el = null;
+    if (this.tip) { this.tip.classList.remove("on"); try { if (this.tip.hidePopover && this.tip.matches(":popover-open")) this.tip.hidePopover(); } catch (e) {} }
+  },
+  init() {
+    const D = document;
+    // mouse: rest on it for half a second
+    D.addEventListener("pointerover", e => {
+      if (e.pointerType !== "mouse") return;
+      const el = this.find(e.target);
+      if (el === this.el) return;
+      this.hide();
+      if (!el) return;
+      if (el.hasAttribute("title")) { el._hintTitle = el.getAttribute("title"); el.removeAttribute("title"); }
+      this.el = el;
+      this.timer = setTimeout(() => this.el === el && this.show(el), 500);
+    });
+    D.addEventListener("pointerout", e => { if (e.pointerType === "mouse" && this.el && !this.el.contains(e.relatedTarget)) this.hide(); });
+    // phone: hold the button; letting go after the hint does not press it
+    D.addEventListener("pointerdown", e => {
+      if (e.pointerType === "mouse") { this.hide(); return; }
+      this.hide(); this.eat = false;
+      const el = this.find(e.target); if (!el) return;
+      this.start = { x: e.clientX, y: e.clientY };
+      this.timer = setTimeout(() => { this.eat = true; this.show(el); if (navigator.vibrate) try { navigator.vibrate(10); } catch (x) {} }, 480);
+    }, true);
+    D.addEventListener("pointermove", e => { if (this.start && e.pointerType !== "mouse" && Math.hypot(e.clientX - this.start.x, e.clientY - this.start.y) > 10) { clearTimeout(this.timer); this.start = null; if (!this.eat) this.hide(); } }, true);
+    const up = e => { if (e.pointerType === "mouse") return; clearTimeout(this.timer); this.start = null; if (this.eat) { clearTimeout(this.hideT); this.hideT = setTimeout(() => this.hide(), 2600); } };
+    D.addEventListener("pointerup", up, true); D.addEventListener("pointercancel", up, true);
+    D.addEventListener("click", e => { if (this.eat) { this.eat = false; e.preventDefault(); e.stopPropagation(); } }, true);
+    D.addEventListener("contextmenu", e => { if (this.eat || this.start) e.preventDefault(); }, true);
+    addEventListener("scroll", () => { if (!this.eat) this.hide(); }, true);
+    addEventListener("keydown", () => this.hide());
+    addEventListener("wheel", () => this.hide(), { passive: true });
+  }
+};
+Hint.init();
 </script>
 
 <main id="sections">
@@ -4448,6 +4703,7 @@ Section({
         if (isOwner() || mode === "local") { await loadAll(); refreshAll(); }   // this browser's copy, shown at once
         if (isOwner() || mode === "view") { await loadRemote(); refreshAll(); }   // the published data
       } catch (e) { console.error(e); notify(T("dbErrorLong"), "bad"); }
+      sec.loaded = true; Bus.emit("vm:data");   // idea 87: the other pages (a Mansion's display cars) know the cars are in
       if (!Tour.seen(sec.tourKey) && !sec.el.hidden) setTimeout(() => sec.startTour(), 600);
     })();
   }
@@ -5645,6 +5901,23 @@ i18n({
     "pm.ceoSub": n => n ? `${n} deținute` : "Până la 5 depozite"
   }
 });
+// 0.26: ideas 85, 87, 88
+i18n({
+  en: {
+    "pm.dreUnfinale": "I didn't finish it", "pm.dreUnfinaleTip": "Takes back the last finale you recorded (the weekly bonus and the replay timer go back too).",
+    "pm.dreUnfinaleToast": "Last finale taken back.",
+    "pm.mPickLoading": "Loading your cars from the Vehicle Manager…",
+    "pm.pmMapTitle": "Property Manager map", "pm.pmMapEmpty": "The properties you own show up here: Mansions, the Agency and the Production Manager businesses placed on its map.",
+    "pm.pmMapOpen": "Open its page"
+  },
+  ro: {
+    "pm.dreUnfinale": "Nu am terminat-o", "pm.dreUnfinaleTip": "Anulează ultima finală notată (revin și bonusul săptămânii, și timerul de reluare).",
+    "pm.dreUnfinaleToast": "Ultima finală a fost anulată.",
+    "pm.mPickLoading": "Se încarcă mașinile din Vehicle Manager…",
+    "pm.pmMapTitle": "Harta Property Manager", "pm.pmMapEmpty": "Aici apar proprietățile tale: Mansion-urile, Agency-ul și afacerile din Production Manager puse pe harta lui.",
+    "pm.pmMapOpen": "Deschide pagina"
+  }
+});
 
 function ProductionManager(sec) {
 const ROOT = sec.el;
@@ -5794,7 +6067,7 @@ const PROD = [...MC, ACID, BUNKER].filter(d => d.production);   // everything th
    Text (EN / RO)
    ====================================================================== */
 
-const t = (key, arg) => window.t("pm." + key, arg);
+const t = (key, ...a) => window.t("pm." + key, ...a);
 const bizName = id => {
   const d = ALL.find(x => x.id === id);
   if (d && d.kind === "ceo") return (S.biz[id] && S.biz[id].wh) || t("ceoSlot", d.slot);
@@ -5910,7 +6183,7 @@ function adoptStored() {
     S = mergeState(JSON.parse(raw));
     baseRev = storedRev();
     syncStatus();
-    renderAll(); updatePinStates();
+    renderAll(); updatePinStates(); if (VIEW) renderFocus();
     if (!segDrag && !faderDrag) { liveWin(); liveQuick(); document.querySelectorAll(".segbar").forEach(updateSegBar); liveNightBits(); }
   } catch (e) {}
 }
@@ -6534,32 +6807,42 @@ function dreHtml() {
         <div><small>${t("drePayNow")}</small><b class="${week ? "" : "hot"}">${money(week ? DRE_PAY : DRE_PAY_WEEK)}</b><small class="muted">${week ? t("dreWeekUsed") : t("dreWeekFree")}</small></div>
         <div><small>${t("dreReplay")}</small><b>${!dreLast() ? "—" : left > 0 ? `<span data-live-timer="dre:replay">${fmtTime(left)}</span>` : t("dreReady")}</b><small class="muted">${t("dreFinales", d.finales.length)}</small></div>
       </div>
-      <div class="btn-row"><button class="btn primary" data-dre-a="finale">🏁 ${t("dreFinaleBtn")}</button>${n ? `<button class="btn ghost small" data-dre-a="reset">${t("dreReset")}</button>` : ""}</div>
+      <div class="btn-row"><button class="btn primary" data-dre-a="finale">🏁 ${t("dreFinaleBtn")}</button>${n ? `<button class="btn ghost small" data-dre-a="reset">${t("dreReset")}</button>` : ""}${d.finales.length ? `<button class="btn ghost small" data-dre-a="unfinale" title="${t("dreUnfinaleTip")}">↶ ${t("dreUnfinale")}</button>` : ""}</div>
       <p class="hint">${t("dreHow")}</p>
     </section>
     <div class="dre-grid">${groups}</div>`;
 }
 function bindDre(root) {
-  const d = dre();
+  /* idea 85: always the live object (dre()), never one kept from when the page was drawn: after a load from GitHub the
+     state is a new object, and the old one no longer counts (that is why Undo / Clear stopped working the second time) */
   const done = () => { save(true); ghMarkDirty(); syncStatus(); const sc = focusEl.scrollTop; focusEl._last = null; renderFocus(); focusEl.scrollTop = sc; };
+  const snap = () => { const d = dre(); return { done: { ...d.done }, setupDone: d.setupDone, finales: [...d.finales], replayFired: d.replayFired }; };
+  const back = b => { Object.assign(dre(), { ...b, done: { ...b.done }, finales: [...b.finales] }); done(); };
   root.querySelectorAll("[data-dre]").forEach(el => el.onchange = () => {
-    const k = el.dataset.dre;
+    const d = dre(), k = el.dataset.dre;
+    if (k === "finale" && el.checked) return finale();
     if (el.checked) d.done[k] = true; else delete d.done[k];
     if (k === "datarec" && el.checked && d.done.oncourse) d.setupDone = true;   // the two setups are done once for good
-    if (k === "finale" && el.checked) return finale();
     done();
   });
   const finale = () => {
-    const before = { done: { ...d.done }, setupDone: d.setupDone, finales: [...d.finales], replayFired: d.replayFired };
-    const pay = dreBonusUsed() ? DRE_PAY : DRE_PAY_WEEK;
+    const before = snap(), pay = dreBonusUsed() ? DRE_PAY : DRE_PAY_WEEK, d = dre();
     d.finales.push(Date.now()); d.setupDone = true; d.done = {}; d.replayFired = false;
     done();
-    toast(t("dreFinaleToast", money(pay)), { label: t("undo"), run: () => { Object.assign(d, before); done(); } });
+    toast(t("dreFinaleToast", money(pay)), { label: t("undo"), run: () => back(before) });
   };
   const a = k => root.querySelector(`[data-dre-a="${k}"]`);
   if (a("finale")) a("finale").onclick = finale;
-  if (a("reset")) a("reset").onclick = () => { const had = { ...d.done }; d.done = {}; done(); toast(t("dreResetToast"), { label: t("undo"), run: () => { d.done = had; done(); } }); };
-  if (a("setupUndo")) a("setupUndo").onclick = () => { d.setupDone = false; done(); };
+  if (a("reset")) a("reset").onclick = () => { const before = snap(); dre().done = {}; done(); toast(t("dreResetToast"), { label: t("undo"), run: () => back(before) }); };
+  if (a("setupUndo")) a("setupUndo").onclick = () => { dre().setupDone = false; done(); };
+  // idea 85: the last finale can be taken back at any time (not only from the few seconds of the Undo message)
+  if (a("unfinale")) a("unfinale").onclick = () => {
+    const before = snap(), d = dre();
+    if (!d.finales.length) return;
+    d.finales.pop(); d.replayFired = true;
+    done();
+    toast(t("dreUnfinaleToast"), { label: t("undo"), run: () => back(before) });
+  };
 }
 // idea 68: the Agency page = two small cards
 function agencyHubHtml() {
@@ -6662,6 +6945,9 @@ function vmCars() {
   if (!vm.ready) { vm.el = document.getElementById("sec-vehicles"); vm.init && vm.init(); vm.ready = true; }
   return (vm.getCars && vm.getCars()) || [];
 }
+// idea 87: true while the Vehicle Manager started in the background is still reading its cars (this browser, then GitHub)
+function vmLoading() { const vm = typeof SECTIONS !== "undefined" && SECTIONS.vehicles; vmCars(); return !!vm && !vm.loaded; }
+let mPickRedraw = null;   // the open car picker draws itself again when the cars arrive
 const MANSION_ICO = `<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#b8902f"/><path d="M8 16.5 17 9l9 7.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 15v10h13V15M15 25v-5h4v5" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>`;
 
 function propsHtml() {
@@ -6735,19 +7021,20 @@ function mansionHtml(id) {
 }
 // the car picker: garage → level → car; the photo shows next to the mouse over a car
 function mPickOpen(id, key, i) {
-  const cars = vmCars(), m = pr().m[id];
+  const m = pr().m[id];
   const box = document.createElement("div");
   box.className = "m-pick-back";
-  const garages = [...new Set(cars.map(c => c.garage).filter(Boolean))].sort();
   let g = "", lv = "";
   const draw = () => {
+    const cars = vmCars(), loading = vmLoading();
+    const garages = [...new Set(cars.map(c => c.garage).filter(Boolean))].sort();
     const levels = [...new Set(cars.filter(c => !g || c.garage === g).map(c => c.spot).filter(Boolean))].sort();
     const list = cars.filter(c => (!g || c.garage === g) && (!lv || c.spot === lv));
     box.innerHTML = `<div class="m-pick" role="dialog" aria-modal="true"><div class="m-pick-head"><b>${key === "podium" ? t("mPodium") : t("mDrive", i + 1)}</b><button class="btn ghost small" data-x>✕</button></div>
       <p class="hint">${t("mPickHint", mDef(id)[1])}</p>
       <div class="m-pick-sel"><label><span>${t("mGarage")}</span><select data-g><option value="">${t("mAll")}</option>${garages.map(x => `<option ${x === g ? "selected" : ""}>${escapeHtml(x)}</option>`).join("")}</select></label>
         <label><span>${t("mLevel")}</span><select data-l><option value="">${t("mAll")}</option>${levels.map(x => `<option ${x === lv ? "selected" : ""}>${escapeHtml(x)}</option>`).join("")}</select></label></div>
-      <div class="m-pick-list">${list.length ? list.map(c => `<button type="button" data-car="${c.id}">${c.image ? `<img src="${c.image}" alt="" loading="lazy">` : "<span>🚗</span>"}<b>${escapeHtml(`${c.brand || ""} ${c.model || ""}`.trim())}</b><small>${escapeHtml(c.garage || "")}${c.spot ? " · " + escapeHtml(c.spot) : ""}</small></button>`).join("") : `<p class="hint">${cars.length ? t("mPickNone") : t("mPickNoCars")}</p>`}</div>
+      <div class="m-pick-list">${list.length ? list.map(c => `<button type="button" data-car="${c.id}">${c.image ? `<img src="${c.image}" alt="" loading="lazy">` : "<span>🚗</span>"}<b>${escapeHtml(`${c.brand || ""} ${c.model || ""}`.trim())}</b><small>${escapeHtml(c.garage || "")}${c.spot ? " · " + escapeHtml(c.spot) : ""}</small></button>`).join("") : `<p class="hint">${cars.length ? t("mPickNone") : loading ? `<span class="m-loading"></span>${t("mPickLoading")}` : t("mPickNoCars")}</p>`}</div>
       <div class="m-peek" hidden></div></div>`;
     box.querySelector("[data-x]").onclick = close;
     box.querySelector("[data-g]").onchange = e => { g = e.target.value; lv = ""; draw(); };
@@ -6761,7 +7048,8 @@ function mPickOpen(id, key, i) {
       b.onmouseleave = () => { peek.hidden = true; };
     });
   };
-  const close = () => { box.remove(); removeEventListener("keydown", esc); };
+  const close = () => { box.remove(); removeEventListener("keydown", esc); if (mPickRedraw === draw) mPickRedraw = null; };
+  mPickRedraw = draw;
   const esc = e => { if (e.key === "Escape") close(); };
   addEventListener("keydown", esc);
   box.onclick = e => { if (e.target === box) close(); };
@@ -6794,8 +7082,9 @@ function bindProps(root) {
   root.querySelectorAll("[data-clear]").forEach(b => b.onclick = () => { const [k, i] = b.dataset.clear.split(":"); if (k === "podium") m.podium = null; else m.drive[+i] = null; re(); });
 }
 // the map: the Mansions you own are places too (with the Agency); their pin can be dragged like the Agency's
-function placeGet(id) { if (id === "agency") return ag().pin; const m = pr().m[id.slice(2)]; return m && m.pin; }
-function placeSet(id, v) { if (id === "agency") ag().pin = v; else { const m = pr().m[id.slice(2)]; if (m) m.pin = v; } }
+// idea 88: "b:<id>" = a Production Manager business (its pin is the same one as on the Production Manager map)
+function placeGet(id) { if (id === "agency") return ag().pin; if (id.startsWith("b:")) return (S.biz[id.slice(2)] || {}).pin; const m = pr().m[id.slice(2)]; return m && m.pin; }
+function placeSet(id, v) { if (id === "agency") ag().pin = v; else if (id.startsWith("b:")) { const b = S.biz[id.slice(2)]; if (b && v) b.pin = v; } else { const m = pr().m[id.slice(2)]; if (m) m.pin = v; } }
 function mansionPlaces() {
   return mOwned().map(([id, n, , , x, y]) => { const m = pr().m[id], p = m.pin || { x, y };
     return { id: "m:" + id, x: p.x, y: p.y, ico: MANSION_ICO, frac: M_UPS.filter(([k]) => m.up[k]).length / M_UPS.length, label: n.replace(/^The /, ""), sub: "Mansion" }; });
@@ -6879,14 +7168,23 @@ const JM_LAYERS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" s
 // drawn after Mihai's screenshot so it stays sharp at any size)
 // with a ring that shows how full the office safe is, and the name under it
 const AG_ICO = `<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#1e63b4"/><g transform="translate(8.8 7.3) scale(.66)"><path fill="#fff" fill-rule="evenodd" d="M4 0h18v20H4zM6 3v2h13V3zm0 4v2.5h13V7zm0 5v2h13v-2zm0 4v2.5h13V16zM2 20h21l1.5 2v5H16v-6H9v6H.5v-5z"/></g></svg>`;
-function jmPlaces() {
-  const out = [], a = ag();
-  if (a.owned && a.loc) {
-    const L = AG_LOCS.find(l => l[0] === a.loc), p = a.pin || (L && { x: L[2], y: L[3] });
-    if (p) out.push({ id: "agency", x: p.x, y: p.y, ico: AG_ICO, frac: Math.min(1, (a.safe || 0) / AG_CAP), label: "Agency", sub: money(a.safe) });
-  }
-  return out.concat(mansionPlaces());
+/* idea 88: one map, two owners. On the Job Manager pages it is the Job Manager map (only the Job Manager places: the Agency);
+   on the Property Manager pages it is the Property Manager map: everything you own, the Mansions, the Agency and the
+   Production Manager businesses that have a pin. Each keeps its own title. */
+const jmMode = () => propView() ? "props" : "jobs";
+function agencyPlaces() {
+  const a = ag();
+  if (!a.owned || !a.loc) return [];
+  const L = AG_LOCS.find(l => l[0] === a.loc), p = a.pin || (L && { x: L[2], y: L[3] });
+  return p ? [{ id: "agency", x: p.x, y: p.y, ico: AG_ICO, frac: Math.min(1, (a.safe || 0) / AG_CAP), label: "Agency", sub: money(a.safe) }] : [];
 }
+function bizPlaces() {
+  return ALL.filter(d => S.biz[d.id] && S.biz[d.id].owned && S.biz[d.id].pin).map(d => {
+    const p = S.biz[d.id].pin;
+    return { id: "b:" + d.id, x: p.x, y: p.y, ico: ICO(d.id), ring: ringHtml(d.id), frac: 0, label: bizName(d.id), sub: "" };
+  });
+}
+function jmPlaces() { return jmMode() === "props" ? [...mansionPlaces(), ...agencyPlaces(), ...bizPlaces()] : agencyPlaces(); }
 function jmRing(frac) {
   const C = 2 * Math.PI * 21;
   return `<svg class="ring" viewBox="0 0 46 46"><circle cx="23" cy="23" r="21" fill="rgba(10,14,20,.85)" stroke="rgba(255,255,255,.15)" stroke-width="4"/><circle cx="23" cy="23" r="21" fill="none" stroke="${ringColor(frac)}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${C * frac} ${C}"/></svg>`;
@@ -7003,10 +7301,20 @@ function jmMoveAsk(id, saved) {
   jm.pop.querySelector('[data-m="no"]').onclick = jmMoveNo;
   jmPlacePop(); jm.pop.querySelector('[data-m="yes"]').focus({ preventScroll: true });
 }
-function jmMoveYes() { const n = jmPlaceName(jm.ask.id); jm.ask = null; jm.placing = null; jmPopClose(); save(true); ghMarkDirty(); focusEl._last = null; renderFocus(); jmRender(); toast(t("pinMoved", n)); }
-function jmPlaceName(id) { return id === "agency" ? "Agency" : (mDef(id.slice(2)) || [, id])[1]; }
+function jmMoveYes() { const n = jmPlaceName(jm.ask.id); jm.ask = null; jm.placing = null; jmPopClose(); save(true); ghMarkDirty(); focusEl._last = null; renderFocus(); jmRender(); renderPins(); toast(t("pinMoved", n)); }
+function jmPlaceName(id) { return id === "agency" ? "Agency" : id.startsWith("b:") ? bizName(id.slice(2)) : (mDef(id.slice(2)) || [, id])[1]; }
 function jmMoveNo() { if (!jm.ask) return; placeSet(jm.ask.id, jm.ask.saved); const n = jmPlaceName(jm.ask.id); jm.ask = null; jmPopClose(); jmRender(); toast(t("pinKept", n)); }
+// the page of a Production Manager business (its own page when it has one, else the Production Manager map)
+const bizPage = id => { const d = defOf(id); return id === "night" ? "#night" : id === "bunker" ? "#bunker" : id === "hangar" ? "#hangar" : MC.some(x => x.id === id) ? "#mc" : "#production"; };
 function jmPopOpen(id) {
+  if (id.startsWith("b:")) {
+    const bid = id.slice(2);
+    jm.sel = id; jm.ask = null; jm.pop.className = "jm-pop show";
+    jm.pop.innerHTML = `<b>${escapeHtml(bizName(bid))}</b><small class="muted">Production Manager</small>
+      <div class="pc-btns"><a class="btn primary small" href="${bizPage(bid)}">${t("pmMapOpen")}</a></div><p class="hint">${t("jmDragHint")}</p>`;
+    jm.pop.querySelectorAll("a").forEach(x => x.onclick = () => jmClose());
+    jmPlacePop(); return;
+  }
   if (id.startsWith("m:")) {
     const mid = id.slice(2), [, n, area, price] = mDef(mid), m = pr().m[mid];
     jm.sel = id; jm.ask = null; jm.pop.className = "jm-pop show";
@@ -7055,9 +7363,11 @@ function jmRender() {
   const want = srcFor(st, "s");
   if (!img.src.endsWith(want)) { img.src = want; img.style.width = MAP_W + "px"; img.style.height = MAP_H + "px"; }
   jm.view.style.background = MAP_STYLES[st].water;
-  jm.win.querySelector(".jm-title").textContent = t("jmTitle");
+  const pm = jmMode() === "props";
+  jm.win.classList.toggle("props", pm);
+  jm.win.querySelector(".jm-title").textContent = t(pm ? "pmMapTitle" : "jmTitle");
   jm.win.querySelector(".jm-x").setAttribute("aria-label", t("close"));
-  jm.btn.title = jm.btn.ariaLabel = t("jmOpen");
+  jm.btn.title = jm.btn.ariaLabel = t(pm ? "pmMapTitle" : "jmOpen");
   const lay = jm.win.querySelector(".jm-lay"); lay.innerHTML = JM_LAYERS; lay.title = lay.ariaLabel = t("mapStyle"); lay.classList.toggle("on", jm.styles);
   const sl = jm.win.querySelector(".jm-styles");
   sl.hidden = !jm.styles;
@@ -7067,14 +7377,14 @@ function jmRender() {
   jm.win.querySelector('[data-jp="done"]').textContent = t("jmDone");
   jm.win.classList.toggle("placing", !!jm.placing);
   const pl = jmPlaces(), empty = jm.win.querySelector(".jm-empty");
-  empty.hidden = !!pl.length || !!jm.placing; empty.textContent = t("jmEmpty");
+  empty.hidden = !!pl.length || !!jm.placing; empty.textContent = t(pm ? "pmMapEmpty" : "jmEmpty");
   jm.win.querySelector(".jm-pins").innerHTML = pl.map(p => `<div class="jm-pin ${jm.placing === p.id ? "hot" : ""}" data-id="${p.id}" role="button" tabindex="0" aria-label="${escapeHtml(p.label)}" style="left:${p.x * MAP_W}px;top:${p.y * MAP_H}px">
-      <span class="jm-pb"><span class="pin-disc">${jmRing(p.frac)}<span class="ico">${p.ico}</span></span><span class="pin-label">${escapeHtml(p.label)}<small>${p.sub}</small></span></span></div>`).join("");
+      <span class="jm-pb"><span class="pin-disc">${p.ring || jmRing(p.frac)}<span class="ico">${p.ico}</span></span><span class="pin-label">${escapeHtml(p.label)}${p.sub ? `<small>${p.sub}</small>` : ""}</span></span></div>`).join("");
   jm.win.querySelectorAll(".jm-pin").forEach(el => el.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); jmPopOpen(el.dataset.id); } });
   if (jm.sel && !jm.ask) jmPopOpen(jm.sel);
   jmApply();
 }
-function jmShow(on) { jmInit(); jm.btn.classList.toggle("on", on); if (on) jmRender(); else if (jm.open) jmClose(); }   // render early: the map picture is loaded before it opens
+function jmShow(on) { jmInit(); const md = on ? jmMode() : null; if (jm.open && (!on || md !== jm.mode)) jmClose(); jm.mode = md; jm.btn.classList.toggle("on", on); if (on) jmRender(); }   // render early: the map picture is loaded before it opens
 function jmOpen(placing) {
   jmInit(); jm.placing = placing || null; jm.styles = false;
   jm.open = true; jm.win.classList.add("open"); jm.btn.classList.add("hid");
@@ -9451,6 +9761,8 @@ const focusEl = document.getElementById("focus");
 let focusCount = 0;
 function renderFocus() {
   if (!VIEW) return;
+  // idea 85: the state was replaced (loaded from GitHub or another tab): draw the page again so its buttons work on the new data
+  if (focusEl._S !== S) { focusEl._S = S; focusEl._last = null; }
   if (VIEW === "night") {
     const n = S.biz.night;
     const html = `<div class="focus-head"><img src="${EMB.night}" alt=""><div><h2>Nightclub</h2>
@@ -9759,6 +10071,7 @@ function setView(v) {
   VIEW = v;
   tbRight.style.display = jobView() ? "none" : "";
   jmShow(jobPage() || propView());
+  if (propView()) vmCars();   // idea 87: the Vehicle Manager starts reading its cars right away, so they are there when a picker opens
   focusEl._last = null;
   closeQuick(); closeFlyout(); closeWin();
   ROOT.classList.toggle("focus", !!VIEW);
@@ -9778,7 +10091,7 @@ boot();
 syncStatus();
 tick();
 Bus.on("lang", applyLang);
-Bus.on("vm:data", () => { if (propView()) { focusEl._last = null; renderFocus(); } });
+Bus.on("vm:data", () => { if (propView()) { focusEl._last = null; renderFocus(); } if (mPickRedraw) mPickRedraw(); });
 Bus.on("warehouse", () => { renderAll(); liveWin(); liveQuick(); });
 Bus.on("note", n => { if (n.biz && !VIEW && defOf(n.biz)) openWin(n.biz); });
 ghPullPM();
