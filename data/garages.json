@@ -165,7 +165,13 @@
   },
   {
     "name": "Nightclub",
-    "slots": 31
+    "slots": 1,
+    "levels": [
+      {
+        "name": "Nightclub Service Entrance",
+        "slots": 1
+      }
+    ]
   },
   {
     "name": "Office",
