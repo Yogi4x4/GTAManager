@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.28.0 (2026-10-30)
+* Property Manager:
+  * Change: the Property Manager page shows only emblems, one for everything you can own: Mansions and CEO Office big on top, then Agency, Nightclub, Bunker, Hangar, MC Clubhouse, Acid Lab, CEO Warehouses, Vehicle Warehouse and Money Fronts. The ones you own are bright (with how many you have), the others faded; each opens its page.
+  * Change: Mansions has its own page (#mansions): the three villas and, on the right, the boost, what is bought once for all and the rules. A villa's page goes back to it.
+  * Add: the CEO Office page (Mihai's emblem): you own it or not, which of the four buildings (Maze Bank Tower, Arcadius, Lombank West, Maze Bank West, with prices), its pin on the Property Manager map, and the CEO warehouses and Vehicle Warehouse you run from it.
+
 ### v0.27.1 (2026-10-30)
 * Job Manager:
   * Change: the Agency has a new emblem (the music studio, the Agency tower and the security team), on the Job Manager card and the Agency pages.

@@ -609,7 +609,7 @@ html[data-bg="page"] :is(#sec-vehicles, #sec-production, #sec-export) { backgrou
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.27.1";
+const APP_VERSION = "0.28";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -914,6 +914,30 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.28.0",
+  "date": "2026-10-30",
+  "en": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Change: the Property Manager page shows only emblems, one for everything you can own: Mansions and CEO Office big on top, then Agency, Nightclub, Bunker, Hangar, MC Clubhouse, Acid Lab, CEO Warehouses, Vehicle Warehouse and Money Fronts. The ones you own are bright (with how many you have), the others faded; each opens its page.",
+     "Change: Mansions has its own page (#mansions): the three villas and, on the right, the boost, what is bought once for all and the rules. A villa's page goes back to it.",
+     "Add: the CEO Office page (Mihai's emblem): you own it or not, which of the four buildings (Maze Bank Tower, Arcadius, Lombank West, Maze Bank West, with prices), its pin on the Property Manager map, and the CEO warehouses and Vehicle Warehouse you run from it."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Schimbă: pagina Property Manager arată doar embleme, câte una pentru tot ce poți deține: Mansions și CEO Office mari sus, apoi Agency, Nightclub, Bunker, Hangar, MC Clubhouse, Acid Lab, Depozite CEO, Vehicle Warehouse și Money Fronts. Cele deținute sunt luminoase (cu câte ai), celelalte estompate; fiecare deschide pagina ei.",
+     "Schimbă: Mansions are pagina ei (#mansions): cele trei vile și, în dreapta, boost-ul, ce se cumpără o dată pentru toate și regulile. Pagina unei vile duce înapoi aici.",
+     "Adaugă: pagina CEO Office (emblema lui Mihai): îl deții sau nu, care din cele patru clădiri (Maze Bank Tower, Arcadius, Lombank West, Maze Bank West, cu prețuri), pinul lui pe harta Property Manager și depozitele CEO și Vehicle Warehouse conduse de acolo."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.27.1",
   "date": "2026-10-30",
@@ -2449,6 +2473,8 @@ const ROUTES = {
   security:   { sec: "production", title: "Security Contracts",     view: "security" },
   dre:        { sec: "production", title: "Dr. Dre Contract",       view: "dre" },
   props:      { sec: "production", title: "Property Manager",       view: "props" },
+  mansions:   { sec: "production", title: "Mansions",               view: "mansions" },
+  ceooffice:  { sec: "production", title: "CEO Office",             view: "ceooffice" },
   richman:    { sec: "production", title: "Richman Villa",          view: "mansion_richman" },
   vinewood:   { sec: "production", title: "The Vinewood Residence", view: "mansion_vinewood" },
   tongva:     { sec: "production", title: "The Tongva Estate",      view: "mansion_tongva" },
@@ -2509,7 +2535,7 @@ const Router = {
     $("#pagesList").innerHTML = link("", t("pg_home")) + link("vehicles", "Vehicle Manager")
       + group(link("production", "Production Manager"), link("mc", "MC Business") + link("night", "Nightclub") + link("bunker", "Bunker") + link("hangar", "Hangar") + link("export", "Vehicle Export Tracker"))
       + group(link("jobs", "Job Manager"), link("agency", "Agency") + link("fronts", "Money Fronts"))
-      + group(link("props", "Property Manager"), link("richman", "Richman Villa") + link("vinewood", "Vinewood Residence") + link("tongva", "Tongva Estate"));
+      + group(link("props", "Property Manager"), link("mansions", "Mansions") + link("ceooffice", "CEO Office") + link("richman", "Richman Villa") + link("vinewood", "Vinewood Residence") + link("tongva", "Tongva Estate"));
   },
   // ⋮ menu: the section's own items, then notifications, account, help, about
   renderMore() {
@@ -2888,6 +2914,9 @@ const HINTS = [
   ["[data-dre-a=\"reset\"]", "Untick all the missions.", "Debifează toate misiunile."], ["[data-dre-a=\"setupUndo\"]", "Show the two setup missions again.", "Arată din nou cele două misiuni de pregătire."],
 
   // ---------- Property Manager ----------
+  ["a.btn[href^=\"#\"]", "Go to that page.", "Mergi la pagina aceea."],
+  [".pr-card-e", "Open this property's page.", "Deschide pagina proprietății."],
+  ["[data-co=\"map\"]", "Show the office on the map.", "Arată biroul pe hartă."], ["[data-co=\"pinReset\"]", "Put the pin back at the game's own place.", "Pune pinul înapoi la locul din joc."],
   ["[data-villa]", "Open this Mansion's page (a faded one: add it, with its upgrades).", "Deschide pagina Mansion-ului (unul estompat: îl adaugi, cu upgrade-urile lui)."],
   ["[data-mset]", "The upgrades you own in this Mansion; also to remove it.", "Upgrade-urile pe care le ai în Mansion; tot de aici îl scoți."],
   ["[data-madd]", "Add this Mansion and tick its upgrades.", "Adaugă Mansion-ul și bifează-i upgrade-urile."],
@@ -5460,6 +5489,33 @@ Section({
 #sec-production .m-car.podium {max-width: 320px;}
 #sec-production .m-car-pic {max-height: 150px;}
 }
+#sec-production .pr-hub {grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px;}
+#sec-production .pr-hub .job-card {padding: 10px; transition: border-color .15s, transform .15s;}
+#sec-production .pr-hub .job-card:hover {border-color: var(--sodium); transform: translateY(-2px);}
+#sec-production .pr-hub .job-card.big {grid-column: span 2;}
+#sec-production .pr-hub .job-card.big img {aspect-ratio: 16 / 9;}
+#sec-production .pr-hub .job-card.off img {opacity: .45; filter: grayscale(.6) drop-shadow(0 6px 14px rgba(0,0,0,.35));}
+#sec-production .pr-hub .job-card.off:hover img {opacity: .8; filter: grayscale(.15) drop-shadow(0 6px 14px rgba(0,0,0,.35));}
+#sec-production .pr-noimg {display: grid; place-items: center; aspect-ratio: 3 / 2; font: 700 20px var(--display);}
+#sec-production .pr-mlogo {width: 150px; height: auto;}
+#sec-production .co-runs {margin-top: 14px;}
+@media (max-width: 600px) {
+#sec-production .pr-hub {grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;}
+#sec-production .pr-hub .job-card {padding: 4px;}
+#sec-production .pr-hub .soon-tag {font-size: 10px; top: 4px; right: 4px; padding: 1px 6px;}
+#sec-production .pr-mlogo {width: 110px;}
+}
+#sec-production .pr-hub-top {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px;}
+#sec-production .pr-hub-top .job-card {padding: 10px; transition: border-color .15s, transform .15s;}
+#sec-production .pr-hub-top .job-card img {aspect-ratio: 16 / 9; max-height: 260px; margin: 0 auto;}
+#sec-production .pr-hub-top .job-card:hover {border-color: var(--sodium); transform: translateY(-2px);}
+#sec-production .pr-hub-top .job-card.off img {opacity: .45; filter: grayscale(.6) drop-shadow(0 6px 14px rgba(0,0,0,.35));}
+#sec-production .pr-hub-top .job-card.off:hover img {opacity: .8; filter: grayscale(.15);}
+@media (max-width: 600px) {
+#sec-production .pr-hub-top {gap: 8px; margin-bottom: 8px;}
+#sec-production .pr-hub-top .job-card {padding: 4px;}
+#sec-production .pr-hub-top .soon-tag {font-size: 10px; top: 4px; right: 4px; padding: 1px 6px;}
+}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -6103,6 +6159,25 @@ i18n({
     "pm.mSetHint": "Bifează ce ai cumpărat în joc. Le bifezi o singură dată; ca să le schimbi mai târziu, folosește ⚙ Setări.",
     "pm.mPodiumLocked": "Podiumul cere upgrade-ul Car Podium (⚙ Setări).", "pm.mRemovedToast": "Mașina a fost scoasă din expunere.",
     "pm.mFacT": "Ce are un Mansion"
+  }
+});
+// 0.28: idea 89 (Property Manager = emblems only; Mansions and CEO Office pages)
+i18n({
+  en: {
+    "pm.propsSub3": "Everything you can own, one emblem each: the bright ones are yours. Tap one to open it.",
+    "pm.prCeoWh": "CEO Warehouses",
+    "pm.coSub": "Your office (SecuroServ): which building, its place on the map and what you run from it.",
+    "pm.coNotOwned": "Tick it if you own a CEO Office, then pick the building.",
+    "pm.coRuns": "Run from this office", "pm.coRunsNone": "The CEO warehouses and the Vehicle Warehouse you own show up here.",
+    "pm.coRunsNote": "You buy them from the office computer; they are tracked in the Production Manager.", "pm.coPinAuto": "On the map by itself, at the building from the game."
+  },
+  ro: {
+    "pm.propsSub3": "Tot ce poți deține, câte o emblemă: cele luminoase sunt ale tale. Apasă una ca s-o deschizi.",
+    "pm.prCeoWh": "Depozite CEO",
+    "pm.coSub": "Biroul tău (SecuroServ): ce clădire, locul ei pe hartă și ce conduci de acolo.",
+    "pm.coNotOwned": "Bifează dacă ai un CEO Office, apoi alege clădirea.",
+    "pm.coRuns": "Conduse din acest birou", "pm.coRunsNone": "Aici apar depozitele CEO și Vehicle Warehouse pe care le ai.",
+    "pm.coRunsNote": "Le cumperi din computerul biroului; le urmărești în Production Manager.", "pm.coPinAuto": "Pus singur pe hartă, la clădirea din joc."
   }
 });
 
@@ -7060,7 +7135,7 @@ function jobCardHtml(k) {
   if (k === "dre") { const [n, all] = dreCount(); return `<a class="job-card open" href="#dre" title="Dr. Dre Contract"><span class="soon-tag on">${n} / ${all}</span><img src="${JOB_IMG.dre}" alt="Dr. Dre Contract"></a>`; }
   if (k === "agency") return `<a class="job-card open" href="#agency" title="Agency"><span class="soon-tag on">${ag().owned ? money(ag().safe) : t("agOpenTag")}</span><img src="${JOB_IMG.agency}" alt="Agency"></a>`;
   if (k === "fronts") return `<a class="job-card open" href="#fronts" title="${t("frontsOpen")}"><span class="soon-tag on">${t("frontsOwned", FRONTS.filter(([f]) => frontOwned(f)).length)}</span><img src="${JOB_IMG.fronts}" alt="Money Fronts"></a>`;
-  if (k === "kortz") return `<a class="job-card soon open" href="#props" title="${kortzReady() ? t("kortzOk") : t("kortzNeed")}"><span class="soon-tag ${kortzReady() ? "on" : "warn"}">${kortzReady() ? "🎨 " + t("kortzOkTag") : "⚠ " + t("kortzNeedTag")}</span><img src="${JOB_IMG[k]}" alt="${JOB_NAMES[k]}" loading="lazy"></a>`;
+  if (k === "kortz") return `<a class="job-card soon open" href="#mansions" title="${kortzReady() ? t("kortzOk") : t("kortzNeed")}"><span class="soon-tag ${kortzReady() ? "on" : "warn"}">${kortzReady() ? "🎨 " + t("kortzOkTag") : "⚠ " + t("kortzNeedTag")}</span><img src="${JOB_IMG[k]}" alt="${JOB_NAMES[k]}" loading="lazy"></a>`;
   return `<div class="job-card soon" aria-disabled="true"><span class="soon-tag">${t("soon2")}</span><img src="${JOB_IMG[k]}" alt="${JOB_NAMES[k]}" loading="lazy"></div>`;
 }
 function jobsHtml() {
@@ -7119,11 +7194,13 @@ function pr() {
   // fill in what is missing in place: the objects must stay the same ones (the page's buttons hold on to them)
   MANSIONS.forEach(([id]) => { const m = p.m[id] || (p.m[id] = {}); const d = { owned: false, pin: null, up: {}, podium: null, drive: [null, null] };
     for (const k in d) if (m[k] === undefined) m[k] = d[k]; });
+  // idea 89: the CEO Office (one per player)
+  const c = p.ceo || (p.ceo = {}); if (c.owned === undefined) c.owned = false; if (c.loc === undefined) c.loc = ""; if (c.pin === undefined) c.pin = null;
   return p;
 }
 const mDef = id => MANSIONS.find(m => m[0] === id);
 const mOwned = () => MANSIONS.filter(([id]) => pr().m[id].owned);
-const propView = () => VIEW === "props" || String(VIEW).startsWith("mansion_");
+const propView = () => ["props", "mansions", "ceooffice"].includes(VIEW) || String(VIEW).startsWith("mansion_");
 const kortzReady = () => mOwned().length > 0 && !!pr().art;
 // Vehicle Manager's cars (it starts quietly in the background the first time a Mansion page needs them)
 function vmCars() {
@@ -7162,22 +7239,60 @@ function propBizList() {
   FRONTS.forEach(([k, n]) => { if (frontOwned(k)) out.push(["#fronts", `<span class="pr-emo">${{ wash: "🧽", heli: "🚁", smoke: "🌿" }[k]}</span>`, n, "Job Manager · Money Fronts"]); });
   return out;
 }
+/* idea 89: the Property Manager page is only the emblems of everything you can own (owned: bright, the others faded);
+   each opens its page. Mansions → #mansions (the three villas and their details), CEO Office → #ceooffice. */
+const CEO_OFFICES = [["Maze Bank Tower", 4000000, 0.4300, 0.7430], ["Arcadius Business Center", 2250000, 0.4250, 0.7350],
+  ["Lombank West", 3100000, 0.3300, 0.7050], ["Maze Bank West", 1000000, 0.3200, 0.7120]];   // map places approximate: drag the pin if it is off
+const CEO_OFFICE_ICO = `<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#7b3fd1"/><path d="M12 26V9l6-2v19M18 26V12l5 2v12M10 26h15" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M14 12h2M14 15h2M14 18h2M14 21h2M20 16h1.5M20 19h1.5M20 22h1.5" stroke="#fff" stroke-width="1.4"/></svg>`;
+function propCards() {
+  const p = pr(), own = id => !!(S.biz[id] && S.biz[id].owned), a = ag();
+  const mcN = MC.filter(d => own(d.id)).length, ceoN = CEO_SLOTS.filter(d => own(d.id)).length, fN = FRONTS.filter(([k]) => frontOwned(k)).length, mN = mOwned().length;
+  return [
+    ["mansions", M_IMG.all, "Mansions", "#mansions", mN > 0, mN ? `${mN} / 3` : ""],
+    ["ceooffice", window.CEO_OFFICE_IMG, "CEO Office", "#ceooffice", p.ceo.owned, p.ceo.owned ? p.ceo.loc || "✓" : ""],
+    ["agency", JOB_IMG.agency, "Agency", "#agency", a.owned, a.owned ? a.loc || "✓" : ""],
+    ["night", EMB.night, "Nightclub", "#night", own("night"), ""],
+    ["bunker", EMB.bunker, "Bunker", "#bunker", own("bunker"), ""],
+    ["hangar", EMB.hangar, "Hangar", "#hangar", own("hangar"), ""],
+    ["mc", EMB.mc, "MC Business", "#mc", mcN > 0, mcN ? `${mcN} / ${MC.length}` : ""],
+    ["acid", EMB.acid, "Acid Lab", "#production", own("acid"), ""],
+    ["ceo", EMB.ceo, t("prCeoWh"), "#production", ceoN > 0, ceoN ? `${ceoN} / 5` : ""],
+    ["veh", EMB.veh, "Vehicle Warehouse", "#production", own("vehwh"), ""],
+    ["fronts", JOB_IMG.fronts, "Money Fronts", "#fronts", fN > 0, fN ? `${fN} / 3` : ""]];
+}
 function propsHtml() {
+  return `<div class="focus-head">${PROP_IMG ? `<img class="ag-logo" src="${PROP_IMG}" alt="">` : ""}<div><h2>Property Manager</h2><p class="muted">${t("propsSub3")}</p></div><a class="btn" href="#">← ${t("home")}</a></div>
+    ${(() => { const card = ([k, img, n, href, on, tag]) => `<a class="job-card pr-card-e ${on ? "own" : "off"}" href="${href}" title="${escapeHtml(n)}">
+      ${on ? `<span class="soon-tag on">${escapeHtml(tag || t("mOwnedTag"))}</span>` : ""}${img ? `<img src="${img}" alt="${escapeHtml(n)}" loading="lazy">` : `<b class="pr-noimg">${escapeHtml(n)}</b>`}</a>`;
+      const all = propCards(), big = all.filter(c => c[0] === "mansions" || c[0] === "ceooffice");
+      return `<div class="pr-hub-top">${big.map(card).join("")}</div><div class="job-grid pr-hub">${all.filter(c => !big.includes(c)).map(card).join("")}</div>`; })()}`;
+}
+// #mansions: the three villas (owned bright, the others faded: tap to add) and, on the right, what counts for all of them
+function mansionsHtml() {
   const p = pr();
   const villa = ([id, n]) => { const on = p.m[id].owned;
     return `<button type="button" class="job-card pr-villa ${on ? "own" : "off"}" data-villa="${id}" title="${on ? escapeHtml(n) : escapeHtml(t("mAddTip", n))}">
       <span class="soon-tag ${on ? "on" : ""}">${on ? t("mOwnedTag") : "+ " + t("mAddTag")}</span><img src="${M_IMG[id] || PROP_IMG}" alt="${escapeHtml(n)}">
       ${on ? `<span class="pr-villa-ups">${mUpIcons(p.m[id])}</span>` : ""}</button>`; };
-  const biz = propBizList();
-  return `<div class="focus-head">${PROP_IMG ? `<img class="ag-logo" src="${PROP_IMG}" alt="">` : ""}<div><h2>Property Manager</h2><p class="muted">${t("propsSub2")}</p></div><a class="btn" href="#">← ${t("home")}</a></div>
+  return `<div class="focus-head">${M_IMG.all ? `<img class="ag-logo pr-mlogo" src="${M_IMG.all}" alt="">` : ""}<div><h2>Mansions</h2><p class="muted">${t("propsSub")}</p></div><a class="btn" href="#props">← Property Manager</a></div>
     <div class="pr-layout">
-      <div class="pr-main">
-        <section class="job-sect pr-mans"><img class="job-head" src="${M_IMG.all || PROP_IMG}" alt="Mansions"><div class="job-grid pr-villas">${MANSIONS.map(villa).join("")}</div></section>
-        <section class="job-sect pr-biz"><h3>${t("prBizT")} <small class="muted">${biz.length || ""}</small></h3>
-          ${biz.length ? `<div class="pr-biz-grid">${biz.map(([href, ico, n, from]) => `<a class="pr-biz-tile" href="${href}"><span class="pr-ico">${ico}</span><span><b>${escapeHtml(n)}</b><small>${from}</small></span></a>`).join("")}</div>` : `<p class="hint">${t("prBizNone")}</p>`}</section>
-      </div>
+      <div class="pr-main"><div class="job-grid pr-villas">${MANSIONS.map(villa).join("")}</div></div>
       <aside class="pr-side">${mBoostHtml()}${mAllHtml()}${mRulesHtml()}</aside>
     </div>`;
+}
+// #ceooffice: which office you own (the four in the game), its pin, and what you run from it (the warehouses)
+function ceoOfficeHtml() {
+  const c = pr().ceo, wh = CEO_SLOTS.filter(d => S.biz[d.id] && S.biz[d.id].owned), veh = S.biz.vehwh && S.biz.vehwh.owned;
+  const top = `<section class="adv-card ag-top">
+      <label class="toggle row"><input type="checkbox" data-co="own" ${c.owned ? "checked" : ""}> <span>${t("owned")}</span></label>
+      ${c.owned ? `<label class="ceo-pick"><span>${t("locPick")}</span><select data-co="loc"><option value="">—</option>${CEO_OFFICES.map(([n, price]) => `<option value="${n}" ${c.loc === n ? "selected" : ""}>${n} · ${money(price)}</option>`).join("")}</select></label>
+      ${c.loc ? `<div class="ag-pinline"><span>📍 ${c.pin ? t("agPinMoved") : t("coPinAuto")}</span><button class="btn small" data-co="map">🗺 ${t("agPinSee")}</button>${c.pin ? `<button class="btn ghost small" data-co="pinReset">${t("agPinReset")}</button>` : ""}</div>` : ""}` : `<p class="hint">${t("coNotOwned")}</p>`}</section>`;
+  const runs = `<section class="adv-card pr-card co-runs"><h4>📦 ${t("coRuns")}</h4>
+      ${wh.length || veh ? `<div class="pr-biz-grid">${wh.map(d => `<a class="pr-biz-tile" href="#production"><span class="pr-ico">${ICO(d.id)}</span><span><b>${escapeHtml(bizName(d.id))}</b><small>${t("prCeoWh")}</small></span></a>`).join("")}
+        ${veh ? `<a class="pr-biz-tile" href="#production"><span class="pr-ico">${ICO("vehwh")}</span><span><b>${escapeHtml(bizName("vehwh"))}</b><small>Vehicle Warehouse</small></span></a>` : ""}</div>` : `<p class="hint">${t("coRunsNone")}</p>`}
+      <p class="pr-note">${t("coRunsNote")}</p></section>`;
+  return `<div class="focus-head">${window.CEO_OFFICE_IMG ? `<img class="ag-logo" src="${window.CEO_OFFICE_IMG}" alt="">` : ""}<div><h2>CEO Office${c.owned && c.loc ? " · " + escapeHtml(c.loc) : ""}</h2><p class="muted">${t("coSub")}</p></div><a class="btn" href="#props">← Property Manager</a></div>
+    ${top}${c.owned ? runs : ""}`;
 }
 // the two things bought once for every Mansion: shown, changed from ⚙
 function mAllHtml() {
@@ -7226,7 +7341,7 @@ function mansionHtml(id) {
   const [, name, area, price] = mDef(id), m = pr().m[id];
   const head = `<div class="focus-head m-head"><img class="m-emb ${m.owned ? "" : "off"}" src="${M_IMG[id] || PROP_IMG}" alt="${escapeHtml(name)}">
       <div><h2>${name}</h2><p class="muted">${area} · ${money(price)}</p>${m.owned ? `<div class="m-upicons">${mUpIcons(m, true)}</div>` : ""}</div>
-      <div class="m-head-btns">${m.owned ? `<button class="btn small" data-mset="1">⚙ ${t("mSettings")}</button><button class="btn small" data-mmap="1">🗺 ${t("mPinMap")}</button>${m.pin ? `<button class="btn ghost small" data-mpinreset="1">${t("agPinReset")}</button>` : ""}` : ""}<a class="btn small" href="#props">← Property Manager</a></div></div>`;
+      <div class="m-head-btns">${m.owned ? `<button class="btn small" data-mset="1">⚙ ${t("mSettings")}</button><button class="btn small" data-mmap="1">🗺 ${t("mPinMap")}</button>${m.pin ? `<button class="btn ghost small" data-mpinreset="1">${t("agPinReset")}</button>` : ""}` : ""}<a class="btn small" href="#mansions">← Mansions</a></div></div>`;
   if (!m.owned) return head + `<section class="adv-card ag-top m-notown"><p>${t("mNotOwned")}</p><button class="btn primary" data-madd="1">＋ ${t("mAddBtn")}</button></section>`;
   return head + `<div class="m-grid">
       <div class="m-main">${M_PHOTO[id] ? `<img class="m-shot" src="${M_PHOTO[id]}" alt="${escapeHtml(name)}">` : ""}${mCarsHtml(id)}</div>
@@ -7317,6 +7432,14 @@ function bindProps(root) {
     }
     propsDone();
   });
+  if (VIEW === "ceooffice") {
+    const c = p.ceo, q = k => root.querySelector(`[data-co="${k}"]`);
+    if (q("own")) q("own").onchange = e => { c.owned = e.target.checked; propsDone(); };
+    if (q("loc")) q("loc").onchange = e => { c.loc = e.target.value; c.pin = null; propsDone(); };
+    if (q("map")) q("map").onclick = () => jmOpen();
+    if (q("pinReset")) q("pinReset").onclick = () => { c.pin = null; propsDone(); };
+    return;
+  }
   const id = String(VIEW).startsWith("mansion_") ? VIEW.slice(8) : null;
   if (!id) return;
   const m = p.m[id];
@@ -7332,8 +7455,8 @@ function bindProps(root) {
 }
 // the map: the Mansions you own are places too (with the Agency); their pin can be dragged like the Agency's
 // idea 88: "b:<id>" = a Production Manager business (its pin is the same one as on the Production Manager map)
-function placeGet(id) { if (id === "agency") return ag().pin; if (id.startsWith("b:")) return (S.biz[id.slice(2)] || {}).pin; const m = pr().m[id.slice(2)]; return m && m.pin; }
-function placeSet(id, v) { if (id === "agency") ag().pin = v; else if (id.startsWith("b:")) { const b = S.biz[id.slice(2)]; if (b && v) b.pin = v; } else { const m = pr().m[id.slice(2)]; if (m) m.pin = v; } }
+function placeGet(id) { if (id === "agency") return ag().pin; if (id === "ceooffice") return pr().ceo.pin; if (id.startsWith("b:")) return (S.biz[id.slice(2)] || {}).pin; const m = pr().m[id.slice(2)]; return m && m.pin; }
+function placeSet(id, v) { if (id === "agency") ag().pin = v; else if (id === "ceooffice") pr().ceo.pin = v; else if (id.startsWith("b:")) { const b = S.biz[id.slice(2)]; if (b && v) b.pin = v; } else { const m = pr().m[id.slice(2)]; if (m) m.pin = v; } }
 function mansionPlaces() {
   return mOwned().map(([id, n, , , x, y]) => { const m = pr().m[id], p = m.pin || { x, y };
     return { id: "m:" + id, x: p.x, y: p.y, ico: MANSION_ICO, frac: M_UPS.filter(([k]) => m.up[k]).length / M_UPS.length, label: n.replace(/^The /, ""), sub: "Mansion" }; });
@@ -7433,7 +7556,13 @@ function bizPlaces() {
     return { id: "b:" + d.id, x: p.x, y: p.y, ico: ICO(d.id), ring: ringHtml(d.id), frac: 0, label: bizName(d.id), sub: "" };
   });
 }
-function jmPlaces() { return jmMode() === "props" ? [...mansionPlaces(), ...agencyPlaces(), ...bizPlaces()] : agencyPlaces(); }
+function ceoOfficePlaces() {
+  const c = pr().ceo, L = CEO_OFFICES.find(o => o[0] === c.loc);
+  if (!c.owned || !L) return [];
+  const p = c.pin || { x: L[2], y: L[3] };
+  return [{ id: "ceooffice", x: p.x, y: p.y, ico: CEO_OFFICE_ICO, frac: 0, label: "CEO Office", sub: escapeHtml(L[0]) }];
+}
+function jmPlaces() { return jmMode() === "props" ? [...mansionPlaces(), ...ceoOfficePlaces(), ...agencyPlaces(), ...bizPlaces()] : agencyPlaces(); }
 function jmRing(frac) {
   const C = 2 * Math.PI * 21;
   return `<svg class="ring" viewBox="0 0 46 46"><circle cx="23" cy="23" r="21" fill="rgba(10,14,20,.85)" stroke="rgba(255,255,255,.15)" stroke-width="4"/><circle cx="23" cy="23" r="21" fill="none" stroke="${ringColor(frac)}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${C * frac} ${C}"/></svg>`;
@@ -7551,11 +7680,18 @@ function jmMoveAsk(id, saved) {
   jmPlacePop(); jm.pop.querySelector('[data-m="yes"]').focus({ preventScroll: true });
 }
 function jmMoveYes() { const n = jmPlaceName(jm.ask.id); jm.ask = null; jm.placing = null; jmPopClose(); save(true); ghMarkDirty(); focusEl._last = null; renderFocus(); jmRender(); renderPins(); toast(t("pinMoved", n)); }
-function jmPlaceName(id) { return id === "agency" ? "Agency" : id.startsWith("b:") ? bizName(id.slice(2)) : (mDef(id.slice(2)) || [, id])[1]; }
+function jmPlaceName(id) { return id === "agency" ? "Agency" : id === "ceooffice" ? "CEO Office" : id.startsWith("b:") ? bizName(id.slice(2)) : (mDef(id.slice(2)) || [, id])[1]; }
 function jmMoveNo() { if (!jm.ask) return; placeSet(jm.ask.id, jm.ask.saved); const n = jmPlaceName(jm.ask.id); jm.ask = null; jmPopClose(); jmRender(); toast(t("pinKept", n)); }
 // the page of a Production Manager business (its own page when it has one, else the Production Manager map)
 const bizPage = id => { const d = defOf(id); return id === "night" ? "#night" : id === "bunker" ? "#bunker" : id === "hangar" ? "#hangar" : MC.some(x => x.id === id) ? "#mc" : "#production"; };
 function jmPopOpen(id) {
+  if (id === "ceooffice") {
+    jm.sel = id; jm.ask = null; jm.pop.className = "jm-pop show";
+    jm.pop.innerHTML = `<b>CEO Office</b><small class="muted">${escapeHtml(pr().ceo.loc)}</small>
+      <div class="pc-btns"><a class="btn primary small" href="#ceooffice">${t("pmMapOpen")}</a></div><p class="hint">${t("jmDragHint")}</p>`;
+    jm.pop.querySelectorAll("a").forEach(x => x.onclick = () => jmClose());
+    jmPlacePop(); return;
+  }
   if (id.startsWith("b:")) {
     const bid = id.slice(2);
     jm.sel = id; jm.ask = null; jm.pop.className = "jm-pop show";
@@ -10045,7 +10181,7 @@ function renderFocus() {
     focusEl._last = key; focusEl.innerHTML = html;
     if (VIEW === "dre") bindDre(focusEl); else bindAgency(focusEl);
   } else if (propView()) {
-    const html = VIEW === "props" ? propsHtml() : mansionHtml(VIEW.slice(8)), key = html.replace(/data-live-timer="[^"]*">[^<]*</g, "");
+    const html = VIEW === "props" ? propsHtml() : VIEW === "mansions" ? mansionsHtml() : VIEW === "ceooffice" ? ceoOfficeHtml() : mansionHtml(VIEW.slice(8)), key = html.replace(/data-live-timer="[^"]*">[^<]*</g, "");
     if (key === focusEl._last) return;
     focusEl._last = key; focusEl.innerHTML = html;
     bindProps(focusEl);
@@ -10118,7 +10254,7 @@ function bindVehAdd(root, after) {
 }
 /* emblems for the focus pages, taken from the menu artwork */
 const EMB = {};
-["night", "mc", "bunker", "hangar"].forEach(k => { const el = document.createElement("div"); el.className = "art-" + k; el.style.display = "none"; ROOT.appendChild(el);
+["night", "mc", "bunker", "hangar", "acid", "ceo", "veh"].forEach(k => { const el = document.createElement("div"); el.className = "art-" + k; el.style.display = "none"; ROOT.appendChild(el);
   EMB[k] = (getComputedStyle(el).getPropertyValue("--emb").match(/url\("?(.*?)"?\)$/) || [])[1] || ""; el.remove(); });
 
 /* Production.json on GitHub while logged in (data/production.json, same format as before) */
