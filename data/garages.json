@@ -155,7 +155,13 @@
   },
   {
     "name": "Garment Factory",
-    "slots": 10
+    "slots": 10,
+    "levels": [
+      {
+        "name": "B1",
+        "slots": 10
+      }
+    ]
   },
   {
     "name": "Nightclub",
