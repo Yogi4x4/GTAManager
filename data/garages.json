@@ -99,7 +99,13 @@
   },
   {
     "name": "Clubhouse",
-    "slots": 10
+    "slots": 10,
+    "levels": [
+      {
+        "name": "G",
+        "slots": 10
+      }
+    ]
   },
   {
     "name": "Del Perro Heights, Apt. 7",
