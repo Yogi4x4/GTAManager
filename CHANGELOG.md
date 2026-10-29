@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.24.0 (2026-10-29)
+* Everywhere:
+  * Add: the In game switch is on every page, at the same place as in the Production Manager (on narrow phones only its track shows).
+* Vehicle Manager:
+  * Add: when you add a car, after the brand the models of that brand are suggested (every GTA Online vehicle), and picking one fills in the class.
+  * Add: the car window says what special upgrades the model takes: HSW (30 cars), Imani Tech (20 cars), the Benny's version it turns into (or that it is one), the Arena Workshop version, hydraulics; the HSW / Benny's / Imani Tech boxes that apply are lit up.
+* Agency:
+  * Add: the Agency upgrades Armory, Accommodation and Vehicle Workshop, with prices and what they give.
+  * Add: Security Contracts: pick the type (6) and the difficulty (Professional, Specialist, Specialist+, with their pay) before pressing I finished a contract; they are noted in a list with a count per type.
+  * Add: Call Franklin: you can ask him by phone for a random Security Contract from anywhere on the map.
+  * Change: the Agency pin line says the pin is on the map by itself; See on the map, and Back to the game's place only after you moved it.
+* Home:
+  * Change: the weekly bonuses robot tries every hour on Thursdays (12:17 to 20:17 in Romania), because GitHub sometimes skips a scheduled run.
+
 ### v0.23.2 (2026-10-29)
 * Job Manager:
   * Change: the Agency pin shows the Agency icon from the game map (the white building), drawn so it stays sharp at any zoom.

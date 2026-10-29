@@ -462,6 +462,12 @@ html[data-bg="page"] #bgLayer::after { background: linear-gradient(180deg, color
 .bg-msg.ok { color: var(--ok, var(--accent)); } .bg-msg.bad { color: var(--bad); } .bg-msg.warn { color: var(--warn); }
 /* the sections paint their own plain background; with a background picture they let it show through */
 html[data-bg="page"] :is(#sec-vehicles, #sec-production, #sec-export) { background: transparent; }
+
+/* idea 80: on narrow phones the switch keeps only its track (the label stays for screen readers), so the top bar fits on every page */
+@media (max-width: 440px) {
+  #topbar .ingame {padding: 5px; gap: 0;}
+  #topbar .ingame > div:last-child {position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);}
+}
 </style>
 </head>
 <body>
@@ -570,7 +576,7 @@ html[data-bg="page"] :is(#sec-vehicles, #sec-production, #sec-export) { backgrou
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.23.2";
+const APP_VERSION = "0.24";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -875,6 +881,70 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.24.0",
+  "date": "2026-10-29",
+  "en": [
+   {
+    "area": "Everywhere",
+    "items": [
+     "Add: the In game switch is on every page, at the same place as in the Production Manager (on narrow phones only its track shows)."
+    ]
+   },
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Add: when you add a car, after the brand the models of that brand are suggested (every GTA Online vehicle), and picking one fills in the class.",
+     "Add: the car window says what special upgrades the model takes: HSW (30 cars), Imani Tech (20 cars), the Benny's version it turns into (or that it is one), the Arena Workshop version, hydraulics; the HSW / Benny's / Imani Tech boxes that apply are lit up."
+    ]
+   },
+   {
+    "area": "Agency",
+    "items": [
+     "Add: the Agency upgrades Armory, Accommodation and Vehicle Workshop, with prices and what they give.",
+     "Add: Security Contracts: pick the type (6) and the difficulty (Professional, Specialist, Specialist+, with their pay) before pressing I finished a contract; they are noted in a list with a count per type.",
+     "Add: Call Franklin: you can ask him by phone for a random Security Contract from anywhere on the map.",
+     "Change: the Agency pin line says the pin is on the map by itself; See on the map, and Back to the game's place only after you moved it."
+    ]
+   },
+   {
+    "area": "Home",
+    "items": [
+     "Change: the weekly bonuses robot tries every hour on Thursdays (12:17 to 20:17 in Romania), because GitHub sometimes skips a scheduled run."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Peste tot",
+    "items": [
+     "Adaugă: comutatorul În joc e pe toate paginile, în același loc ca în Production Manager (pe telefoanele înguste se vede doar comutatorul)."
+    ]
+   },
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Adaugă: când adaugi o mașină, după producător îți sunt sugerate modelele lui (toate vehiculele din GTA Online), iar modelul ales completează și clasa.",
+     "Adaugă: fereastra mașinii spune ce upgrade-uri speciale acceptă modelul: HSW (30 de mașini), Imani Tech (20), versiunea Benny's în care se transformă (sau că e una), versiunea Arena Workshop, hidraulice; căsuțele HSW / Benny's / Imani Tech potrivite se aprind."
+    ]
+   },
+   {
+    "area": "Agency",
+    "items": [
+     "Adaugă: upgrade-urile Agency Armory, Accommodation și Vehicle Workshop, cu prețuri și ce oferă.",
+     "Adaugă: Security Contracts: alegi tipul (6) și dificultatea (Professional, Specialist, Specialist+, cu plata lor) înainte de Am terminat un contract; se notează într-o listă, cu numărul pe fiecare tip.",
+     "Adaugă: Sună-l pe Franklin: îi poți cere la telefon un Security Contract aleatoriu, de oriunde de pe hartă.",
+     "Schimbă: rândul pinului Agency spune că pinul e pe hartă singur; Vezi pe hartă, iar Înapoi la locul din joc doar după ce l-ai mutat."
+    ]
+   },
+   {
+    "area": "Acasă",
+    "items": [
+     "Schimbă: robotul bonusurilor săptămânale încearcă joia din oră în oră (12:17–20:17, ora României), pentru că GitHub mai sare câte o rulare programată."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.23.2",
   "date": "2026-10-29",
@@ -2246,6 +2316,13 @@ const Router = {
     const fill = (slot, v) => { slot.innerHTML = ""; if (!v) return; if (typeof v === "string") slot.innerHTML = v; else slot.appendChild(v); };
     fill($("#tbLeft"), s.tbLeft && (typeof s.tbLeft === "function" ? s.tbLeft() : s.tbLeft));
     fill($("#tbRight"), s.tbRight && (typeof s.tbRight === "function" ? s.tbRight() : s.tbRight));
+    // idea 80: the "In game" switch of the Production Manager on every page, at the same place (the end of the section's buttons).
+    // It is the very same switch: the Production Manager starts quietly in the background the first time another page needs it.
+    const pm = SECTIONS.production;
+    if (pm) {
+      if (!pm.ready) { pm.el = document.getElementById("sec-production"); pm.init && pm.init(); pm.ready = true; }
+      if (pm.ingameEl) (s === pm ? pm.tbRight : $("#tbRight")).appendChild(pm.ingameEl);
+    }
     applyI18n($("#topbar"));
     $("#tourBtn").hidden = !(s.tour && s.tour());
     this.renderPages();
@@ -2973,6 +3050,14 @@ Section({
 #sec-vehicles .vt-sug {grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px;}
 #sec-vehicles .vt-sug button {width: 34px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); cursor: pointer; font-size: 17px; line-height: 1;}
 #sec-vehicles .vt-sug button:hover {border-color: var(--accent);}
+#sec-vehicles .mod-hint {margin-top: 8px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); font-size: 13px; line-height: 1.7;}
+#sec-vehicles .mod-hint .mh {display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--border); white-space: nowrap; font-size: 12px;}
+#sec-vehicles .mod-hint .mh.hsw {border-color: #e0a12a;}
+#sec-vehicles .mod-hint .mh.imani {border-color: #3d8bfd;}
+#sec-vehicles .mod-hint .mh.benny {border-color: #c0392b;}
+#sec-vehicles .mod-hint .mh.arena {border-color: #8e44ad;}
+#sec-vehicles .check-row label.avail {color: var(--accent); font-weight: 600;}
+#sec-vehicles .check-row label.na {opacity: .55;}
 
 #sec-vehicles { min-height: calc(100vh - var(--header-h)); margin: 0; }
 .vm-garages .lbl { margin-left: 2px; }
@@ -3083,7 +3168,7 @@ Section({
           <option value="Dinka"><option value="Maibatsu"><option value="Western">
         </datalist>
       </div>
-      <div class="form-group"><label>Model</label><input id="model" data-i18n-ph="vm.exModel"></div>
+      <div class="form-group"><label>Model</label><input id="model" list="modelList" autocomplete="off" data-i18n-ph="vm.exModel"><datalist id="modelList"></datalist></div>
       <div class="form-group">
         <label data-i18n="vm.vType"></label>
         <select id="vtype"><option value="car" data-i18n="vm.vt_car"></option><option value="moto" data-i18n="vm.vt_moto"></option><option value="plane" data-i18n="vm.vt_plane"></option><option value="heli" data-i18n="vm.vt_heli"></option><option value="boat" data-i18n="vm.vt_boat"></option><option value="yacht" data-i18n="vm.vt_yacht"></option><option value="other" data-i18n="vm.vt_other"></option></select>
@@ -3119,6 +3204,7 @@ Section({
           <label><input type="checkbox" id="bennys"> Benny's</label>
           <label><input type="checkbox" id="imani"> Imani Tech</label>
         </div>
+        <div id="modHint" class="mod-hint" hidden></div>
         <select id="imaniType" disabled style="margin-top:8px">
           <option value="" data-i18n="vm.imaniType"></option><option>Lock-On Jammer</option><option>RC Unit</option>
         </select>
@@ -3253,7 +3339,7 @@ i18n({
     "vm.ghDisconnectConfirm": "Remove the token from this browser? The page becomes view-only.",
     "vm.ghUnsaved": "Changes are still being saved to GitHub.", "vm.noCarsView": "No cars published yet.",
     "vm.themeTitle": "Theme", "vm.themes": "Themes", "vm.customTheme": "Custom", "vm.bgColor": "Background", "vm.accentColor": "Accent", "vm.titleFont": "Title font", "vm.customHint": "Text colors adjust automatically so everything stays readable.",
-    "vm.dataMenuTitle": "Import/Export", "vm.menuCars": "Cars", "vm.menuGarages": "Garages", "vm.importNote": "Import replaces all existing data. Export a backup first.",
+    "vm.modHsw": "HSW possible (Hao's Special Works, LS Car Meet)", "vm.modImani": "Imani Tech possible (Agency Vehicle Workshop)", "vm.modBenny": v => `Benny's turns it into: ${v}`, "vm.modBennyOf": "Benny's version (Benny's upgrades)", "vm.modArena": v => `Arena Workshop: ${v}`, "vm.modHyd": "Hydraulics", "vm.modNone": "No special upgrades (HSW, Imani Tech, Benny's) for this one.", "vm.dataMenuTitle": "Import/Export", "vm.menuCars": "Cars", "vm.menuGarages": "Garages", "vm.importNote": "Import replaces all existing data. Export a backup first.",
     "vm.manufacturer": "Manufacturer", "vm.exPegassi": "e.g. Pegassi", "vm.exModel": "e.g. Oppressor MK II",
     "vm.classType": "Class / Type", "vm.exSuper": "e.g. Super", "vm.garage": "Garage", "vm.garageName": "Garage name",
     "vm.levelSpot": "Level / Spot", "vm.exSpot": "e.g. Garage B1 / Spot 3", "vm.notesOpt": "Notes (optional)",
@@ -3338,7 +3424,7 @@ i18n({
     "vm.ghDisconnectConfirm": "Ștergi token-ul din acest browser? Pagina devine doar pentru vizualizare.",
     "vm.ghUnsaved": "Modificările încă se salvează în GitHub.", "vm.noCarsView": "Nicio mașină publicată încă.",
     "vm.themeTitle": "Temă", "vm.themes": "Teme", "vm.customTheme": "Personalizat", "vm.bgColor": "Fundal", "vm.accentColor": "Accent", "vm.titleFont": "Font titlu", "vm.customHint": "Culorile textului se ajustează automat, ca totul să rămână lizibil.",
-    "vm.dataMenuTitle": "Import/Export", "vm.menuCars": "Mașini", "vm.menuGarages": "Garaje", "vm.importNote": "Importul înlocuiește toate datele existente. Fă întâi un export ca backup.",
+    "vm.modHsw": "Se poate HSW (Hao's Special Works, LS Car Meet)", "vm.modImani": "Se poate Imani Tech (Vehicle Workshop din Agency)", "vm.modBenny": v => `La Benny's devine: ${v}`, "vm.modBennyOf": "Versiune Benny's (upgrade-uri Benny's)", "vm.modArena": v => `Arena Workshop: ${v}`, "vm.modHyd": "Hidraulice", "vm.modNone": "Fără upgrade-uri speciale (HSW, Imani Tech, Benny's) pentru ea.", "vm.dataMenuTitle": "Import/Export", "vm.menuCars": "Mașini", "vm.menuGarages": "Garaje", "vm.importNote": "Importul înlocuiește toate datele existente. Fă întâi un export ca backup.",
     "vm.manufacturer": "Producător", "vm.exPegassi": "ex: Pegassi", "vm.exModel": "ex: Oppressor MK II",
     "vm.classType": "Clasă / Gen", "vm.exSuper": "ex: Super", "vm.garage": "Garaj", "vm.garageName": "Nume garaj",
     "vm.levelSpot": "Nivel / Loc", "vm.exSpot": "ex: Garage B1 / Loc 3", "vm.notesOpt": "Note (opțional)",
@@ -3370,6 +3456,11 @@ i18n({
     "vm.garageFullConfirm": (o) => `Garajul „${o.name}” este plin (${o.occ}/${o.slots}).\nSalvezi mașina acolo oricum?`
   }
 });
+
+// idea 81: every GTA Online vehicle (brand, model, class, type) for the suggestions in the car window, from the DurtyFree/gta-v-data-dumps
+// vehicles list; HSW (gtabase, October 2026), Imani Tech (the 20 cars with the Remote Control Unit), Benny's / Arena conversions (gtabase).
+// f: hsw, imani, benny = "the Benny's version this car turns into", bennyOf (it is a Benny's version), arena, hyd (hydraulics)
+const VM_CARS = [["","Airport Bus","Service","car"],["","Airtug","Utility","car"],["","Akula","Helicopter","heli"],["","Ambulance","Emergency","car"],["","Annihilator","Helicopter","heli"],["","Annihilator Stealth","Helicopter","heli"],["","Armored Boxville","Van","car"],["","B-11 Strikeforce","Plane","plane"],["","Barracks","Military","car"],["","Barrage","Military","car"],["","BMX","Cycle","moto"],["","Boxville","Van","car"],["","Burrito (Bail Enforcement)","Emergency","car"],["","Bus","Service","car"],["","Buzzard","Helicopter","heli"],["","Buzzard Attack Chopper","Helicopter","heli"],["","Caddy","Utility","car"],["","Cargo Plane","Plane","plane"],["","Cargobob","Helicopter","heli"],["","Chernobog","Military","car"],["","Cruiser","Cycle","moto"],["","Cuban 800","Plane","plane"],["","Dashound","Service","car"],["","Dock Handler","Industrial","car"],["","Docktug","Utility","car"],["","Duster","Plane","plane"],["","Endurex Race Bike","Cycle","moto"],["","F-160 Raiju","Plane","plane"],["","Festival Bus","Service","car"],["","FH-1 Hunter","Helicopter","heli"],["","FIB","Emergency","car"],["","Fixter","Cycle","moto"],["","Frogger","Helicopter","heli"],["","Higgins Helitours Maverick","Helicopter","heli"],["","Inductor","Cycle","moto"],["","Invade and Persuade Tank","Military","car"],["","Jet","Plane","plane"],["","Junk Energy Inductor","Cycle","moto"],["","Kraken","Boat","boat"],["","Kurtz 31 Patrol Boat","Boat","boat"],["","Lawn Mower","Utility","car"],["","LF-22 Starling","Plane","plane"],["","Mallard","Plane","plane"],["","Mammatus","Plane","plane"],["","Maverick","Helicopter","heli"],["","P-45 Nokota","Plane","plane"],["","P-996 LAZER","Plane","plane"],["","Police Bike","Emergency","moto"],["","Police Cruiser","Emergency","car"],["","Police Maverick","Helicopter","heli"],["","Police Predator","Boat","boat"],["","Police Prison Bus","Emergency","car"],["","Police Rancher","Emergency","car"],["","Police Riot","Emergency","car"],["","Police Roadcruiser","Emergency","car"],["","Police Transporter","Emergency","car"],["","Ramp Buggy","Off-Road","car"],["","Rat-Loader","Muscle","car"],["","RC Bandito","Off-Road","car"],["","RCV","Emergency","car"],["","Rental Shuttle Bus","Service","car"],["","Rhino Tank","Military","car"],["","Ripley","Utility","car"],["","RM-10 Bombushka","Plane","plane"],["","RO-86 Alkonost","Plane","plane"],["","Savage","Helicopter","heli"],["","Scorcher","Cycle","moto"],["","Scrap Truck","Utility","car"],["","Sea Sparrow","Helicopter","heli"],["","Sheriff Cruiser","Emergency","car"],["","Sheriff SUV","Emergency","car"],["","Skylift","Helicopter","heli"],["","Space Docker","Off-Road","car"],["","Sparrow","Helicopter","heli"],["","Submersible","Boat","boat"],["","Taxi","Service","car"],["","Tipper","Industrial","car"],["","Titan","Plane","plane"],["","TM-02 Khanjali","Military","car"],["","Tour Bus","Service","car"],["","Tow Truck","Utility","car"],["","Tractor","Utility","car"],["","Trashmaster","Service","car"],["","Tri-Cycles Race Bike","Cycle","moto"],["","Tug","Boat","boat"],["","Utility Truck","Utility","car"],["","V-65 Molotok","Plane","plane"],["","Valkyrie","Helicopter","heli"],["","Valkyrie MOD.0","Helicopter","heli"],["","Velum","Plane","plane"],["","Velum 5-Seater","Plane","plane"],["","Vetir","Military","car"],["","Vigilante","Super","car"],["","Volatol","Plane","plane"],["","Whippet Race Bike","Cycle","moto"],["Albany","Alpha","Sports","car"],["Albany","Brigham","Muscle","car"],["Albany","Buccaneer","Muscle","car",{"benny":"Buccaneer Custom"}],["Albany","Buccaneer Custom","Muscle","car",{"bennyOf":1,"hyd":1}],["Albany","Cavalcade","SUV","car"],["Albany","Cavalcade XL","SUV","car"],["Albany","Emperor","Sedan","car"],["Albany","Fränken Stange","Sports Classic","car"],["Albany","Hermes","Muscle","car"],["Albany","Lurcher","Muscle","car"],["Albany","Manana","Sports Classic","car",{"benny":"Manana Custom"}],["Albany","Manana Custom","Muscle","car",{"bennyOf":1,"hyd":1}],["Albany","Primo","Sedan","car",{"benny":"Primo Custom"}],["Albany","Primo Custom","Sedan","car",{"bennyOf":1,"hyd":1}],["Albany","Roosevelt","Sports Classic","car"],["Albany","Roosevelt Valor","Sports Classic","car"],["Albany","V-STR","Sports","car"],["Albany","Virgo","Muscle","car"],["Albany","Washington","Sedan","car"],["Annis","300R","Sports","car",{"imani":1}],["Annis","Apocalypse ZR380","Sports","car"],["Annis","Elegy Retro Custom","Sports","car",{"bennyOf":1}],["Annis","Elegy RH8","Sports","car",{"benny":"Elegy Retro Custom"}],["Annis","Euros","Sports","car"],["Annis","Euros X32","Coupe","car",{"hsw":1}],["Annis","Future Shock ZR380","Sports","car"],["Annis","Hardy","Sedan","car"],["Annis","Hellion","Off-Road","car"],["Annis","Minimus","Sedan","car"],["Annis","Nightmare ZR380","Sports","car"],["Annis","RE-7B","Super","car"],["Annis","Remus","Sports","car"],["Annis","S80RR","Super","car"],["Annis","Savestra","Sports Classic","car"],["Annis","ZR350","Sports","car"],["Benefactor","Apocalypse Bruiser","Off-Road","car"],["Benefactor","BR8","Open Wheel","car"],["Benefactor","Dubsta","SUV","car"],["Benefactor","Dubsta 6x6","Off-Road","car"],["Benefactor","Feltzer","Sports","car"],["Benefactor","Feltzer Classic","Sports Classic","car"],["Benefactor","Future Shock Bruiser","Off-Road","car"],["Benefactor","Glendale","Sedan","car",{"benny":"Glendale Custom","arena":"Bruiser (Arena)"}],["Benefactor","Glendale Custom","Sedan","car",{"bennyOf":1,"hyd":1}],["Benefactor","Krieger","Super","car"],["Benefactor","LM87","Super","car"],["Benefactor","Nightmare Bruiser","Off-Road","car"],["Benefactor","Panto","Compact","car"],["Benefactor","Schafter","Sedan","car"],["Benefactor","Schafter LWB","Sports","car"],["Benefactor","Schafter LWB (Armored)","Sedan","car"],["Benefactor","Schafter V12","Sports","car"],["Benefactor","Schafter V12 (Armored)","Sedan","car"],["Benefactor","Schlagen GT","Sports","car"],["Benefactor","Schwartzer","Sports","car"],["Benefactor","Serrano","SUV","car"],["Benefactor","SM722","Sports","car"],["Benefactor","Stirling GT","Sports Classic","car",{"hsw":1}],["Benefactor","Streiter","Sports","car"],["Benefactor","Surano","Sports","car"],["Benefactor","Terrorbyte","Commercial","car"],["Benefactor","Turreted Limo","Sedan","car"],["Benefactor","Vorschlaghammer","Sedan","car"],["Benefactor","XLS","SUV","car"],["Benefactor","XLS (Armored)","SUV","car"],["BF","Bifta","Off-Road","car"],["BF","Club","Compact","car"],["BF","Dune Buggy","Off-Road","car"],["BF","Dune FAV","Off-Road","car"],["BF","Injection","Off-Road","car"],["BF","Raptor","Sports","car"],["BF","Surfer","Van","car"],["BF","Surfer Custom","Van","car"],["BF","Weevil","Compact","car",{"benny":"Weevil Custom"}],["BF","Weevil Custom","Muscle","car",{"bennyOf":1}],["Bollokan","Envisage","Sports","car",{"imani":1}],["Bollokan","Prairie","Compact","car"],["Bravado","Apocalypse Sasquatch","Off-Road","car"],["Bravado","Banshee","Sports","car",{"hsw":1,"benny":"Banshee 900R"}],["Bravado","Banshee 900R","Super","car",{"bennyOf":1}],["Bravado","Banshee GTS","Sports","car",{"hsw":1}],["Bravado","Bison","Van","car"],["Bravado","Buffalo","Sports","car"],["Bravado","Buffalo Cruiser","Emergency","car"],["Bravado","Buffalo EVX","Muscle","car",{"hsw":1,"imani":1}],["Bravado","Buffalo S","Sports","car"],["Bravado","Buffalo STX","Muscle","car",{"imani":1}],["Bravado","Buffalo STX Pursuit","Emergency","car"],["Bravado","Dorado","SUV","car"],["Bravado","Dorado Cruiser","Emergency","car"],["Bravado","Duneloader","Off-Road","car"],["Bravado","Future Shock Sasquatch","Off-Road","car"],["Bravado","Gauntlet","Muscle","car"],["Bravado","Gauntlet Classic","Muscle","car",{"benny":"Gauntlet Classic Custom"}],["Bravado","Gauntlet Classic Custom","Muscle","car",{"bennyOf":1}],["Bravado","Gauntlet Hellfire","Muscle","car"],["Bravado","Gauntlet Interceptor","Emergency","car"],["Bravado","Greenwood","Muscle","car",{"imani":1}],["Bravado","Greenwood Cruiser","Emergency","car"],["Bravado","Gresley","SUV","car"],["Bravado","Half-track","Military","car"],["Bravado","Hotring Hellfire","Sports","car"],["Bravado","Nightmare Sasquatch","Off-Road","car"],["Bravado","Paradise","Van","car"],["Bravado","Rat-Truck","Muscle","car",{"arena":"Sasquatch (Arena)"}],["Bravado","Redwood Gauntlet","Muscle","car"],["Bravado","Rumpo","Van","car"],["Bravado","Rumpo Custom","Van","car"],["Bravado","Sprunk Buffalo","Sports","car"],["Bravado","Verlierer","Sports","car"],["Bravado","Youga","Van","car"],["Bravado","Youga Classic","Van","car",{"benny":"Youga Classic 4x4"}],["Bravado","Youga Classic 4x4","Van","car",{"bennyOf":1}],["Brute","Bobcat Security Stockade","Commercial","car"],["Brute","Boxville","Van","car"],["Brute","Boxville (LSDS)","Van","car"],["Brute","Camper","Van","car"],["Brute","Pony","Van","car"],["Brute","Stockade","Commercial","car"],["Brute","Taco Van","Van","car"],["Brute","Tipper","Industrial","car"],["Buckingham","Alpha-Z1","Plane","plane"],["Buckingham","Conada","Helicopter","heli"],["Buckingham","DH-7 Iron Mule","Helicopter","heli"],["Buckingham","Howard NX-25","Plane","plane"],["Buckingham","Luxor","Plane","plane"],["Buckingham","Luxor Deluxe","Plane","plane"],["Buckingham","Miljet","Plane","plane"],["Buckingham","Nimbus","Plane","plane"],["Buckingham","Pyro","Plane","plane"],["Buckingham","Shamal","Plane","plane"],["Buckingham","SuperVolito","Helicopter","heli"],["Buckingham","SuperVolito Carbon","Helicopter","heli"],["Buckingham","Swift","Helicopter","heli"],["Buckingham","Swift Deluxe","Helicopter","heli"],["Buckingham","Vestra","Plane","plane"],["Buckingham","Volatus","Helicopter","heli"],["Buckingham","Weaponized Conada","Helicopter","heli"],["Canis","Bodhi","Off-Road","car"],["Canis","Castigator","SUV","car"],["Canis","Crusader","Military","car"],["Canis","Freecrawler","Off-Road","car"],["Canis","Kalahari","Off-Road","car"],["Canis","Kamacho","Off-Road","car"],["Canis","Mesa","SUV","car"],["Canis","Seminole","SUV","car"],["Canis","Seminole Frontier","SUV","car"],["Canis","Terminus","Off-Road","car",{"imani":1}],["Canis","Terminus Patrol","Emergency","car"],["Chariot","Romero Hearse","Sedan","car"],["Cheval","Fugitive","Sedan","car"],["Cheval","Marshall","Off-Road","car"],["Cheval","Picador","Muscle","car"],["Cheval","Surge","Sedan","car"],["Cheval","Taipan","Super","car"],["Classique","Broadway","Muscle","car"],["Coil","Brawler","Off-Road","car"],["Coil","Cyclone","Super","car"],["Coil","Cyclone II","Super","car",{"hsw":1}],["Coil","Raiden","Sports","car"],["Coil","Rocket Voltic","Super","car"],["Coil","Voltic","Super","car"],["Declasse","Apocalypse Brutus","Off-Road","car"],["Declasse","Apocalypse Impaler","Muscle","car"],["Declasse","Asea","Sedan","car"],["Declasse","Bugstars Burrito","Van","car"],["Declasse","Burger Shot Stallion","Muscle","car"],["Declasse","Burrito","Van","car"],["Declasse","DR1","Open Wheel","car"],["Declasse","Draugur","Off-Road","car"],["Declasse","Drift Tampa","Sports","car"],["Declasse","Drift Walton L35","Off-Road","car"],["Declasse","Drift Yosemite","Muscle","car"],["Declasse","Future Shock Brutus","Off-Road","car"],["Declasse","Future Shock Impaler","Muscle","car"],["Declasse","Gang Burrito","Van","car"],["Declasse","Granger","SUV","car"],["Declasse","Granger 3600LX","SUV","car",{"imani":1}],["Declasse","Hotring Sabre","Sports","car"],["Declasse","Impaler","Muscle","car",{"arena":"Impaler (Arena)"}],["Declasse","Impaler LX","Muscle","car"],["Declasse","Impaler LX Cruiser","Emergency","car"],["Declasse","Impaler SZ","Muscle","car"],["Declasse","Impaler SZ Cruiser","Emergency","car"],["Declasse","Lifeguard","Emergency","car"],["Declasse","Mamba","Sports Classic","car"],["Declasse","Moonbeam","Muscle","car",{"benny":"Moonbeam Custom"}],["Declasse","Moonbeam Custom","Muscle","car",{"bennyOf":1,"hyd":1}],["Declasse","Nightmare Brutus","Off-Road","car"],["Declasse","Nightmare Impaler","Muscle","car"],["Declasse","Park Ranger","Emergency","car"],["Declasse","Premier","Sedan","car"],["Declasse","Rancher XL","Off-Road","car"],["Declasse","Rhapsody","Compact","car"],["Declasse","Sabre Turbo","Muscle","car",{"benny":"Sabre Turbo Custom"}],["Declasse","Sabre Turbo Custom","Muscle","car",{"bennyOf":1,"hyd":1}],["Declasse","Scramjet","Super","car"],["Declasse","Stallion","Muscle","car"],["Declasse","Tahoma Coupe","Muscle","car"],["Declasse","Tampa","Muscle","car"],["Declasse","Tampa GT","Muscle","car",{"hsw":1}],["Declasse","Tornado","Sports Classic","car",{"benny":"Tornado Custom"}],["Declasse","Tornado Custom","Sports Classic","car",{"bennyOf":1,"hyd":1}],["Declasse","Tornado Rat Rod","Sports Classic","car"],["Declasse","Tulip","Muscle","car"],["Declasse","Tulip M-100","Muscle","car"],["Declasse","Vamos","Muscle","car"],["Declasse","Vigero","Muscle","car"],["Declasse","Vigero ZX","Muscle","car",{"hsw":1}],["Declasse","Vigero ZX Convertible","Muscle","car",{"hsw":1}],["Declasse","Voodoo","Muscle","car",{"benny":"Voodoo Custom"}],["Declasse","Voodoo Custom","Muscle","car",{"bennyOf":1,"hyd":1}],["Declasse","Walton L35","Off-Road","car"],["Declasse","Walton L35 Stock","Off-Road","car"],["Declasse","Weaponized Tampa","Muscle","car"],["Declasse","Yosemite","Muscle","car",{"benny":"Yosemite Rancher"}],["Declasse","Yosemite 1500","Off-Road","car"],["Declasse","Yosemite Rancher","Off-Road","car",{"bennyOf":1}],["Dewbauchee","Champion","Super","car",{"imani":1}],["Dewbauchee","Exemplar","Coupe","car"],["Dewbauchee","JB 700","Sports Classic","car"],["Dewbauchee","JB 700W","Sports Classic","car"],["Dewbauchee","Massacro","Sports","car"],["Dewbauchee","Massacro (Racecar)","Sports","car"],["Dewbauchee","Rapid GT","Sports","car"],["Dewbauchee","Rapid GT Classic","Sports Classic","car"],["Dewbauchee","Rapid GT X","Sports","car"],["Dewbauchee","Seven-70","Sports","car"],["Dewbauchee","Specter","Sports","car",{"benny":"Specter Custom"}],["Dewbauchee","Specter Custom","Sports","car",{"bennyOf":1}],["Dewbauchee","Vagner","Super","car"],["Dinka","Akuma","Motorcycle","moto"],["Dinka","Blista","Compact","car"],["Dinka","Blista Compact","Sports","car"],["Dinka","Blista Kanjo","Compact","car"],["Dinka","Chavos V6","Sedan","car"],["Dinka","Double-T","Motorcycle","moto"],["Dinka","Enduro","Motorcycle","moto"],["Dinka","Go Go Monkey Blista","Sports","car"],["Dinka","Jester","Sports","car"],["Dinka","Jester (Racecar)","Sports","car"],["Dinka","Jester Classic","Sports Classic","car"],["Dinka","Jester RR","Sports","car"],["Dinka","Jester RR Widebody","Sports","car"],["Dinka","Kanjo SJ","Coupe","car"],["Dinka","Marquis","Boat","boat"],["Dinka","Postlude","Coupe","car"],["Dinka","RT3000","Sports","car"],["Dinka","Sugoi","Sports","car"],["Dinka","Thrust","Motorcycle","moto"],["Dinka","Verus","Off-Road","car"],["Dinka","Veto Classic","Sports","car"],["Dinka","Veto Modern","Sports","car"],["Dinka","Vindicator","Motorcycle","moto"],["Dundreary","Landstalker","SUV","car"],["Dundreary","Landstalker XL","SUV","car"],["Dundreary","Regina","Sedan","car"],["Dundreary","Stretch","Sedan","car"],["Dundreary","Virgo Classic","Muscle","car",{"benny":"Virgo Classic Custom"}],["Dundreary","Virgo Classic Custom","Muscle","car",{"bennyOf":1,"hyd":1}],["Eberhard","Titan 250 D","Plane","plane"],["Emperor","ETR1","Super","car"],["Emperor","Habanero","SUV","car"],["Emperor","Vectre","Sports","car"],["Enus","Cognoscenti","Sedan","car"],["Enus","Cognoscenti (Armored)","Sedan","car"],["Enus","Cognoscenti 55","Sedan","car"],["Enus","Cognoscenti 55 (Armored)","Sedan","car"],["Enus","Cognoscenti Cabrio","Coupe","car"],["Enus","Deity","Sedan","car",{"imani":1}],["Enus","Huntley S","SUV","car"],["Enus","Jubilee","SUV","car",{"imani":1}],["Enus","Paragon R","Sports","car"],["Enus","Paragon R (Armored)","Sports","car"],["Enus","Paragon S","Sports","car",{"imani":1}],["Enus","Stafford","Sedan","car"],["Enus","Super Diamond","Sedan","car"],["Enus","Windsor","Coupe","car"],["Enus","Windsor Drop","Coupe","car"],["Fathom","FQ 2","SUV","car"],["Fathom","FR36","Coupe","car"],["Gallivanter","Baller","SUV","car"],["Gallivanter","Baller LE","SUV","car"],["Gallivanter","Baller LE (Armored)","SUV","car"],["Gallivanter","Baller LE LWB","SUV","car"],["Gallivanter","Baller LE LWB (Armored)","SUV","car"],["Gallivanter","Baller ST","SUV","car"],["Gallivanter","Baller ST-D","SUV","car",{"imani":1}],["Grotti","Bestia GTS","Sports","car"],["Grotti","Brioso 300","Compact","car",{"benny":"Brioso 300 Widebody"}],["Grotti","Brioso 300 Widebody","Compact","car",{"bennyOf":1}],["Grotti","Brioso R/A","Compact","car",{"hsw":1}],["Grotti","Carbonizzare","Sports","car"],["Grotti","Cheetah","Super","car"],["Grotti","Cheetah Classic","Sports Classic","car"],["Grotti","Furia","Super","car"],["Grotti","GT500","Sports Classic","car"],["Grotti","GT750","Sports Classic","car"],["Grotti","Itali Classic","Sports Classic","car"],["Grotti","Itali GTO","Sports","car"],["Grotti","Itali GTO Stinger TT","Sports","car",{"hsw":1,"imani":1}],["Grotti","Itali RSX","Sports","car"],["Grotti","LSCM Cheetah Classic","Sports Classic","car"],["Grotti","Stinger","Sports Classic","car"],["Grotti","Stinger GT","Sports Classic","car"],["Grotti","Turismo Classic","Sports Classic","car",{"hsw":1}],["Grotti","Turismo Omaggio","Super","car",{"imani":1}],["Grotti","Turismo R","Super","car"],["Grotti","Veleno GT","Super","car",{"hsw":1}],["Grotti","Visione","Super","car"],["Grotti","X80 Proto","Super","car"],["Hijak","Khamelion","Sports","car"],["Hijak","Ruston","Sports","car"],["HVY","APC","Military","car"],["HVY","Apocalypse Scarab","Military","car"],["HVY","Barracks Semi","Military","car"],["HVY","Biff","Commercial","car"],["HVY","Cutter","Industrial","car"],["HVY","Dozer","Industrial","car"],["HVY","Dump","Industrial","car"],["HVY","Forklift","Utility","car"],["HVY","Future Shock Scarab","Military","car"],["HVY","Insurgent","Off-Road","car"],["HVY","Insurgent Pick-Up","Off-Road","car"],["HVY","Insurgent Pick-Up Custom","Off-Road","car"],["HVY","Menacer","Off-Road","car"],["HVY","Mixer","Industrial","car"],["HVY","Nightmare Scarab","Military","car"],["HVY","Nightshark","Off-Road","car"],["Imponte","Arbiter GT","Muscle","car",{"hsw":1}],["Imponte","Beater Dukes","Muscle","car"],["Imponte","Deluxo","Sports Classic","car"],["Imponte","Duke O'Death","Muscle","car"],["Imponte","Dukes","Muscle","car"],["Imponte","Nightshade","Muscle","car"],["Imponte","Phoenix","Muscle","car"],["Imponte","Ruiner","Muscle","car"],["Imponte","Ruiner 2000","Muscle","car"],["Imponte","Ruiner ZZ-8","Muscle","car"],["Invetero","Coquette","Sports","car"],["Invetero","Coquette BlackFin","Muscle","car"],["Invetero","Coquette Classic","Sports Classic","car"],["Invetero","Coquette D1","Sports Classic","car"],["Invetero","Coquette D10","Sports","car"],["Invetero","Coquette D10 Pursuit","Emergency","car"],["Invetero","Coquette D5","Sports","car"],["JoBuilt","Hauler","Commercial","car"],["JoBuilt","Hauler Custom","Commercial","car"],["JoBuilt","Phantom","Commercial","car"],["JoBuilt","Phantom Custom","Commercial","car"],["JoBuilt","Phantom Wedge","Commercial","car"],["JoBuilt","Rubble","Industrial","car"],["Karin","190z","Sports Classic","car"],["Karin","Asterope","Sedan","car"],["Karin","Asterope GZ","Sedan","car"],["Karin","BeeJay XL","SUV","car"],["Karin","Boor","Off-Road","car"],["Karin","Calico GTF","Sports","car"],["Karin","Dilettante","Compact","car"],["Karin","Everon","Off-Road","car"],["Karin","Everon RS","SUV","car"],["Karin","Futo","Sports","car"],["Karin","Futo GTX","Sports","car"],["Karin","Hotring Everon","Sports","car"],["Karin","Intruder","Sedan","car"],["Karin","Kuruma","Sports","car"],["Karin","Kuruma (Armored)","Sports","car"],["Karin","Previon","Coupe","car"],["Karin","Rebel","Off-Road","car"],["Karin","Rusty Rebel","Off-Road","car"],["Karin","S95","Sports","car",{"hsw":1}],["Karin","Sultan","Sports","car",{"benny":"Sultan RS"}],["Karin","Sultan Classic","Sports","car"],["Karin","Sultan RS","Super","car",{"bennyOf":1}],["Karin","Sultan RS Classic","Sports","car"],["Karin","Technical","Off-Road","car"],["Karin","Technical Aqua","Off-Road","car"],["Karin","Technical Custom","Off-Road","car"],["Karin","Vivanite","SUV","car",{"hsw":1}],["Karin","Woodlander","SUV","car",{"hsw":1}],["Kraken","Avisa","Boat","boat"],["Lampadati","Casco","Sports Classic","car"],["Lampadati","Cinquemila","Sedan","car"],["Lampadati","Corsita","Sports","car"],["Lampadati","Felon","Coupe","car"],["Lampadati","Felon GT","Coupe","car"],["Lampadati","Furore GT","Sports","car"],["Lampadati","Komoda","Sports","car"],["Lampadati","Michelli GT","Sports Classic","car"],["Lampadati","Novak","SUV","car"],["Lampadati","Pigalle","Sports Classic","car"],["Lampadati","Tigon","Super","car"],["Lampadati","Toro","Boat","boat"],["Lampadati","Tropos Rallye","Sports","car"],["Lampadati","Viseris","Sports Classic","car"],["LCC","Avarus","Motorcycle","moto"],["LCC","Hexer","Motorcycle","moto"],["LCC","Innovation","Motorcycle","moto"],["LCC","Sanctus","Motorcycle","moto"],["Maibatsu","Manchez","Motorcycle","moto"],["Maibatsu","Manchez Scout","Motorcycle","moto"],["Maibatsu","Manchez Scout C","Motorcycle","moto"],["Maibatsu","MonstroCiti","Off-Road","car",{"hsw":1,"imani":1}],["Maibatsu","Mule","Commercial","car"],["Maibatsu","Mule Custom","Commercial","car"],["Maibatsu","Penumbra","Sports","car"],["Maibatsu","Penumbra FF","Sports","car"],["Maibatsu","Sanchez","Motorcycle","moto"],["Maibatsu","Sanchez (livery)","Motorcycle","moto"],["Mammoth","Avenger","Plane","plane"],["Mammoth","Dodo","Plane","plane"],["Mammoth","Hydra","Plane","plane"],["Mammoth","Mogul","Plane","plane"],["Mammoth","Patriot","SUV","car"],["Mammoth","Patriot Mil-Spec","Off-Road","car",{"imani":1}],["Mammoth","Patriot Stretch","SUV","car"],["Mammoth","Squaddie","SUV","car"],["Mammoth","Streamer216","Plane","plane"],["Mammoth","Thruster","Military","heli"],["Mammoth","Tula","Plane","plane"],["Maxwell","Asbo","Compact","car"],["Maxwell","Vagrant","Off-Road","car"],["MTL","Apocalypse Cerberus","Commercial","car"],["MTL","Brickade","Service","car"],["MTL","Brickade 6x6","Service","car"],["MTL","Custom Flatbed","Industrial","car"],["MTL","Dune","Service","car"],["MTL","Fire Truck","Emergency","car"],["MTL","Flatbed","Industrial","car"],["MTL","Future Shock Cerberus","Commercial","car"],["MTL","Nightmare Cerberus","Commercial","car"],["MTL","Packer","Commercial","car"],["MTL","Pounder","Commercial","car"],["MTL","Pounder Custom","Commercial","car"],["MTL","Wastelander","Service","car"],["Nagasaki","BF400","Motorcycle","moto"],["Nagasaki","Blazer","Off-Road","car"],["Nagasaki","Blazer Aqua","Off-Road","car"],["Nagasaki","Blazer Lifeguard","Off-Road","car"],["Nagasaki","Carbon RS","Motorcycle","moto"],["Nagasaki","Chimera","Motorcycle","car"],["Nagasaki","Dinghy","Boat","boat"],["Nagasaki","Havok","Helicopter","heli"],["Nagasaki","Hot Rod Blazer","Off-Road","car"],["Nagasaki","Outlaw","Off-Road","car"],["Nagasaki","Shinobi","Motorcycle","moto"],["Nagasaki","Shotaro","Motorcycle","moto"],["Nagasaki","Street Blazer","Off-Road","car"],["Nagasaki","Stryder","Motorcycle","car"],["Nagasaki","Ultralight","Plane","plane"],["Nagasaki","Weaponized Dinghy","Boat","boat"],["Obey","10F","Sports","car",{"benny":"10F Widebody"}],["Obey","10F Widebody","Sports","car",{"bennyOf":1}],["Obey","8F Drafter","Sports","car"],["Obey","9F","Sports","car"],["Obey","9F Cabrio","Sports","car"],["Obey","I-Wagen","SUV","car"],["Obey","Omnis","Sports","car"],["Obey","Omnis e-GT","Sports","car",{"imani":1}],["Obey","Rocoto","SUV","car"],["Obey","Tailgater","Sedan","car"],["Obey","Tailgater S","Sedan","car"],["Ocelot","Ardent","Sports Classic","car"],["Ocelot","F620","Coupe","car"],["Ocelot","Jackal","Coupe","car"],["Ocelot","Jugular","Sports","car"],["Ocelot","Locust","Sports","car"],["Ocelot","Lynx","Sports","car"],["Ocelot","Pariah","Sports","car"],["Ocelot","Penetrator","Super","car"],["Ocelot","R88","Open Wheel","car"],["Ocelot","Stromberg","Sports Classic","car"],["Ocelot","Swinger","Sports Classic","car"],["Ocelot","Virtue","Super","car",{"imani":1}],["Ocelot","XA-21","Super","car"],["Overflod","Autarch","Super","car"],["Overflod","Entity MT","Super","car",{"hsw":1}],["Overflod","Entity XF","Super","car"],["Overflod","Entity XXR","Super","car"],["Overflod","Imorgon","Sports","car"],["Overflod","Pipistrello","Super","car"],["Overflod","Suzume","Super","car"],["Overflod","Tyrant","Super","car"],["Overflod","Zeno","Super","car"],["Pegassi","Bati 801","Motorcycle","moto"],["Pegassi","Bati 801RR","Motorcycle","moto"],["Pegassi","Esskey","Motorcycle","moto"],["Pegassi","Faggio","Motorcycle","moto"],["Pegassi","Faggio Mod","Motorcycle","moto"],["Pegassi","Faggio Sport","Motorcycle","moto"],["Pegassi","FCR 1000","Motorcycle","moto",{"benny":"FCR 1000 Custom"}],["Pegassi","FCR 1000 Custom","Motorcycle","moto",{"bennyOf":1}],["Pegassi","Ignus","Super","car"],["Pegassi","Infernus","Super","car"],["Pegassi","Infernus Classic","Sports Classic","car"],["Pegassi","Monroe","Sports Classic","car"],["Pegassi","Oppressor","Motorcycle","moto"],["Pegassi","Oppressor Mk II","Motorcycle","moto"],["Pegassi","Osiris","Super","car"],["Pegassi","Pizza Boy","Motorcycle","moto"],["Pegassi","Reaper","Super","car"],["Pegassi","Ruffian","Motorcycle","moto"],["Pegassi","Speeder","Boat","boat"],["Pegassi","Tempesta","Super","car"],["Pegassi","Tezeract","Super","car"],["Pegassi","Toreador","Sports Classic","car"],["Pegassi","Torero","Sports Classic","car"],["Pegassi","Torero XO","Super","car"],["Pegassi","Toros","SUV","car"],["Pegassi","Vacca","Super","car"],["Pegassi","Vortex","Motorcycle","moto"],["Pegassi","Weaponized Ignus","Super","car",{"hsw":1}],["Pegassi","Zentorno","Super","car"],["Pegassi","Zorrusso","Super","car"],["Penaud","La Coureuse","Sports","car",{"hsw":1,"imani":1}],["Pfister","811","Super","car"],["Pfister","Astrale","Sports Classic","car",{"hsw":1}],["Pfister","Astron","SUV","car"],["Pfister","Astron Custom","SUV","car",{"hsw":1}],["Pfister","Comet","Sports","car",{"benny":"Comet Retro Custom"}],["Pfister","Comet Retro Custom","Sports","car",{"bennyOf":1}],["Pfister","Comet S2","Sports","car"],["Pfister","Comet S2 Cabrio","Sports","car"],["Pfister","Comet Safari","Sports","car"],["Pfister","Comet SR","Sports","car"],["Pfister","Growler","Sports","car"],["Pfister","Neon","Sports","car"],["Pfister","X-treme","Super","car"],["Principe","Deveste Eight","Super","car",{"hsw":1}],["Principe","Diabolus","Motorcycle","moto",{"benny":"Diabolus Custom"}],["Principe","Diabolus Custom","Motorcycle","moto",{"bennyOf":1}],["Principe","Lectro","Motorcycle","moto"],["Principe","Nemesis","Motorcycle","moto"],["Progen","Emerus","Super","car"],["Progen","GP1","Super","car"],["Progen","Itali GTB","Super","car",{"benny":"Itali GTB Custom"}],["Progen","Itali GTB Custom","Super","car",{"bennyOf":1}],["Progen","Luiva","Super","car"],["Progen","PR4","Open Wheel","car"],["Progen","T20","Super","car"],["Progen","Tyrus","Super","car"],["RUNE","Cheburek","Sports Classic","car"],["RUNE","Kosatka","Boat","boat"],["RUNE","Zhaba","Off-Road","car"],["Schyster","Deviant","Muscle","car"],["Schyster","Fusilade","Sports","car"],["Shitzu","Defiler","Motorcycle","moto"],["Shitzu","Hakuchou","Motorcycle","moto"],["Shitzu","Hakuchou Drag","Motorcycle","moto",{"hsw":1}],["Shitzu","Jetmax","Boat","boat"],["Shitzu","Keitora","Utility","car"],["Shitzu","Longfin","Boat","boat"],["Shitzu","PCJ 600","Motorcycle","moto"],["Shitzu","Squalo","Boat","boat"],["Shitzu","Suntrap","Boat","boat"],["Shitzu","Tropic","Boat","boat"],["Shitzu","Vader","Motorcycle","moto"],["Speedophile","Seashark","Boat","boat"],["Stanley","Fieldmaster","Utility","car"],["Toundra","Panthere","Sports","car"],["Truffade","Adder","Super","car"],["Truffade","Nero","Super","car",{"benny":"Nero Custom"}],["Truffade","Nero Custom","Super","car",{"bennyOf":1}],["Truffade","Thrax","Super","car"],["Truffade","Z-Type","Sports Classic","car"],["Vapid","Aleutian","SUV","car",{"imani":1}],["Vapid","Apocalypse Dominator","Muscle","car"],["Vapid","Apocalypse Imperator","Muscle","car"],["Vapid","Apocalypse Slamvan","Muscle","car"],["Vapid","Benson","Commercial","car"],["Vapid","Benson (Cluckin' Bell)","Commercial","car"],["Vapid","Blade","Muscle","car"],["Vapid","Bobcat XL","Van","car"],["Vapid","Bullet","Super","car"],["Vapid","Caracara","Off-Road","car"],["Vapid","Caracara 4x4","Off-Road","car"],["Vapid","Caracara Pursuit","Emergency","car"],["Vapid","Chino","Muscle","car",{"benny":"Chino Custom"}],["Vapid","Chino Custom","Muscle","car",{"bennyOf":1,"hyd":1}],["Vapid","Clique","Muscle","car"],["Vapid","Clique Wagon","Muscle","car"],["Vapid","Clown Van","Van","car"],["Vapid","Contender","SUV","car"],["Vapid","Desert Raid","Off-Road","car"],["Vapid","Dominator","Muscle","car",{"arena":"Dominator (Arena)"}],["Vapid","Dominator ASP","Muscle","car"],["Vapid","Dominator FX","Muscle","car"],["Vapid","Dominator FX Interceptor","Emergency","car"],["Vapid","Dominator GT","Muscle","car"],["Vapid","Dominator GTT","Muscle","car"],["Vapid","Dominator GTX","Muscle","car"],["Vapid","Ellie","Muscle","car"],["Vapid","Firebolt ASP","Off-Road","car",{"hsw":1}],["Vapid","Flash GT","Sports","car"],["Vapid","FMJ","Super","car"],["Vapid","FMJ MK V","Super","car",{"hsw":1}],["Vapid","Future Shock Dominator","Muscle","car"],["Vapid","Future Shock Imperator","Muscle","car"],["Vapid","Future Shock Slamvan","Muscle","car"],["Vapid","GB200","Sports","car"],["Vapid","Guardian","Industrial","car"],["Vapid","Hotknife","Muscle","car"],["Vapid","Hustler","Muscle","car"],["Vapid","Lost Slamvan","Muscle","car"],["Vapid","Minivan","Van","car",{"benny":"Minivan Custom"}],["Vapid","Minivan Custom","Van","car",{"bennyOf":1,"hyd":1}],["Vapid","Monster","Off-Road","car"],["Vapid","Nightmare Dominator","Muscle","car"],["Vapid","Nightmare Imperator","Muscle","car"],["Vapid","Nightmare Slamvan","Muscle","car"],["Vapid","Peyote","Sports Classic","car",{"benny":"Peyote Custom"}],["Vapid","Peyote Custom","Sports Classic","car",{"bennyOf":1,"hyd":1}],["Vapid","Peyote Gasser","Muscle","car"],["Vapid","Pisswasser Dominator","Muscle","car"],["Vapid","Radius","SUV","car"],["Vapid","Ratel","Off-Road","car"],["Vapid","Retinue","Sports Classic","car"],["Vapid","Retinue Mk II","Sports Classic","car"],["Vapid","Riata","Off-Road","car"],["Vapid","Sadler","Utility","car"],["Vapid","Sandking SWB","Off-Road","car"],["Vapid","Sandking XL","Off-Road","car"],["Vapid","Slamtruck","Utility","car",{"hyd":1}],["Vapid","Slamvan","Muscle","car",{"benny":"Slamvan Custom","arena":"Slamvan (Arena)"}],["Vapid","Slamvan Custom","Muscle","car",{"bennyOf":1,"hyd":1}],["Vapid","Speedo","Van","car"],["Vapid","Speedo Custom","Van","car"],["Vapid","Stanier","Sedan","car"],["Vapid","Stanier LE Cruiser","Emergency","car"],["Vapid","Trophy Truck","Off-Road","car"],["Vapid","Unmarked Cruiser","Emergency","car"],["Vapid","Uranus LozSpeed","Sports Classic","car"],["Vapid","Winky","Off-Road","car"],["Vapid","Youga Custom","Van","car"],["Vulcar","Fagaloa","Sports Classic","car"],["Vulcar","Ingot","Sedan","car"],["Vulcar","Nebula Turbo","Sports Classic","car"],["Vulcar","Warrener","Sedan","car"],["Vulcar","Warrener HKR","Sedan","car"],["Vysser","Neo","Sports","car"],["Weeny","Apocalypse Issi","Compact","car"],["Weeny","Dynasty","Sports Classic","car"],["Weeny","Future Shock Issi","Compact","car"],["Weeny","Issi","Compact","car"],["Weeny","Issi Classic","Compact","car",{"arena":"Issi (Arena)"}],["Weeny","Issi Rally","SUV","car",{"hsw":1}],["Weeny","Issi Sport","Sports","car"],["Weeny","Nightmare Issi","Compact","car"],["Western","Apocalypse Deathbike","Motorcycle","moto"],["Western","Bagger","Motorcycle","moto"],["Western","Besra","Plane","plane"],["Western","Cliffhanger","Motorcycle","moto"],["Western","Daemon","Motorcycle","moto"],["Western","Daemon Custom","Motorcycle","moto"],["Western","Duster 300-H","Plane","plane"],["Western","Future Shock Deathbike","Motorcycle","moto"],["Western","Gargoyle","Motorcycle","moto",{"arena":"Deathbike (Arena)"}],["Western","Nightblade","Motorcycle","moto"],["Western","Nightmare Deathbike","Motorcycle","moto"],["Western","Police Bike","Emergency","moto"],["Western","Powersurge","Motorcycle","moto"],["Western","Rampant Rocket","Motorcycle","car"],["Western","Rat Bike","Motorcycle","moto"],["Western","Reever","Motorcycle","moto"],["Western","Rogue","Plane","plane"],["Western","Seabreeze","Plane","plane"],["Western","Sovereign","Motorcycle","moto"],["Western","Wolfsbane","Motorcycle","moto"],["Western","Zombie Bobber","Motorcycle","moto"],["Western","Zombie Chopper","Motorcycle","moto"],["Willard","Eudora","Muscle","car",{"hyd":1}],["Willard","Faction","Muscle","car",{"benny":"Faction Custom, Faction Custom Donk"}],["Willard","Faction Custom","Muscle","car",{"bennyOf":1,"hyd":1}],["Willard","Faction Custom Donk","Muscle","car",{"bennyOf":1,"hyd":1}],["Willard","Outreach Faction","Emergency","car"],["Zirconium","Journey","Van","car"],["Zirconium","Journey II","Van","car"],["Zirconium","Stratum","Sedan","car"],["Übermacht","Cypher","Sports","car"],["Übermacht","Niobe","Sports","car",{"hsw":1}],["Übermacht","Oracle","Coupe","car"],["Übermacht","Oracle XS","Coupe","car"],["Übermacht","Rebla GTS","SUV","car"],["Übermacht","Revolter","Sports","car"],["Übermacht","Rhinehart","Sedan","car"],["Übermacht","SC1","Super","car"],["Übermacht","Sentinel","Coupe","car"],["Übermacht","Sentinel Classic","Sports","car",{"benny":"Sentinel Classic Widebody"}],["Übermacht","Sentinel Classic Widebody","Sports","car",{"bennyOf":1}],["Übermacht","Sentinel GTS","Sports","car"],["Übermacht","Sentinel XS","Coupe","car",{"hsw":1}],["Übermacht","Sentinel XS4","Sedan","car"],["Übermacht","Zion","Coupe","car"],["Übermacht","Zion Cabrio","Coupe","car"],["Übermacht","Zion Classic","Sports Classic","car"]];
 
 i18n({
   en: { "vm.garagesLbl": "Garages", "vm.menuData": "GitHub",
@@ -3817,6 +3908,46 @@ Section({
       cx.putImageData(d, 0, 0);
     }
     byId("imani").onchange = e => byId("imaniType").disabled = !e.target.checked;
+    /* idea 81: the models of the chosen brand are suggested (every GTA Online vehicle, VM_CARS), and the window says which special
+       upgrades the model can take: HSW, Imani Tech, a Benny's or Arena Workshop version, hydraulics */
+    const nrm = s => String(s || "").toLowerCase().replace(/ü/g, "u").replace(/[^a-z0-9]/g, "");
+    const brandListEl = byId("brandList");
+    brandListEl.innerHTML = [...new Set(VM_CARS.map(r => r[0]).filter(Boolean))].map(b => `<option value="${esc(b)}">`).join("");
+    const fillModels = () => {
+      const b = nrm(byId("brand").value);
+      const list = VM_CARS.filter(r => !b || nrm(r[0]) === b);
+      byId("modelList").innerHTML = list.map(r => `<option value="${esc(r[1])}">${b ? esc(r[2]) : esc(r[0] + " · " + r[2])}</option>`).join("");
+    };
+    const findCar = () => {
+      const b = nrm(byId("brand").value), m = nrm(byId("model").value);
+      if (!m) return null;
+      return VM_CARS.find(r => nrm(r[1]) === m && (!b || nrm(r[0]) === b)) || null;
+    };
+    const showMods = (auto) => {
+      const r = findCar(), box = byId("modHint"), f = (r && r[4]) || {};
+      ["hsw", "imani", "bennys"].forEach(k => byId(k).closest("label").classList.remove("avail", "na"));
+      if (!r) { box.hidden = true; return; }
+      if (auto) {
+        if (!byId("brand").value.trim() && r[0]) byId("brand").value = r[0];
+        if (!byId("cls").value.trim() && r[2]) byId("cls").value = r[2];
+        if (editCarId == null && byId("vtype").value === "car" && r[3] && r[3] !== "car" && [...byId("vtype").options].some(o => o.value === r[3])) byId("vtype").value = r[3];
+      }
+      const tags = [];
+      if (f.hsw) tags.push(`<span class="mh hsw">⚡ ${T("modHsw")}</span>`);
+      if (f.imani) tags.push(`<span class="mh imani">🛡 ${T("modImani")}</span>`);
+      if (f.benny) tags.push(`<span class="mh benny">🔧 ${T("modBenny", esc(f.benny))}</span>`);
+      if (f.bennyOf) tags.push(`<span class="mh benny">🔧 ${T("modBennyOf")}</span>`);
+      if (f.arena) tags.push(`<span class="mh arena">🏟 ${T("modArena", esc(f.arena))}</span>`);
+      if (f.hyd) tags.push(`<span class="mh hyd">↕ ${T("modHyd")}</span>`);
+      byId("hsw").closest("label").classList.add(f.hsw ? "avail" : "na");
+      byId("imani").closest("label").classList.add(f.imani ? "avail" : "na");
+      byId("bennys").closest("label").classList.add(f.benny || f.bennyOf ? "avail" : "na");
+      box.innerHTML = `<b>${esc((r[0] ? r[0] + " " : "") + r[1])}</b> · ${esc(r[2])}<br>` + (tags.length ? tags.join(" ") : `<span class="muted">${T("modNone")}</span>`);
+      box.hidden = false;
+    };
+    byId("brand").addEventListener("input", () => { fillModels(); showMods(false); });
+    byId("model").addEventListener("input", () => showMods(true));
+    byId("model").addEventListener("focus", fillModels);
 
     /* ---------- garages: occupancy ---------- */
     // a garage is { name, slots } or, with levels, { name, slots, levels: [{ name, slots }] } (slots = sum of the levels)
@@ -3981,6 +4112,7 @@ Section({
       byId("photoEditBtn").hidden = !(c && c.image);
       updateGarageInfo();
       updateLevelPicker(c ? c.spot || "" : "");
+      fillModels(); showMods(false);
       carDlg.showModal();
     }
     async function saveCar() {
@@ -4808,6 +4940,25 @@ Section({
 #sec-production .dre-pay {grid-template-columns: 1fr;}
 #sec-production .dre-back {margin-left: 0;}
 }
+#sec-production .ag-pinline {display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--muted);}
+#sec-production .ag-ups {display: flex; flex-direction: column; gap: 8px; margin-top: 12px;}
+#sec-production .ag-ups h4 {margin: 0 0 2px;}
+#sec-production .ag-up {display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); cursor: pointer; line-height: 1.35;}
+#sec-production .ag-up.on {border-color: color-mix(in srgb, var(--ok) 60%, var(--line)); background: color-mix(in srgb, var(--ok) 8%, transparent);}
+#sec-production .ag-up input {margin-top: 3px;}
+#sec-production .ag-up-ico {font-size: 20px;}
+#sec-production .sc-pick {display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;}
+#sec-production .sc-chips {display: flex; flex-wrap: wrap; gap: 6px;}
+#sec-production .sc-chip {padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font-size: 13px; cursor: pointer;}
+#sec-production .sc-chip.on {border-color: var(--sodium); background: color-mix(in srgb, var(--sodium) 22%, var(--panel-2)); font-weight: 600;}
+#sec-production .sc-log {margin: 4px 0 10px; font-size: 13px;}
+#sec-production .sc-log summary {cursor: pointer; color: var(--muted);}
+#sec-production .sc-log ul {margin: 6px 0 0; padding-left: 18px;}
+#sec-production .sc-log li span {color: var(--muted); margin-right: 4px;}
+#sec-production .sc-counts {display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px;}
+#sec-production .sc-franklin {display: flex; gap: 10px; align-items: flex-start; margin: 12px 0 4px; padding: 10px; border-radius: 10px; background: color-mix(in srgb, #4a87d6 18%, var(--panel-2)); border: 1px solid color-mix(in srgb, #4a87d6 50%, var(--line));}
+#sec-production .sc-franklin img {width: 40px; height: 44px; border-radius: 6px; object-fit: cover; flex: none;}
+#sec-production .sc-franklin p {margin: 2px 0 0; font-size: 13px;}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -4832,19 +4983,19 @@ body[data-sec="production"] { overflow: hidden; }
 #sec-production .ceo-sp label { display: flex; align-items: center; gap: 8px; font-size: 13px; }
 #sec-production .ceo-sp label span { flex: 1; }
 #sec-production .ceo-sp input { width: 56px; text-align: center; }
-.pm-tb .ingame {display: flex; align-items: center; gap: 10px; padding: 5px 12px 5px 6px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); user-select: none;}
-.pm-tb .ingame .track {position: relative; width: 44px; height: 24px; border-radius: 999px; background: var(--steel); transition: background .25s cubic-bezier(.2, .8, .2, 1);}
-.pm-tb .ingame .track::after {content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--text); transition: transform .25s cubic-bezier(.2, .8, .2, 1);}
-.pm-tb .ingame.on {border-color: color-mix(in srgb, var(--ok) 60%, var(--line));}
-.pm-tb .ingame.on .track {background: var(--ok);}
-.pm-tb .ingame.on .track::after {transform: translateX(20px);}
-.pm-tb .ingame .lbl {font: 600 15px/1.1 'Barlow Condensed', 'Arial Narrow', sans-serif; letter-spacing: .02em;}
-.pm-tb .ingame .sub {display: block; font: 400 12px/1.1 Barlow, 'Segoe UI', system-ui, sans-serif; color: var(--muted);}
-.pm-tb .ingame.on .sub {color: var(--ok);}
+#topbar .ingame {display: flex; align-items: center; gap: 10px; padding: 5px 12px 5px 6px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); user-select: none;}
+#topbar .ingame .track {position: relative; width: 44px; height: 24px; border-radius: 999px; background: var(--steel); transition: background .25s cubic-bezier(.2, .8, .2, 1);}
+#topbar .ingame .track::after {content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--text); transition: transform .25s cubic-bezier(.2, .8, .2, 1);}
+#topbar .ingame.on {border-color: color-mix(in srgb, var(--ok) 60%, var(--line));}
+#topbar .ingame.on .track {background: var(--ok);}
+#topbar .ingame.on .track::after {transform: translateX(20px);}
+#topbar .ingame .lbl {font: 600 15px/1.1 'Barlow Condensed', 'Arial Narrow', sans-serif; letter-spacing: .02em;}
+#topbar .ingame .sub {display: block; font: 400 12px/1.1 Barlow, 'Segoe UI', system-ui, sans-serif; color: var(--muted);}
+#topbar .ingame.on .sub {color: var(--ok);}
 .pm-tb .head-stat {text-align: right; line-height: 1.15;}
 .pm-tb .head-stat b {display: block; font: 700 18px/1.1 'Barlow Condensed', 'Arial Narrow', sans-serif;}
 .pm-tb .head-stat small {color: var(--muted); font-size: 12px;}
-.pm-tb .ingame { cursor: pointer; }
+#topbar .ingame { cursor: pointer; }
 .pm-tb .head-stat .hs-lbl { font-style: normal; font-size: .62em; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-right: 3px; }
 /* "here I am": the pin of the business under the mouse in the menu */
 #sec-production .pin.spot { z-index: 199999 !important; }
@@ -4903,12 +5054,12 @@ html[data-anim="off"] #sec-production .pin.spot .pin-disc, html[data-anim="off"]
 }
 @media (max-width: 760px), (max-height: 520px) {
   .pm-tb .head-stat { display: none; }
-  .pm-tb .ingame { padding: 4px 10px 4px 5px; gap: 7px; flex: 0 0 auto; }
-  .pm-tb .ingame .track { width: 38px; height: 22px; }
-  .pm-tb .ingame .track::after { width: 16px; height: 16px; }
-  .pm-tb .ingame.on .track::after { transform: translateX(16px); }
-  .pm-tb .ingame .lbl { white-space: nowrap; font-size: 14px; }
-  .pm-tb .ingame .sub { display: none; }
+  #topbar .ingame { padding: 4px 10px 4px 5px; gap: 7px; flex: 0 0 auto; }
+  #topbar .ingame .track { width: 38px; height: 22px; }
+  #topbar .ingame .track::after { width: 16px; height: 16px; }
+  #topbar .ingame.on .track::after { transform: translateX(16px); }
+  #topbar .ingame .lbl { white-space: nowrap; font-size: 14px; }
+  #topbar .ingame .sub { display: none; }
 }
 </style>
 <section class="sec" id="sec-production" hidden>
@@ -5055,7 +5206,7 @@ i18n({
     "pm.ncPriv": "Private / Invite Only", "pm.ncPub": "Full public lobby (+50%)", "pm.ncOpenPage": "Open the Nightclub page", "pm.locPick": "Which one in the game?",
     "pm.agHubSub": "Your Agency: the Security Contracts with the office safe, and Dr. Dre's VIP Contract.", "pm.agTileSc": "The office safe and the Security Contracts.", "pm.ah1t": "Agency", "pm.ah1b": "Tick that you own it and pick its area.", "pm.ah2t": "Two parts", "pm.ah2b": "Security Contracts (the safe) and Dr. Dre Contract. Tap one to open it.", "pm.dreSub": "Dr. Dre's VIP Contract, run from your Agency's computer: 13 missions, solo or with up to 3 friends.", "pm.dreProg": "Done", "pm.drePayNow": "The finale pays now", "pm.dreWeekFree": "first finale this week: bonus", "pm.dreWeekUsed": "weekly bonus used (new on Thursday)", "pm.dreReplay": "Can be replayed", "pm.dreReady": "now", "pm.dreFinales": n => n ? `finished ${n} time(s)` : "not done yet", "pm.dreFinaleBtn": "I finished the finale", "pm.dreFinaleToast": v => `Dr. Dre Contract done: ${v}. The list starts again, and I'll ring when it can be replayed.`, "pm.dreReset": "Clear the ticks", "pm.dreResetToast": "Ticks cleared.", "pm.dreReplayNote": "Dr. Dre Contract can be replayed (Agency computer)", "pm.dreHow": "Fastest: the three Leaks go in any order, so do Nightlife and South Central (easy shooting) first and keep High Society, the hardest finale, for when you are warmed up. Between missions step out of the Agency for Franklin's call, then back to the computer. On replays the two setups are skipped.", "pm.dreSetupDone": "Done once: on replays these two stay in the computer's Archive and are skipped.", "pm.dreSetupUndo": "Show them again", "pm.dreG_setup": "Setup (once)", "pm.dreG_night": "Nightlife Leak", "pm.dreG_high": "High Society Leak", "pm.dreG_south": "South Central Leak", "pm.dreG_end": "Finale", "pm.dreGh_night": "Easy: straight shooting.", "pm.dreGh_high": "Hardest finale: bring your best weapons and armour.", "pm.dreGh_south": "Lots of enemies, but simple.", "pm.dre_oncourse": "On Course", "pm.dreTip_oncourse": "Golf club meeting, mostly cutscenes. Ram the two runners with the cart until the bar fills, then the pier.", "pm.dre_datarec": "Setup: Data Recovery", "pm.dreTip_datarec": "Land on the marked skyscraper, grenade the door in the far left corner, hold the doorway, take the drive from a cabinet. Parachute down and hide to lose the cops.", "pm.dre_nclub": "The Nightclub", "pm.dreTip_nclub": "Go in loud and skip the cleaning van (it costs more time than it saves). The tape is in the round VIP room upstairs.", "pm.dre_marina": "The Marina", "pm.dreTip_marina": "Reach the yacht's bridge, then photograph the evidence in the cabin. Once the photo is sent it counts, even if you die after.", "pm.dre_nfinal": "Nightlife Leak (finale)", "pm.dreTip_nfinal": "Casino garage, lift to the penthouse; the DJ with the laptop is at the back. Fight down to the VIP area, take the laptop, leave.", "pm.dre_country": "The Country Club", "pm.dreTip_country": "Drop from the roof next to the keypad to avoid the cameras. Hack, then catch the limo driver right away instead of tailing.", "pm.dre_guest": "Guest List", "pm.dreTip_guest": "Clear the guards in the back yard, stun the lawyer (blue dot), put him in his own car's trunk, drive to the Agency.", "pm.dre_hfinal": "High Society Leak (finale)", "pm.dreTip_hfinal": "Hold a corner at the party and shoot the helicopter down there. If you steal the pursuers' car without killing them, no more spawn.", "pm.dre_davis": "Davis", "pm.dreTip_davis": "Drive Vernon's car, clear the area with the allies, take the white van, lose dealers and cops, drop it off.", "pm.dre_ballas": "The Ballas", "pm.dreTip_ballas": "After the fight ignore the police: follow Vernon into the garage, the cutscene clears your wanted level.", "pm.dre_sfinal": "South Central Leak (finale)", "pm.dreTip_sfinal": "Take the car outside the Agency, follow the two cars, clear the ambush, chase and drop the phone's owner, take his car back.", "pm.dre_studio": "Studio Time", "pm.dreTip_studio": "From the hallway marker. Damage to Dre's car has no penalty. Clear outside first, then the inside; watch your back.", "pm.dre_finale": "Don't F**k With Dre", "pm.dreTip_finale": "Target: Mirror Park railyard, far corner on the right edge. Then the airport hangar; wound him on the platform. Shorter than Studio Time.", "pm.dt1t": "Dr. Dre Contract", "pm.dt1b": "Tick the missions as you go; the finale button records the payout and starts the replay timer.", "pm.dt2t": "Pay and replay", "pm.dt2b": "$1,099,800 on the first finale of the week, then $900,000; replay about 48 minutes later.", "pm.dt3t": "The missions", "pm.dt3b": "Each with a short tip for the fastest way.",
     "pm.agOpenTag": "Open", "pm.agSub": "The office safe and the Security Contracts. The safe fills while you play, like the Nightclub's.",
-    "pm.agNotOwned": "Tick it if you own an Agency: the safe and the Security Contracts show up.", "pm.agPinBtn": "Place on the map",
+    "pm.agNotOwned": "Tick it if you own an Agency: the safe and the Security Contracts show up.", "pm.agPinAuto": "On the map by itself, at your Agency's place.", "pm.agPinMoved": "On the map where you moved it.", "pm.agPinSee": "See on the map", "pm.agPinReset": "Back to the game's place", "pm.agUps": "Agency upgrades", "pm.agUp_armory": "Armory", "pm.agUp_quarters": "Accommodation", "pm.agUp_workshop": "Vehicle Workshop", "pm.agUpTxt_armory": "Your own Ammu-Nation in the Agency: weapons, armour and their upgrades.", "pm.agUpTxt_quarters": "Personal quarters: a bed, the wardrobe and the Agency as your spawn point.", "pm.agUpTxt_workshop": "Vehicle mods in the Agency, with Imani Tech (Missile Lock-On Jammer, Remote Control Unit) on the cars that take it.", "pm.scType": "Which contract", "pm.scTier": "Difficulty", "pm.scPay": "Pays", "pm.scPickHint": "Optional: pick the type and the difficulty before pressing the button, to keep track of them.", "pm.scLog": n => `Contracts noted (${n})`, "pm.scNoType": "type not picked", "pm.scCallT": "Call Franklin", "pm.scCallTxt": "From the phone (Contacts → Franklin) you can ask for a Security Contract from anywhere on the map, without going to the Agency. It is a random one: you can't pick it.", "pm.agPinBtn": "Place on the map",
     "pm.agSafe": "Office safe", "pm.agNow": "In the safe now", "pm.agPaused": "Turn on “In game” (top) and the safe fills while you play.", "pm.agFullHint": "The safe is full: empty it in the game.",
     "pm.agLeft": m => `Full in ${m}.`, "pm.agNoPay": "No income yet: it starts after the first 5 Security Contracts.",
     "pm.agContracts": "Security Contracts done", "pm.agPerDay": "Into the safe per in-game day (48 min)", "pm.agTyped": "typed",
@@ -5251,7 +5402,7 @@ i18n({
     "pm.ncPriv": "Privat / Invite Only", "pm.ncPub": "Lobby public plin (+50%)", "pm.ncOpenPage": "Deschide pagina Nightclub", "pm.locPick": "Care e, din joc?",
     "pm.agHubSub": "Agency-ul tău: Security Contracts cu seiful din birou și VIP Contract-ul lui Dr. Dre.", "pm.agTileSc": "Seiful din birou și Security Contracts.", "pm.ah1t": "Agency", "pm.ah1b": "Bifează că îl ai și alege-i zona.", "pm.ah2t": "Două părți", "pm.ah2b": "Security Contracts (seiful) și Dr. Dre Contract. Apasă una ca s-o deschizi.", "pm.dreSub": "VIP Contract-ul lui Dr. Dre, pornit din computerul Agency: 13 misiuni, solo sau cu până la 3 prieteni.", "pm.dreProg": "Făcute", "pm.drePayNow": "Finala plătește acum", "pm.dreWeekFree": "prima finală din săptămână: bonus", "pm.dreWeekUsed": "bonusul săptămânii folosit (nou joi)", "pm.dreReplay": "Se poate relua", "pm.dreReady": "acum", "pm.dreFinales": n => n ? (n === 1 ? "terminat o dată" : `terminat de ${n} ori`) : "încă nefăcut", "pm.dreFinaleBtn": "Am terminat finala", "pm.dreFinaleToast": v => `Dr. Dre Contract gata: ${v}. Lista începe din nou și sun când se poate relua.`, "pm.dreReset": "Șterge bifele", "pm.dreResetToast": "Bifele au fost șterse.", "pm.dreReplayNote": "Dr. Dre Contract se poate relua (computerul din Agency)", "pm.dreHow": "Cel mai rapid: cele trei Leak-uri merg în orice ordine, așa că fă întâi Nightlife și South Central (trageri simple) și lasă High Society, finala cea mai grea, la urmă. Între misiuni ieși din Agency pentru apelul lui Franklin, apoi înapoi la computer. La reluare, cele două pregătiri se sar.", "pm.dreSetupDone": "Făcute o dată: la reluare rămân în Arhiva computerului și se sar.", "pm.dreSetupUndo": "Arată-le din nou", "pm.dreG_setup": "Pregătire (o singură dată)", "pm.dreG_night": "Nightlife Leak", "pm.dreG_high": "High Society Leak", "pm.dreG_south": "South Central Leak", "pm.dreG_end": "Finala", "pm.dreGh_night": "Ușor: doar trageri.", "pm.dreGh_high": "Cea mai grea finală: ia cele mai bune arme și armură.", "pm.dreGh_south": "Mulți inamici, dar simplu.", "pm.dre_oncourse": "On Course", "pm.dreTip_oncourse": "Întâlnirea de la clubul de golf, mai mult filmări. Lovește cu căruciorul cei doi fugari până se umple bara, apoi pe debarcader.", "pm.dre_datarec": "Setup: Data Recovery", "pm.dreTip_datarec": "Aterizezi pe zgârie-norul marcat, arunci o grenadă la ușa din colțul din stânga, aperi intrarea, iei hard-diskul dintr-un dulap. Coboară cu parașuta și ascunde-te ca să scapi de poliție.", "pm.dre_nclub": "The Nightclub", "pm.dreTip_nclub": "Intră direct, fără duba de curățenie (pierzi mai mult timp decât câștigi). Caseta e în camera VIP rotundă de sus.", "pm.dre_marina": "The Marina", "pm.dreTip_marina": "Ajungi pe puntea de comandă a iahtului, apoi fotografiezi dovada din cabină. După ce poza e trimisă, contează chiar dacă mori.", "pm.dre_nfinal": "Nightlife Leak (finală)", "pm.dreTip_nfinal": "Garajul cazinoului, liftul spre penthouse; DJ-ul cu laptopul e în spate. Lupți până jos în zona VIP, iei laptopul, pleci.", "pm.dre_country": "The Country Club", "pm.dreTip_country": "Sari de pe acoperiș lângă tastatură ca să eviți camerele. Spargi codul, apoi prinzi direct șoferul limuzinei în loc s-o urmărești.", "pm.dre_guest": "Guest List", "pm.dreTip_guest": "Curăță paznicii din curtea din spate, imobilizezi avocatul (punct albastru) cu stun gun, îl pui în portbagajul mașinii lui, mergi la Agency.", "pm.dre_hfinal": "High Society Leak (finală)", "pm.dreTip_hfinal": "Ține un colț la petrecere și doboară elicopterul acolo. Dacă le furi mașina urmăritorilor fără să-i omori, nu mai apar alții.", "pm.dre_davis": "Davis", "pm.dreTip_davis": "Conduci mașina lui Vernon, cureți zona cu aliații, iei duba albă, scapi de dealeri și poliție, o lași la marcaj.", "pm.dre_ballas": "The Ballas", "pm.dreTip_ballas": "După luptă ignoră poliția: urmează-l pe Vernon în garaj, filmarea îți șterge stelele.", "pm.dre_sfinal": "South Central Leak (finală)", "pm.dreTip_sfinal": "Iei mașina din fața Agency, urmărești cele două mașini, cureți ambuscada, îl prinzi pe cel cu telefonul și aduci mașina lui înapoi.", "pm.dre_studio": "Studio Time", "pm.dreTip_studio": "De la marcajul din hol. Avariile la mașina lui Dre nu contează. Curăță întâi afară, apoi înăuntru; atenție la spate.", "pm.dre_finale": "Don't F**k With Dre", "pm.dreTip_finale": "Ținta: depoul feroviar Mirror Park, colțul îndepărtat pe marginea din dreapta. Apoi hangarul de la aeroport; rănește-l pe platformă. Mai scurtă decât Studio Time.", "pm.dt1t": "Dr. Dre Contract", "pm.dt1b": "Bifează misiunile pe măsură ce le faci; butonul de finală notează plata și pornește timerul de reluare.", "pm.dt2t": "Plata și reluarea", "pm.dt2b": "1.099.800 $ la prima finală din săptămână, apoi 900.000 $; reluare după aproximativ 48 de minute.", "pm.dt3t": "Misiunile", "pm.dt3b": "Fiecare cu un sfat scurt pentru varianta cea mai rapidă.",
     "pm.agOpenTag": "Deschide", "pm.agSub": "Seiful din birou și Security Contracts. Seiful se umple cât joci, ca la Nightclub.",
-    "pm.agNotOwned": "Bifează dacă ai un Agency: apar seiful și Security Contracts.", "pm.agPinBtn": "Pune pe hartă",
+    "pm.agNotOwned": "Bifează dacă ai un Agency: apar seiful și Security Contracts.", "pm.agPinAuto": "Pe hartă singur, la locul Agency-ului tău.", "pm.agPinMoved": "Pe hartă unde l-ai mutat tu.", "pm.agPinSee": "Vezi pe hartă", "pm.agPinReset": "Înapoi la locul din joc", "pm.agUps": "Upgrade-uri Agency", "pm.agUp_armory": "Armory", "pm.agUp_quarters": "Accommodation", "pm.agUp_workshop": "Vehicle Workshop", "pm.agUpTxt_armory": "Un Ammu-Nation al tău în Agency: arme, armură și upgrade-urile lor.", "pm.agUpTxt_quarters": "Camera personală: pat, garderobă și Agency-ul ca loc de pornire în joc.", "pm.agUpTxt_workshop": "Modificări de mașini în Agency, cu Imani Tech (Missile Lock-On Jammer, Remote Control Unit) pe mașinile care îl acceptă.", "pm.scType": "Ce contract", "pm.scTier": "Dificultate", "pm.scPay": "Plătește", "pm.scPickHint": "Opțional: alege tipul și dificultatea înainte să apeși butonul, ca să le ții evidența.", "pm.scLog": n => `Contracte notate (${n})`, "pm.scNoType": "tip neales", "pm.scCallT": "Sună-l pe Franklin", "pm.scCallTxt": "Din telefon (Contacte → Franklin) poți cere un Security Contract de oriunde de pe hartă, fără să mergi la Agency. E unul aleatoriu: nu-l poți alege.", "pm.agPinBtn": "Pune pe hartă",
     "pm.agSafe": "Seiful din birou", "pm.agNow": "Acum în seif", "pm.agPaused": "Pornește „În joc” (sus) și seiful se umple cât joci.", "pm.agFullHint": "Seiful e plin: golește-l în joc.",
     "pm.agLeft": m => `Plin în ${m}.`, "pm.agNoPay": "Încă nu primește nimic: pornește după primele 5 Security Contracts.",
     "pm.agContracts": "Security Contracts făcute", "pm.agPerDay": "Intră în seif pe zi din joc (48 min)", "pm.agTyped": "scris de mână",
@@ -5414,7 +5565,7 @@ const tbRight = document.createElement("span");
 tbRight.className = "pm-tb";
 tbRight.innerHTML = `<div class="head-stat"></div><div class="ingame" role="switch" tabindex="0" aria-checked="false"><div class="track"></div><div><span class="lbl" data-i18n="pm.inGame"></span><span class="sub"></span></div></div>`;
 const headStat = tbRight.querySelector(".head-stat"), ingameEl = tbRight.querySelector(".ingame"), ingameSub = tbRight.querySelector(".sub");
-sec.tbLeft = sideBtn; sec.tbRight = tbRight;
+sec.tbLeft = sideBtn; sec.tbRight = tbRight; sec.ingameEl = ingameEl;   // idea 80: the Router shows this same switch on every page
 "use strict";
 /* ======================================================================
    Game data
@@ -5598,7 +5749,7 @@ function defaultState() {
 }
 // idea 63: Money Fronts (Higgins Helitours "owned" is the hangar's heli switch, shared with the Hangar)
 // idea 67: Job Manager businesses (kept apart from S.biz, so they never show on the Production Manager map)
-function defaultJobs() { return { agency: { owned: false, loc: "", pin: null, contracts: 0, perDay: null, safe: 0, cd: null, alert: null },
+function defaultJobs() { return { agency: { owned: false, loc: "", pin: null, contracts: 0, perDay: null, safe: 0, cd: null, alert: null, up: {}, pick: {}, log: [] },
   dre: { setupDone: false, done: {}, finales: [], replayFired: true } }; }
 function defaultFronts() { return { wash: { owned: false, heat: 0, laund: 0, fired: {} }, smoke: { owned: false, heat: 0, laund: 0, fired: {} }, heli: { heat: 0, laund: 0, fired: {} } }; }
 let S = defaultState();
@@ -6326,9 +6477,10 @@ function agencyHubHtml() {
   const top = `<section class="adv-card ag-top">
       <label class="toggle row"><input type="checkbox" data-ag="own" ${a.owned ? "checked" : ""}> <span>${t("owned")}</span></label>
       ${a.owned ? `<label class="ceo-pick"><span>${t("locPick")}</span><select data-ag="loc"><option value="">—</option>${AG_LOCS.map(([nm, p]) => `<option value="${nm}" ${a.loc === nm ? "selected" : ""}>${nm} · ${money(p)}</option>`).join("")}</select></label>
-      ${a.loc ? `<button class="btn small" data-ag="pin">📍 ${t("agPinBtn")}</button>` : ""}` : `<p class="hint">${t("agNotOwned")}</p>`}</section>`;
+      ${a.loc ? agPinLine(a) : ""}` : `<p class="hint">${t("agNotOwned")}</p>`}</section>`;
   return `<div class="focus-head"><img class="ag-logo" src="${JOB_IMG.agency}" alt=""><div><h2>Agency${a.loc ? " · " + escapeHtml(a.loc) : ""}</h2><p class="muted">${t("agHubSub")}</p></div><a class="btn" href="#jobs">← Job Manager</a></div>
     ${top}
+    ${a.owned ? agUpsHtml(a) : ""}
     <div class="ag-hub">
       <a class="adv-card ag-tile" href="#security"><span class="ag-ico">🛡️</span><div><h4>Security Contracts</h4>
         <p>${a.owned ? `${t("agContracts")}: <b>${a.contracts}</b> · ${t("agNow")}: <b>${money(a.safe)}</b>` : t("agTileSc")}</p>
@@ -6355,13 +6507,43 @@ function jobsHtml() {
   return `<div class="focus-head"><div><h2>Job Manager</h2><p class="muted">${t("jobsSub")}</p></div></div>
     <div class="job-sects">${sect("heists", JOB_IMG.heists, "Heists", HEISTS)}${sect("jobs", JOB_IMG.jobs, "Jobs", JOBS)}</div>`;
 }
+// idea 77: the pin is put on the map by itself (each Agency area has its place); the line says so and offers to see it,
+// and only when it was moved by hand: to put it back
+function agPinLine(a) {
+  return `<div class="ag-pinline"><span>📍 ${a.pin ? t("agPinMoved") : t("agPinAuto")}</span>
+    <button class="btn small" data-ag="pin">🗺 ${t("agPinSee")}</button>${a.pin ? `<button class="btn ghost small" data-ag="pinReset">${t("agPinReset")}</button>` : ""}</div>`;
+}
+// idea 82: the Agency's own upgrades that matter (Dynasty 8 Executive)
+const AG_UPS = [["armory", 720000, "🔫"], ["quarters", 275000, "🛏️"], ["workshop", 800000, "🔧"]];
+function agUpsHtml(a) {
+  const up = a.up || {};
+  return `<section class="adv-card ag-ups"><h4>${t("agUps")}</h4>${AG_UPS.map(([k, p, ico]) => `<label class="ag-up ${up[k] ? "on" : ""}">
+      <input type="checkbox" data-agup="${k}" ${up[k] ? "checked" : ""}><span class="ag-up-ico">${ico}</span>
+      <span><b>${t("agUp_" + k)}</b> <small class="muted">${money(p)}</small><br><small>${t("agUpTxt_" + k)}</small></span></label>`).join("")}</section>`;
+}
+// idea 78: the six Security Contract types and the three difficulties (payout ranges from the game guides)
+const SC_TYPES = ["Asset Protection", "Gang Termination", "Liquidize Assets", "Recover Valuables", "Rescue Operation", "Vehicle Recovery"];
+const SC_TIERS = [["Professional", "$31,000 – $42,000"], ["Specialist", "$44,000 – $56,000"], ["Specialist+", "$60,000 – $70,000"]];
+const FRANKLIN = "data:image/webp;base64,UklGRtQEAABXRUJQVlA4IMgEAABQFwCdASo8AEIAPi0Sh0KhoQ2eA1QMAWJQBOmVLgT+V8x219UIMH21Z/fSVttedS9Km9Ab09aBG/j7v4P+P72nJ0uI+rKODm2QMDlicuOelJE5mzNUnxSkNvhrlS7soD8ksLrxBufVB5i9mu2jfcSu93Qw3LFNHmXi9/WwAmfQJlKd1Y1dkAQqjzYyypZcBhOYWtRQxatwbDMjbqXj+Ndpkc6uMyC3aipGv7Kg1rxjRO7QWNA74JCgjYVaiy9n9oqopFAA/v6lsLntLLMCJqQjtvR1EpdwnughDCeQFIMCtoBczNSBq/DBNvjhEDDkU9ZptD//Ep5f+egkC6GcgdpS+MDRY5KhKSBDZOJ0OIgwnDykIud7rOX6mStQZvGrDsChxF0vN5etxtCXBO0fYxNcKJyg1c7oblS9Lkq6wuWS+2cd/MbfvEsAEHPYswBv++skrrn7Y1UG0tW/OTedZmwk3fQpMyjvLALPzuZJD9doH1VE6Gap8ISqavsYIzHawMKbM1KdLiAE7FrkojevFyW05L4ZcE0MlhMmwHYSocTM/Tqkr6A/0MT1ehF32TqSOzBpj+N3Xp7UNGUMzrWx5kRAQNv3Ho/oK4jECnmhPQosCQ/ZdwkNHudUmXeUCQpaqA7+2iwl8pcvTSLLWJABndsCtqghuZVY7s1vwwbf3cJ3qZ+nPhUze6il637wNRNfnwodmXG/kx3o2LOIS+bmZQBP0ILwWudefC4Msw63sXYQLwdIwgsNd7iOO9bfW3y93JvhO2pWkCub328wDvY2q8lssw2oQcgaSSAcwIvr7sVdkoDhC6V0bwqeyyNDEWWRsh8N5xJ5p1r0D5iMaGtzuSxqOPa6eriOUPupwVbiaCeJAZXY+xS9NJ6SndFGoimzm9w3qUb4PCE7MIAUKYGhsARWbZ3fKswOb9FOsV12dKWVm3gE9UITyZe/MbGoZcBdfhyp5ODomUCbNyvHSKL1xxhXEu6vDwpHojrDDmASgF/8KAPswdsqoAH6Nk6d2btR/V/SfJvpdGnfKsZ3qJyGW4/g2xWuVlDs34Jpwh7qcrFKugTu82VzEaBmdgP4wcyxsL8BC9frWwaaCN1J57MKROaEx9ffcs/xsd2tia/Z0lmXNDyQCa7YjYjRRKaCueSEmHKNPzU/LlO7fxM3QK/t4Ce35Kv2Wa0aPaKLwOO79kNwvpWGxPGXtbC+O+dGqyyTf7PqhfHDr6bv76fpu+uVys+8svf3dc4wcf9TsYN+f/vVwSuSfsv5wAlG3TPiR/vILG8+NpbO9a5y8+Ly+33G4Oj1X8P3/+9FKmShlrccDWxuAomglRWtH149KmSUiDgqJsA33BlRPF3tN91kw7keqUkHuuNtJKrrLKIFFTF//EX44776dXkiGymdNZZo9tjiQGNCNuKLQPL639N7+eOVcNB2MMioOozn9j3MoGeano5DNImKMJ/jTv3BJ/nrHvbaGNB5WEOcAS81GbyXeusnTFbhG8stFW9n7MY3QIbZVOGnelU4ZmCrAc2KV1FOquUDPck6bt5/Sjzvvy3AgO6ZLDgtgDGi96WVUbl++wNAlI3vE9/AeJiCq+fALkylet1GJvGneqwT7HUwA0Ux8/DXHAY+UiPxY9gAAAA=";
+function scPickHtml(a) {
+  const p = a.pick || {}, log = a.log || [];
+  const chips = (list, key, cur) => list.map(v => { const n = Array.isArray(v) ? v[0] : v; return `<button type="button" class="sc-chip ${cur === n ? "on" : ""}" data-sc="${key}" data-v="${n}" ${Array.isArray(v) ? `title="${v[1]}"` : ""}>${n}</button>`; }).join("");
+  const counts = SC_TYPES.map(n => [n, log.filter(x => x.type === n).length]).filter(x => x[1]);
+  return `<div class="sc-pick"><div class="q-label">${t("scType")}</div><div class="sc-chips">${chips(SC_TYPES, "type", p.type)}</div>
+      <div class="q-label">${t("scTier")}</div><div class="sc-chips">${chips(SC_TIERS, "tier", p.tier)}</div>
+      ${p.tier ? `<p class="hint">${t("scPay")}: <b>${SC_TIERS.find(x => x[0] === p.tier)[1]}</b></p>` : `<p class="hint">${t("scPickHint")}</p>`}</div>
+    ${log.length ? `<details class="sc-log"><summary>${t("scLog", log.length)}</summary>
+      ${counts.length ? `<div class="sc-counts">${counts.map(([n, c]) => `<span>${n}: <b>${c}</b></span>`).join("")}</div>` : ""}
+      <ul>${log.slice(-8).reverse().map(x => `<li><span>${new Date(x.at).toLocaleDateString()}</span> ${x.type || `<i class="muted">${t("scNoType")}</i>`}${x.tier ? ` · ${x.tier}` : ""}</li>`).join("")}</ul></details>` : ""}
+    <div class="sc-franklin"><img src="${FRANKLIN}" alt="Franklin"><div><b>📞 ${t("scCallT")}</b><p>${t("scCallTxt")}</p></div></div>`;
+}
 function agencyHtml() {
   const a = ag(), pd = agPerDay(), calc = agCalc(a.contracts), left = agLeft(), n = a.contracts;
   const head = `<div class="focus-head"><img class="ag-logo" src="${JOB_IMG.agency}" alt=""><div><h2>Security Contracts</h2><p class="muted">${t("agSub")}</p></div><a class="btn" href="#agency">← Agency</a></div>`;
   const top = `<section class="adv-card ag-top">
       <label class="toggle row"><input type="checkbox" data-ag="own" ${a.owned ? "checked" : ""}> <span>${t("owned")}</span></label>
       ${a.owned ? `<label class="ceo-pick"><span>${t("locPick")}</span><select data-ag="loc"><option value="">—</option>${AG_LOCS.map(([n, p]) => `<option value="${n}" ${a.loc === n ? "selected" : ""}>${n} · ${money(p)}</option>`).join("")}</select></label>
-      ${a.loc ? `<button class="btn small" data-ag="pin">📍 ${t("agPinBtn")}</button>` : ""}` : `<p class="hint">${t("agNotOwned")}</p>`}</section>`;
+      ${a.loc ? agPinLine(a) : ""}` : `<p class="hint">${t("agNotOwned")}</p>`}</section>`;
   if (!a.owned) return head + top;
   return head + `<div class="adv-grid2 ag-grid">
     <section class="adv-card ag-safe"><h4>${t("agSafe")}</h4>
@@ -6383,6 +6565,7 @@ function agencyHtml() {
       ${a.perDay != null ? `<button class="btn ghost small" data-ag="pdReset">${t("agPdReset", money(calc))}</button>` : ""}
     </section>
     <section class="adv-card ag-sc"><h4>Security Contracts</h4>
+      ${scPickHtml(a)}
       <button class="btn primary ag-done" data-ag="done">✅ ${t("agDone")}</button>
       ${a.cd ? `<div class="club-line ag-cd ${agCdLeft() === 0 ? "ready" : ""}"><span>🔔</span><b data-live-timer="agency:cd">${agCdText()}</b><button class="btn ghost small" data-ag="cdX" title="${t("hgCdStop")}" aria-label="${t("hgCdStop")}">✕</button></div>` : ""}
       <p class="hint">${t("agScHint")}</p>
@@ -6396,7 +6579,10 @@ function bindAgency(root) {
   const q = k => root.querySelector(`[data-ag="${k}"]`), on = (k, ev, fn) => { const el = q(k); if (el) el[ev] = fn; };
   on("own", "onchange", e => { a.owned = e.target.checked; done(); });
   on("loc", "onchange", e => { a.loc = e.target.value; a.pin = null; done(); });
-  on("pin", "onclick", () => jmOpen("agency"));
+  on("pin", "onclick", () => jmOpen());
+  on("pinReset", "onclick", () => { a.pin = null; done(); });
+  root.querySelectorAll("[data-agup]").forEach(x => x.onchange = () => { a.up = { ...(a.up || {}), [x.dataset.agup]: x.checked }; done(); });
+  root.querySelectorAll("[data-sc]").forEach(x => x.onclick = () => { const k = x.dataset.sc, p = a.pick = { ...(a.pick || {}) }; p[k] = p[k] === x.dataset.v ? null : x.dataset.v; done(); });
   const num = (v, max) => Math.max(0, Math.min(max, Math.round(parseFloat(v) || 0)));
   on("safe", "onchange", e => { a.safe = num(e.target.value, AG_CAP); a.alert = null; done(); });
   on("safeR", "oninput", e => { q("safe").value = e.target.value; });
@@ -6410,7 +6596,12 @@ function bindAgency(root) {
   on("pd", "onchange", e => { a.perDay = e.target.value === "" ? null : num(e.target.value, AG_MAX_DAY); done(); });
   on("pdReset", "onclick", () => { a.perDay = null; done(); });
   // one click after a Security Contract: +1 to the count (and so to the safe) and the 5-minute bell for the next one
-  on("done", "onclick", () => { a.contracts++; a.cd = { at: Date.now(), fired: false }; done(); toast(t("agDoneToast", a.contracts), { label: t("undo"), run: () => { a.contracts = Math.max(0, a.contracts - 1); a.cd = null; done(); } }); });
+  // idea 78: the type and difficulty picked above go into the contract log (the last 100), then the pick is cleared for the next one
+  on("done", "onclick", () => {
+    const p = a.pick || {}, entry = { at: Date.now(), type: p.type || null, tier: p.tier || null };
+    a.contracts++; a.cd = { at: Date.now(), fired: false }; a.log = [...(a.log || []), entry].slice(-100); a.pick = {}; done();
+    toast(t("agDoneToast", a.contracts), { label: t("undo"), run: () => { a.contracts = Math.max(0, a.contracts - 1); a.cd = null; a.log = (a.log || []).filter(x => x !== entry); a.pick = p; done(); } });
+  });
   on("cdX", "onclick", () => { a.cd = null; done(); });
 }
 
