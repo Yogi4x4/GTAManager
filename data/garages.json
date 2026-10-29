@@ -186,6 +186,20 @@
     ]
   },
   {
+    "name": "Nightclub (Special)",
+    "slots": 4,
+    "levels": [
+      {
+        "name": "B1 (Delivery Vehicles)",
+        "slots": 3
+      },
+      {
+        "name": "B5 (Terrorbyte)",
+        "slots": 1
+      }
+    ]
+  },
+  {
     "name": "Office",
     "slots": 60
   },
