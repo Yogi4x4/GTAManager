@@ -2,6 +2,13 @@
 
 * * *
 
+### v0.27.0 (2026-10-30)
+* Property Manager:
+  * Change: the Property Manager is redone like the Job Manager: a Mansions section (the MANSIONS emblem and a card for each villa: the ones you own bright, with their upgrades as small icons, the others faded) and a section with every business you own in the other Managers, each opening its own page.
+  * Change: adding a Mansion opens a small window where you tick its upgrades once; later they change from ⚙ Settings on its page (also where you remove it). Art Studio and Security Team are ticked the same way, once for all.
+  * Change: the boost, the things bought once for all and the rules are small cards on the right, the rules with icons.
+  * Change: a Mansion's page: its emblem, the upgrades as small icons, the photo of the villa, the cars on show (small buttons until a car is set; a set car is a small card, the podium a bit bigger) and on the right the boost, what a Mansion has (as chips) and the rules. The page arranges itself by what is set.
+
 ### v0.26.0 (2026-10-30)
 * Everywhere:
   * Add: every button has a short hint saying what it does: with a mouse, rest on the button for half a second; on a phone, hold it (the button is not pressed then, only the hint shows).
