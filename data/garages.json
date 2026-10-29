@@ -201,7 +201,45 @@
   },
   {
     "name": "Office",
-    "slots": 60
+    "slots": 60,
+    "levels": [
+      {
+        "name": "1A",
+        "slots": 6
+      },
+      {
+        "name": "1B",
+        "slots": 7
+      },
+      {
+        "name": "1C",
+        "slots": 7
+      },
+      {
+        "name": "2A",
+        "slots": 6
+      },
+      {
+        "name": "2B",
+        "slots": 7
+      },
+      {
+        "name": "2C",
+        "slots": 7
+      },
+      {
+        "name": "3A",
+        "slots": 6
+      },
+      {
+        "name": "3B",
+        "slots": 7
+      },
+      {
+        "name": "3C",
+        "slots": 7
+      }
+    ]
   },
   {
     "name": "Vinewood Mansion",
