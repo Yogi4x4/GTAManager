@@ -165,10 +165,30 @@
   },
   {
     "name": "Nightclub",
-    "slots": 1,
+    "slots": 35,
     "levels": [
       {
         "name": "Nightclub Service Entrance",
+        "slots": 1
+      },
+      {
+        "name": "B1 (Delivery Vehicle Garage)",
+        "slots": 3
+      },
+      {
+        "name": "B2",
+        "slots": 10
+      },
+      {
+        "name": "B3",
+        "slots": 10
+      },
+      {
+        "name": "B4",
+        "slots": 10
+      },
+      {
+        "name": "B5 (Terrobyte)",
         "slots": 1
       }
     ]
