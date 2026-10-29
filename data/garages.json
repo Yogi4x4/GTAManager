@@ -79,7 +79,13 @@
   },
   {
     "name": "Bail Office",
-    "slots": 2
+    "slots": 2,
+    "levels": [
+      {
+        "name": "G",
+        "slots": 2
+      }
+    ]
   },
   {
     "name": "Casino Penthouse Garage",
