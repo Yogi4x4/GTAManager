@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.27.1 (2026-10-30)
+* Job Manager:
+  * Change: the Agency has a new emblem (the music studio, the Agency tower and the security team), on the Job Manager card and the Agency pages.
+
 ### v0.27.0 (2026-10-30)
 * Property Manager:
   * Change: the Property Manager is redone like the Job Manager: a Mansions section (the MANSIONS emblem and a card for each villa: the ones you own bright, with their upgrades as small icons, the others faded) and a section with every business you own in the other Managers, each opening its own page.
