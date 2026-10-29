@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.23.2 (2026-10-29)
+* Job Manager:
+  * Change: the Agency pin shows the Agency icon from the game map (the white building), drawn so it stays sharp at any zoom.
+
+### v0.23.1 (2026-10-29)
+* Guided tours:
+  * Fix: on phones the tour window goes across the screen again, at the bottom or at the top (whichever covers less of what it shows); it no longer sits in the middle of the business list on the left.
+
 ### v0.23.0 (2026-10-28)
 * Vehicle Manager:
   * Change: the car cards are as see-through as the Home cards, so the background shows behind them.

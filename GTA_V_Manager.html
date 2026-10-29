@@ -369,7 +369,7 @@ body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); 
 .tour-dots i.on { background: var(--accent); }
 .tour-btns { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
 .tour-btns .grow { flex: 1; }
-@media (max-width: 600px) { .tour-card { padding: 12px 14px 10px; } .tour-card h3 { font-size: 16px; } }
+@media (max-width: 600px) { .tour-card { width: calc(100vw - 24px); padding: 12px 14px 10px; } .tour-card h3 { font-size: 16px; } }
 
 /* ======================================================================
    Look & feel: more than colours. Every theme gets a moving light under the top bar,
@@ -570,7 +570,7 @@ html[data-bg="page"] :is(#sec-vehicles, #sec-production, #sec-export) { backgrou
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.23";
+const APP_VERSION = "0.23.2";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -875,6 +875,46 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.23.2",
+  "date": "2026-10-29",
+  "en": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Change: the Agency pin shows the Agency icon from the game map (the white building), drawn so it stays sharp at any zoom."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Schimbă: pinul Agency arată iconița Agency de pe harta din joc (clădirea albă), desenată ca să rămână clară la orice zoom."
+    ]
+   }
+  ]
+ },
+ {
+  "v": "0.23.1",
+  "date": "2026-10-29",
+  "en": [
+   {
+    "area": "Guided tours",
+    "items": [
+     "Fix: on phones the tour window goes across the screen again, at the bottom or at the top (whichever covers less of what it shows); it no longer sits in the middle of the business list on the left."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Tururi ghidate",
+    "items": [
+     "Repară: pe telefon fereastra turului stă din nou pe toată lățimea ecranului, jos sau sus (unde acoperă mai puțin din ce arată); nu se mai pune peste lista de afaceri din stânga."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.23.0",
   "date": "2026-10-28",
@@ -1899,7 +1939,8 @@ const Tour = {
       /* idea 75: the card never sits on what it shows. Try below, above, right, left, then the corners and edges of the screen,
          and keep the place that covers the least of the lit-up part (a part bigger than the screen: the least of it) */
       const cx = r.left + r.width / 2 - cw / 2, cy = r.top + r.height / 2 - ch / 2;
-      const spots = [[r.left, r.top + r.height + m], [cx, r.top + r.height + m], [r.left, r.top - m - ch], [cx, r.top - m - ch],
+      // a phone: the card goes across the screen, at the bottom or at the top (never in the middle of a list), whichever covers less of the lit-up part
+      const spots = W <= 600 ? [[m, H - ch - m], [m, m]] : [[r.left, r.top + r.height + m], [cx, r.top + r.height + m], [r.left, r.top - m - ch], [cx, r.top - m - ch],
         [r.left + r.width + m, r.top], [r.left + r.width + m, cy], [r.left - cw - m, r.top], [r.left - cw - m, cy],
         [m, H - ch - m], [W - cw - m, H - ch - m], [m, m], [W - cw - m, m], [(W - cw) / 2, H - ch - m], [(W - cw) / 2, m]];
       const cover = (x, y) => Math.max(0, Math.min(x + cw, r.left + r.width) - Math.max(x, r.left)) * Math.max(0, Math.min(y + ch, r.top + r.height) - Math.max(y, r.top));
@@ -6380,9 +6421,10 @@ function bindAgency(root) {
 const jm = { btn: null, win: null, view: null, world: null, open: false, cam: { s: 0.3, x: 0, y: 0 }, placing: null, ptrs: new Map(), moved: false, styles: false };
 const JM_ICON = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z"/><path d="M9 4v13.5M15 6.5V20"/></svg>`;
 const JM_LAYERS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>`;
-// idea 73: the Agency pin looks like the Production Manager pins: a round disc (Agency blue, the white "A" badge of the in-game blip)
+// idea 73: the Agency pin looks like the Production Manager pins: a round disc (Agency blue) with the in-game Agency blip (the white building,
+// drawn after Mihai's screenshot so it stays sharp at any size)
 // with a ring that shows how full the office safe is, and the name under it
-const AG_ICO = `<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#1e63b4"/><path d="M17 6.5 26 10v6.2c0 5.4-3.8 9.4-9 11.3-5.2-1.9-9-5.9-9-11.3V10z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="m12.6 21.6 4.4-11 4.4 11M14.2 17.8h5.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const AG_ICO = `<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#1e63b4"/><g transform="translate(8.8 7.3) scale(.66)"><path fill="#fff" fill-rule="evenodd" d="M4 0h18v20H4zM6 3v2h13V3zm0 4v2.5h13V7zm0 5v2h13v-2zm0 4v2.5h13V16zM2 20h21l1.5 2v5H16v-6H9v6H.5v-5z"/></g></svg>`;
 function jmPlaces() {
   const out = [], a = ag();
   if (a.owned && a.loc) {
