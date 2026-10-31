@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.29.0 (2026-10-31)
+* Maps:
+  * Change: a pin moves only after you hold it for half a second (it lifts, the phone buzzes); a normal drag, even one starting on a pin, moves the map. A short tap on a pin still opens its window. On every map.
+  * Fix: "Show on the map" opens the map centred on that property (it opened somewhere else, around the Nightclub), with its pin pulsing.
+  * Add: "Show on the map" on the Nightclub, Bunker, Hangar and MC pages (the Production Manager map, on that business) and on each Money Front.
+  * Add: the three Money Fronts are on the Job Manager and Property Manager maps (places approximate: hold a pin and drag it). Hands On Car Wash and the CEO Office have Mihai's icons.
+* Production Manager:
+  * Add: the Nightclub, Bunker, Hangar and MC pages have a "← Production Manager" button.
+* Property Manager:
+  * Change: the CEO Office card shows the new emblem (the tower outside).
+  * Change: no more Money Fronts card: Hands On Car Wash, Higgins Helitours and Smoke on the Water have their own; Auto Shop and Bail Office are there, faded, coming soon.
+  * Add: ✎ Arrange: drag the cards into any order and give each one of 5 sizes; Mansions and CEO Office start smaller. Saved with your data.
+* Vehicle Manager:
+  * Add: the Special upgrades page (pages menu, under Vehicle Manager): every vehicle that takes HSW, Imani Tech or a Benny's version; pick one or more, with "has all picked" / "has any", a search and "only my vehicles".
+* Home:
+  * Add: Twitch Drops: a new GitHub Action ("Twitch Drops") looks for them a few times a day; while they are on, a small card on Home and one notification in the bell per drop.
+
 ### v0.28.0 (2026-10-30)
 * Property Manager:
   * Change: the Property Manager page shows only emblems, one for everything you can own: Mansions and CEO Office big on top, then Agency, Nightclub, Bunker, Hangar, MC Clubhouse, Acid Lab, CEO Warehouses, Vehicle Warehouse and Money Fronts. The ones you own are bright (with how many you have), the others faded; each opens its page.
