@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.30.0 (2026-10-31)
+* Characters:
+  * Add: two characters, like in GTA Online (⋮ → Settings → Characters → Create the second character). Each one has its own businesses, properties, vehicles and garages, timers, contracts and export list; only the bank is shared in the game. Character 1 keeps all the data you have now.
+  * Add: once the second character exists, a round button with its initial in the top bar switches between them. Switching stops "In game" for the character you leave and starts it for the other one.
+  * Add: on GitHub the second character's data is in data/c2/; the names are in data/characters.json. A notification about the other character offers to switch to it.
+* Property Manager:
+  * Add: cards have a height too (↕, 1 to 4 rows) besides the width (↔): small cards now fill the room next to a tall one, for example a big card on the left with two rows of small ones on its right.
+  * Add: Templates: 15 ready-made layouts (Big + 2, Big left + 4, Big in the middle, Banner, Mosaic, Magazine, Tall + 6 and more). Tap a place to choose what goes there, drag a card onto another place to swap them; the others can show below. On a phone the layout rearranges itself.
+  * Add: the Apartment and Facility cards (Mihai's emblems), coming soon.
+* Settings:
+  * Add: ⋮ → ⚙ Settings: one window for General, Look, Notifications, Characters, Account and, under Pages, each page's own settings, every row with a line on what it does. The ⋮ menu is shorter.
+  * Add: Look → Cards: how see-through the cards are on every page, with a slider; while you hold it the window steps aside and you see the page change live.
+  * Add: Backgrounds: "▶ Show now" under each picture; it stays one whole interval, then the pictures change again by themselves.
+* Updates:
+  * Fix: copies of the app (forks) now also receive the Twitch Drops Action (.github/workflows/drops.yml).
+
 ### v0.29.0 (2026-10-31)
 * Maps:
   * Change: a pin moves only after you hold it for half a second (it lifts, the phone buzzes); a normal drag, even one starting on a pin, moves the map. A short tap on a pin still opens its window. On every map.
