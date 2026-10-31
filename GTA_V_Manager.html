@@ -726,7 +726,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.32";
+const APP_VERSION = "0.32.1";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1041,6 +1041,26 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.32.1",
+  "date": "2026-11-01",
+  "en": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Change: the three categories are one under the other, Heists, Contracts, Jobs, all the same size: full width, the same emblem height and the same card height (they were side by side and uneven)."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Schimbat: cele trei categorii sunt una sub alta, Heists, Contracts, Jobs, toate de aceeași mărime: pe toată lățimea, cu emblema la aceeași înălțime și cardurile la aceeași înălțime (erau una lângă alta și inegale)."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.32.0",
   "date": "2026-11-01",
@@ -6454,6 +6474,22 @@ Section({
 #sec-production .job-card.op-txt {min-height: 110px;}
 #sec-production .job-card.op-txt b {font-size: 15px;}
 }
+#sec-production .job-sects {grid-template-columns: 1fr !important; gap: 16px;}
+#sec-production .job-sect, #sec-production .job-sect.contracts {grid-column: auto;}
+#sec-production .job-sect .job-head, #sec-production .job-sect.contracts .job-head {width: auto; max-width: 100%; height: 190px; object-fit: contain; margin: 0 auto 8px;}
+#sec-production .job-sect .job-grid, #sec-production .job-sect.contracts .job-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px;}
+#sec-production .job-sect.contracts .job-card {width: auto;}
+#sec-production .job-sect .job-grid .job-card {height: 140px; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative;}
+#sec-production .job-sect .job-grid .job-card img {width: 100%; height: 100%; object-fit: contain;}
+@media (max-width: 600px) {
+#sec-production .job-sect .job-head, #sec-production .job-sect.contracts .job-head {height: 120px;}
+#sec-production .job-sect .job-grid, #sec-production .job-sect.contracts .job-grid {grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;}
+#sec-production .job-sect .job-grid .job-card {height: 110px;}
+}
+@media (max-height: 520px) and (min-width: 600px) {
+#sec-production .job-sect .job-head, #sec-production .job-sect.contracts .job-head {height: 100px;}
+#sec-production .job-sect .job-grid, #sec-production .job-sect.contracts .job-grid {grid-template-columns: repeat(4, minmax(0, 1fr));}
+}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -8242,7 +8278,7 @@ function jobCardHtml(k) {
 function jobsHtml() {
   const sect = (cls, img, alt, list) => `<section class="job-sect ${cls}"><img class="job-head" src="${img}" alt="${alt}"><div class="job-grid">${list.map(jobCardHtml).join("")}</div></section>`;
   return `<div class="focus-head"><div><h2>Job Manager</h2><p class="muted">${t("jobsSub")}</p></div></div>
-    <div class="job-sects">${sect("heists", JOB_IMG.heists, "Heists", HEISTS)}${sect("jobs", JOB_IMG.jobs, "Jobs", JOBS)}${sect("contracts", JOB_IMG.contracts, "Contracts", CONTRACTS)}</div>`;
+    <div class="job-sects">${sect("heists", JOB_IMG.heists, "Heists", HEISTS)}${sect("contracts", JOB_IMG.contracts, "Contracts", CONTRACTS)}${sect("jobs", JOB_IMG.jobs, "Jobs", JOBS)}</div>`;
 }
 /* ---------- ideas 112–114: one page per heist / contract, the missions in order with ticks ----------
    S.ops[op][part] = { d: [ticks], n: finales done }; S.ops._week = the weekly post the Salvage Yard ticks belong to */

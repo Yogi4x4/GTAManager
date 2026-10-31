@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.32.1 (2026-11-01)
+* Job Manager:
+  * Change: the three categories are one under the other, Heists, Contracts, Jobs, all the same size: full width, the same emblem height and the same card height (they were side by side and uneven).
+
 ### v0.32.0 (2026-11-01)
 * Job Manager:
   * Change: heists and contracts sorted as in the game. Heists: the five classic ones (The Fleeca Job, The Prison Break, The Humane Labs Raid, Series A Funding, The Pacific Standard Job), Doomsday, Diamond Casino, Cayo Perico, Kortz Center. Contracts: Dr. Dre (VIP Contract), Auto Shop Contracts, Salvage Yard Robberies, Cluckin' Bell Farm Raid, Bail Office Bounties. Jobs keeps the businesses (Agency, Auto Shop, Bail Office, Garment Factory, Money Fronts); the Agency is a container like Money Fronts, and its Security Contracts (jobs, not contracts) are on the Agency page, with their emblem.
