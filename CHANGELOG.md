@@ -4,11 +4,12 @@
 
 ### v0.32.0 (2026-11-01)
 * Job Manager:
-  * Change: heists and contracts sorted as in the game. Heists: the five classic ones (The Fleeca Job, The Prison Break, The Humane Labs Raid, Series A Funding, The Pacific Standard Job), Doomsday, Diamond Casino, Cayo Perico, Kortz Center. Contracts: Security Contracts, Dr. Dre (VIP Contract), Auto Shop Contracts, Salvage Yard Robberies, Cluckin' Bell Farm Raid, Bail Office Bounties. Jobs keeps the businesses (Agency, Auto Shop, Bail Office, Garment Factory, Money Fronts).
+  * Change: heists and contracts sorted as in the game. Heists: the five classic ones (The Fleeca Job, The Prison Break, The Humane Labs Raid, Series A Funding, The Pacific Standard Job), Doomsday, Diamond Casino, Cayo Perico, Kortz Center. Contracts: Dr. Dre (VIP Contract), Auto Shop Contracts, Salvage Yard Robberies, Cluckin' Bell Farm Raid, Bail Office Bounties. Jobs keeps the businesses (Agency, Auto Shop, Bail Office, Garment Factory, Money Fronts); the Agency is a container like Money Fronts, and its Security Contracts (jobs, not contracts) are on the Agency page, with their emblem.
   * Add: every heist and contract opens its own page with its missions in order (scope out, tasks / preps, planning, finale; optional ones marked): tick them as you go, "Finale done" counts the run and starts the ticks over (with Undo). Doomsday has its three acts, Auto Shop its eight contracts with their payouts, the Salvage Yard its five robberies.
   * Add: the Salvage Yard page shows this week's three robberies and their cars, read by itself from the weekly post; the other two are faded. On a new week the robbery ticks start over and a notification says which cars are on.
   * Add: the Kortz Center page shows this week's primary targets; Bail Office Bounties shows this week's Most Wanted target and FIB Priority File.
   * Add: heists and contracts without an emblem yet have a card with their name (and what they need), until the emblem comes.
+  * Fix: the Contracts emblem has its top back (it was cut off in the picture itself; the frame's tip is redrawn).
 
 ### v0.31.0 (2026-10-31)
 * Job Manager:
