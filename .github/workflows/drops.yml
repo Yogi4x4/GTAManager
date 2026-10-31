@@ -1,0 +1,90 @@
+# GTA V Manager: Twitch Drops for GTA Online (idea 91).
+# A few times a day this looks for the newest "Twitch Drops" announcement on r/gtaonline (where Rockstar's drops are always posted
+# the day they start) and saves it as data/drops.json. The page only reads that file: a notification in the bell (once per drop)
+# and a small card on Home while the drops are on. Run it by hand any time: Actions → Twitch Drops → Run workflow.
+name: Twitch Drops
+on:
+  schedule:
+    - cron: "23 */6 * * *"     # every 6 hours
+    - cron: "53 17,19 * * 4"   # and twice on Thursdays (Rockstar's weekly update)
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: twitch-drops
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Look for Twitch Drops
+        run: |
+          python3 - <<'PY'
+          import json, re, datetime, urllib.request, urllib.parse, html, os
+          import xml.etree.ElementTree as ET
+          UA = "GTAManager-drops/1.0 (GitHub Action; personal fan page)"
+          def get(url):
+              req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "*/*"})
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  return r.read().decode("utf-8", "replace")
+          now = datetime.datetime.now(datetime.timezone.utc)
+          Q = urllib.parse.quote('title:"twitch drops"')
+          posts = []
+          # 1. Reddit search (JSON), 2. the same as RSS if JSON is refused
+          try:
+              d = json.loads(get(f"https://www.reddit.com/r/gtaonline/search.json?q={Q}&restrict_sr=1&sort=new&t=month&limit=15"))
+              for c in d["data"]["children"]:
+                  p = c["data"]
+                  posts.append({"title": p["title"], "url": "https://www.reddit.com" + p["permalink"], "posted": datetime.datetime.fromtimestamp(p["created_utc"], datetime.timezone.utc), "text": p.get("selftext", "")})
+          except Exception as e:
+              print("json failed:", e)
+              try:
+                  root = ET.fromstring(get(f"https://www.reddit.com/r/gtaonline/search.rss?q={Q}&restrict_sr=1&sort=new&t=month"))
+                  ns = {"a": "http://www.w3.org/2005/Atom"}
+                  for en in root.findall("a:entry", ns):
+                      t = en.findtext("a:title", "", ns); u = en.find("a:link", ns).get("href"); up = en.findtext("a:updated", "", ns)
+                      body = re.sub(r"<[^>]+>", "\n", html.unescape(en.findtext("a:content", "", ns) or ""))
+                      posts.append({"title": t, "url": u, "posted": datetime.datetime.fromisoformat(up.replace("Z", "+00:00")), "text": body})
+              except Exception as e2:
+                  print("rss failed:", e2)
+          posts = [p for p in posts if re.search(r"twitch\s*drop", p["title"], re.I)]
+          posts.sort(key=lambda p: p["posted"], reverse=True)
+          out = {"active": False, "fetched": now.strftime("%Y-%m-%dT%H:%MZ"), "page": "https://www.rockstargames.com/gta-online/twitch-drops"}
+          MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
+          def until_of(s, posted):
+              # "until November 12", "through Nov 12th", "ends 12 November", "Oct 30 - Nov 5"
+              m = re.search(r"(?:until|through|thru|till|ends?|ending|to|-|–)\s+(?:\w+day,?\s+)?([A-Za-z]{3,9})\.?\s+(\d{1,2})", s, re.I) or re.search(r"(?:until|through|ends?)\s+(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,9})", s, re.I)
+              if not m: return None
+              a, b = m.groups()
+              mon, day = (a, b) if a[:1].isalpha() else (b, a)
+              mi = MONTHS.get(mon[:3].lower())
+              if not mi: return None
+              y = posted.year + (1 if mi < posted.month - 6 else 0)
+              try: return datetime.datetime(y, mi, int(day), 23, 59, tzinfo=datetime.timezone.utc)
+              except ValueError: return None
+          if posts:
+              p = posts[0]
+              until = until_of(p["title"] + "\n" + p["text"], p["posted"]) or p["posted"] + datetime.timedelta(days=7)
+              items = [re.sub(r"[*_#>`]+", "", l).strip(" -•") for l in p["text"].splitlines() if re.match(r"\s*[-*•]\s+\S", l)][:8]
+              out.update({"title": p["title"], "url": p["url"], "posted": p["posted"].strftime("%Y-%m-%dT%H:%MZ"), "until": until.strftime("%Y-%m-%dT%H:%MZ"),
+                          "items": items, "active": p["posted"] <= now <= until and now - p["posted"] < datetime.timedelta(days=21)})
+          os.makedirs("data", exist_ok=True)
+          old = None
+          try: old = json.load(open("data/drops.json"))
+          except Exception: pass
+          same = old and {k: v for k, v in old.items() if k != "fetched"} == {k: v for k, v in out.items() if k != "fetched"}
+          if not same:
+              json.dump(out, open("data/drops.json", "w"), ensure_ascii=False, indent=1)
+          print(json.dumps(out, ensure_ascii=False)[:600])
+          PY
+      - name: Save to the repository
+        run: |
+          if [ -n "$(git status --porcelain data/drops.json)" ]; then
+            git config user.name "GTA Manager bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/drops.json
+            git commit -m "Twitch Drops (GTA Manager)"
+            git pull --rebase
+            git push
+          fi
