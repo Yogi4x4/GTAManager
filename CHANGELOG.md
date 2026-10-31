@@ -2,6 +2,21 @@
 
 * * *
 
+### v0.32.0 (2026-11-01)
+* Job Manager:
+  * Change: heists and contracts sorted as in the game. Heists: the five classic ones (The Fleeca Job, The Prison Break, The Humane Labs Raid, Series A Funding, The Pacific Standard Job), Doomsday, Diamond Casino, Cayo Perico, Kortz Center. Contracts: Security Contracts, Dr. Dre (VIP Contract), Auto Shop Contracts, Salvage Yard Robberies, Cluckin' Bell Farm Raid, Bail Office Bounties. Jobs keeps the businesses (Agency, Auto Shop, Bail Office, Garment Factory, Money Fronts).
+  * Add: every heist and contract opens its own page with its missions in order (scope out, tasks / preps, planning, finale; optional ones marked): tick them as you go, "Finale done" counts the run and starts the ticks over (with Undo). Doomsday has its three acts, Auto Shop its eight contracts with their payouts, the Salvage Yard its five robberies.
+  * Add: the Salvage Yard page shows this week's three robberies and their cars, read by itself from the weekly post; the other two are faded. On a new week the robbery ticks start over and a notification says which cars are on.
+  * Add: the Kortz Center page shows this week's primary targets; Bail Office Bounties shows this week's Most Wanted target and FIB Priority File.
+  * Add: heists and contracts without an emblem yet have a card with their name (and what they need), until the emblem comes.
+
+### v0.31.0 (2026-10-31)
+* Job Manager:
+  * Add: a third category, Contracts (Mihai's emblem), under Heists and Jobs, across the whole width. For now it holds Security Contracts (opens its page; shows how many you've done, or that it needs the Agency); more contracts come here as their emblems arrive.
+  * Change: the Agency page shows its two cards big, each with its emblem on top and centred: Security Contracts (new emblem) and Dr. Dre Contract, whose emblem was hard to see before. The Security Contracts page has the new emblem at the top.
+* Property Manager:
+  * Add: the Garage card (Mihai's emblem; opens the Vehicle Manager) and the McKenzie Field Hangar card (coming soon).
+
 ### v0.30.0 (2026-10-31)
 * Characters:
   * Add: two characters, like in GTA Online (⋮ → Settings → Characters → Create the second character). Each one has its own businesses, properties, vehicles and garages, timers, contracts and export list; only the bank is shared in the game. Character 1 keeps all the data you have now.
