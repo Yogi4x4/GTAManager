@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.35.2 (2026-11-01)
+* Property Manager:
+  * Fix: the Vinewood Residence page showed mostly the hills above it: a new, closer photo of the whole Mansion (Mihai's), and a Mansion's photo is never cut any more (shown whole, at the page's width).
+
 ### v0.35.1 (2026-11-01)
 * Property Manager:
   * Change: the cars on show in a Mansion are only the photo and the name now, with no buttons on them. A tap on a car opens its edit window: a big preview, 📋 screenshot / 🖼 from the device / Ctrl+V while the window is open, back to the Vehicle Manager photo, the font (each one shows the car's name written with it), change or remove the car.
