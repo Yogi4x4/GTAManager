@@ -736,7 +736,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.34";
+const APP_VERSION = "0.35";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -744,8 +744,8 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": 
    character 2 has its own copy of everything that belongs to a character (businesses, properties, cars, timers, contracts):
    browser keys get "@c2" (ck), GitHub files go to data/c2/ (cp). Only the bank is shared in the game (the app doesn't keep it). */
 const CHAR = (() => { try { return localStorage.getItem("gtaChar") === "2" ? 2 : 1; } catch (e) { return 1; } })();
-const CHAR_KEYS = ["gtaProductionV5", "gtaProductionV5:rev", "gtaProductionClock", "gtaWarehouse", "gtaChecks", "gtaWarehouseSummary", "gtaWarehouseSavedAt", "GTAGarageDB"];
-const CHAR_FILES = ["data/production.json", "data/vehicles.json", "data/garages.json", "data/warehouse.json"];
+const CHAR_KEYS = ["gtaMPhotos", "gtaProductionV5", "gtaProductionV5:rev", "gtaProductionClock", "gtaWarehouse", "gtaChecks", "gtaWarehouseSummary", "gtaWarehouseSavedAt", "GTAGarageDB"];
+const CHAR_FILES = ["data/photos.json", "data/production.json", "data/vehicles.json", "data/garages.json", "data/warehouse.json"];
 const ck = k => CHAR === 2 && CHAR_KEYS.includes(k) ? k + "@c2" : k;
 const cp = p => CHAR === 2 && CHAR_FILES.includes(p) ? "data/c2/" + p.slice(5) : p;
 const LS = {
@@ -1051,6 +1051,30 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.35.0",
+  "date": "2026-11-01",
+  "en": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Fix: the map showed no property. A class name added in 0.33 for the progress bars of the Job Manager cards was the same as the map pins' own, so it squashed them (the Job Manager map had the same problem).",
+     "Change: how you arrange the page stays on the device where you arrange it (not saved to GitHub); the other devices show the default arrangement. The arrangement saved so far moved to the first device that opened this version.",
+     "Add: the cars on show in a Mansion look like a showroom: a big photo, and under it the make and model written by hand. Pick the car from the Vehicle Manager first; then 📋 Screenshot (or Ctrl+V after touching the car, or 🖼 a file) puts your own screenshot on it, ↺ brings back the Vehicle Manager photo, and you choose the font: Great Vibes, Allura, Parisienne, Pinyon Script, Dancing Script, Cinzel or Playfair Display. Screenshots are kept in their own file, data/photos.json."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Reparat: harta nu arăta nicio proprietate. Un nume de clasă adăugat în 0.33 pentru barele de progres de pe cardurile din Job Manager era la fel cu cel al pinilor de pe hartă și îi strivea (harta din Job Manager avea aceeași problemă).",
+     "Schimbat: aranjarea paginii rămâne pe dispozitivul pe care o faci (nu se mai salvează pe GitHub); celelalte dispozitive arată aranjarea implicită. Aranjarea salvată până acum s-a mutat pe primul dispozitiv care a deschis această versiune.",
+     "Nou: mașinile expuse la un Mansion arată ca într-un showroom: o poză mare și sub ea marca și modelul scrise de mână. Alegi întâi mașina din Vehicle Manager; apoi 📋 Captură (sau Ctrl+V după ce atingi mașina, sau 🖼 un fișier) îi pune captura ta, ↺ aduce înapoi poza din Vehicle Manager, iar fontul îl alegi: Great Vibes, Allura, Parisienne, Pinyon Script, Dancing Script, Cinzel sau Playfair Display. Capturile stau în fișierul lor, data/photos.json."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.34.0",
   "date": "2026-11-01",
@@ -6641,8 +6665,8 @@ Section({
 #sec-production .jm-grid > .job-card {position: relative; height: 132px; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 8px; overflow: hidden;}
 #sec-production .jm-grid > .job-card img {width: 100%; height: 100%; object-fit: contain;}
 #sec-production .jm-grid > .job-card.op-txt {padding: 28px 10px 12px;}
-#sec-production .jm-pb {position: absolute; left: 8px; right: 8px; bottom: 6px; height: 4px; border-radius: 999px; background: var(--panel-2); overflow: hidden;}
-#sec-production .jm-pb::after {content: ""; position: absolute; inset: 0 auto 0 0; width: var(--p); background: var(--sodium);}
+#sec-production .jm-prog {position: absolute; left: 8px; right: 8px; bottom: 6px; height: 4px; border-radius: 999px; background: var(--panel-2); overflow: hidden;}
+#sec-production .jm-prog::after {content: ""; position: absolute; inset: 0 auto 0 0; width: var(--p); background: var(--sodium);}
 #sec-production .op-about {margin: 0 0 10px; font-size: 15px; line-height: 1.45; max-width: 75ch;}
 #sec-production .op-desc {display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); line-height: 1.3;}
 #sec-production .op-steps li.done .op-nm {text-decoration: none;}
@@ -6674,7 +6698,26 @@ Section({
 #sec-production .op-ppl {position: absolute; left: 6px; bottom: 6px; z-index: 2; display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px 2px 5px; border-radius: 999px;
   background: rgba(10,14,20,.82); border: 1px solid var(--line); color: var(--text); font: 700 12px/1 var(--body, sans-serif);}
 #sec-production .op-ppl svg {width: 12px; height: 12px; fill: currentColor;}
-#sec-production .jm-grid > .job-card .jm-pb {left: 60px;}
+#sec-production .jm-grid > .job-card .jm-prog {left: 60px;}
+#sec-production .m-car.lux {margin: 0; flex: 1 1 260px; max-width: 360px; border: 1px solid color-mix(in srgb, #d4af37 55%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, #d4af37 7%, var(--panel-2)), var(--panel-2));
+  box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(212,175,55,.12);}
+#sec-production .m-car.lux.podium {flex-basis: 340px; max-width: 460px; border-color: #d4af37;}
+#sec-production .m-car.lux .m-car-pic {position: relative; border-bottom: 1px solid color-mix(in srgb, #d4af37 40%, transparent);}
+#sec-production .m-shot-tag {position: absolute; left: 6px; bottom: 6px; font-size: 13px; padding: 1px 6px; border-radius: 999px; background: rgba(10,14,20,.75);}
+#sec-production .m-cap {display: flex; flex-direction: column; align-items: center; gap: 0; padding: 8px 10px 4px; text-align: center;}
+#sec-production .m-cap small {font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #d4af37;}
+#sec-production .m-make {font-family: var(--mfont); font-size: 17px; line-height: 1.1; color: color-mix(in srgb, #f3e7c3 75%, var(--muted)); margin-top: 2px;}
+#sec-production .m-model {font-family: var(--mfont); font-size: 30px; line-height: 1.15; color: #f3e7c3; text-shadow: 0 2px 10px rgba(212,175,55,.25); overflow-wrap: anywhere;}
+#sec-production .m-car.lux.podium .m-model {font-size: 36px;}
+#sec-production .m-lux-tools {display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; padding: 4px 8px 10px;}
+#sec-production .m-lux-tools .btn {height: 28px; padding: 0 9px; font-size: 12px;}
+#sec-production .m-lux-tools .m-file {display: inline-flex; align-items: center; cursor: pointer;}
+#sec-production .m-lux-tools select {height: 28px; max-width: 130px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 13px;}
+#sec-production .m-paste-hint {margin: 0 0 8px; font-size: 12.5px;}
+@media (max-width: 600px) {
+#sec-production .m-car.lux, #sec-production .m-car.lux.podium {flex-basis: 100%; max-width: 100%;}
+#sec-production .m-model {font-size: 26px;}
+}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -7420,6 +7463,19 @@ i18n({
     "pm.garOtherName": "Nume", "pm.garOtherSlots": "Locuri", "pm.garSrc": "Lista: garajele Dynasty 8 (gamerguides.com, gamertweak.com, gtabase.com, sportskeeda.com).",
     "pm.opMinPl": n => "Minimum " + n + (n === 1 ? " jucător" : " jucători") }
 });
+// 0.35 (idea 126: the cars on show in a Mansion)
+i18n({
+  en: { "pm.mPaste": "Screenshot", "pm.mPasteT": "Paste a screenshot from the clipboard (Print Screen in the game first)", "pm.mFileT": "Choose a picture from the device",
+    "pm.mVmPhotoT": "Back to the Vehicle Manager photo", "pm.mVmPhotoToast": "The Vehicle Manager photo is back.", "pm.mFontT": "The font of the name",
+    "pm.mPasteHint": "Pick the car from the Vehicle Manager first; then 📋 (or Ctrl+V after touching the car) puts your own screenshot on it. The name below is in the font you choose.",
+    "pm.mShotDone": "Screenshot set.", "pm.mShotFail": "That picture couldn't be read.", "pm.mPasteNone": "No picture in the clipboard: press Print Screen in the game first.",
+    "pm.mPasteKeys": "The browser didn't let me read the clipboard: press Ctrl+V on this page instead." },
+  ro: { "pm.mPaste": "Captură", "pm.mPasteT": "Lipește o captură de ecran din clipboard (întâi Print Screen în joc)", "pm.mFileT": "Alege o poză de pe dispozitiv",
+    "pm.mVmPhotoT": "Înapoi la poza din Vehicle Manager", "pm.mVmPhotoToast": "A revenit poza din Vehicle Manager.", "pm.mFontT": "Fontul numelui",
+    "pm.mPasteHint": "Alegi întâi mașina din Vehicle Manager; apoi 📋 (sau Ctrl+V după ce atingi mașina) îi pune captura ta. Numele de dedesubt e scris cu fontul ales.",
+    "pm.mShotDone": "Captura a fost pusă.", "pm.mShotFail": "Poza nu a putut fi citită.", "pm.mPasteNone": "Nu e nicio poză în clipboard: apasă întâi Print Screen în joc.",
+    "pm.mPasteKeys": "Browserul nu m-a lăsat să citesc clipboard-ul: apasă Ctrl+V pe această pagină." }
+});
 
 /* ======================================================================
    Ideas 112–114 (01.11.2026): every heist and contract of GTA Online, with its missions in order.
@@ -7762,6 +7818,7 @@ const bizName = id => {
    State (saved in this browser)
    ====================================================================== */
 const STORE_KEY = ck("gtaProductionV5");   // idea 94: character 2 has its own copy
+let prL = null;   // idea 125: the Property Manager arrangement of this device (see prLayout)
 function defaultBiz(def) {
   if (def.kind === "night") return { owned: false, pin: null, alert: null, layer: "mid", bed: false, security: false, equipment: false,
     hired: 1, floors: 1, assign: {}, crates: {}, pop: 100, safe: 0, fired: {} };
@@ -7877,6 +7934,8 @@ function save(now = false) {
       if (r > baseRev) { adoptStored(); return; }
       baseRev = r + 1;
       S.rev = baseRev;
+      if (S.props && S.props.layout) delete S.props.layout;   // idea 125: the PRM arrangement is per device
+      if (prL) LS.set("gtaPrLayout", prL);
       localStorage.setItem(STORE_KEY, JSON.stringify(S));
       localStorage.setItem(REV_KEY, String(baseRev));
     } catch (e) {}
@@ -8614,7 +8673,7 @@ function opCardHtml(k) {
   if (!tag && parts === 1) { const [a, b] = opProg(k, o.parts[0]); tag = a ? `${a} / ${b}` : runs ? t("opRuns", runs) : ""; }
   if (!tag && parts > 1) tag = o.unit === "acts" ? t("opActs", o.parts.filter(p => opGet(k, p.id).n > 0).length, parts) : runs ? t("opRuns", runs) : t("opParts", parts);
   const tg = (tag ? `<span class="soon-tag on">${escapeHtml(tag)}</span>` : "") + (o.cat === "heist" ? opPlayersHtml(o) : "");
-  const pp = parts === 1 ? opProg(k, o.parts[0]) : [0, 0], bar = pp[0] ? `<i class="jm-pb" style="--p:${pp[0] / pp[1] * 100}%"></i>` : "";
+  const pp = parts === 1 ? opProg(k, o.parts[0]) : [0, 0], bar = pp[0] ? `<i class="jm-prog" style="--p:${pp[0] / pp[1] * 100}%"></i>` : "";   // not "jm-pb": that is the map pin's class (idea 124)
   if (img) return `<a class="job-card open" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<img src="${prImg(img)}" alt="${escapeHtml(o.name)}" loading="lazy">${bar}</a>`;
   // no emblem yet: the name on the card (idea 113)
   return `<a class="job-card open op-txt ${o.group === "classic" ? "classic" : ""}" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<b>${escapeHtml(o.name)}</b><small>${escapeHtml(t("opNeeds"))}: ${escapeHtml(o.needs)}</small>${bar}</a>`;
@@ -8845,8 +8904,17 @@ function propCards() {
     ["garage", (window.PRM_IMG || {}).garage, "Garages", "#garages", garList().length > 0, garList().length ? t("garN", garList().length) : ""],
     ["mckenzie", (window.PRM_IMG || {}).mckenzie, "McKenzie Field Hangar", "", false, "soon"]];
 }
+/* idea 125: the arrangement of this page stays on this device (browser key gtaPrLayout), it is not saved to GitHub;
+   the other devices show the default one. The one that was synced before moves here once, on the first device that opens 0.35. */
 function prLayout() {
-  const p = pr(), L = p.layout || (p.layout = { order: [], size: {} });
+  const p = pr();
+  if (!prL) {
+    prL = LS.get("gtaPrLayout", null);
+    if (!prL && p.layout) { prL = p.layout; LS.set("gtaPrLayout", prL); }
+    if (p.layout) { delete p.layout; save(true); ghMarkDirty(); }
+    if (!prL) prL = { order: [], size: {} };
+  }
+  const L = prL;
   const ids = propCards().map(c => c[0]);
   L.order = [...(L.order || []).filter(id => ids.includes(id)), ...ids.filter(id => !(L.order || []).includes(id))];   // new cards go at the end
   L.size = L.size || {}; L.hgt = L.hgt || {}; L.slots = L.slots || {};
@@ -9174,20 +9242,63 @@ const M_FAC = [["mFacOut", ["mF_drive", "mF_pool", "mF_gym", "mF_kennel", "mF_he
 function mFacHtml() {
   return `<section class="adv-card pr-card"><h4>🏠 ${t("mFacT")}</h4>${M_FAC.map(([h, list]) => `<div class="pr-fac"><h5>${t(h)}</h5><div class="pr-fac-chips">${list.map(k => `<span>${t(k)}</span>`).join("")}</div></div>`).join("")}</section>`;
 }
-// the cars on show: a set car is a small card, the empty places are small buttons
+/* idea 126: the cars on show, like in a showroom: first the car from the Vehicle Manager (its photo), then, if you like,
+   your own screenshot pasted over it (📋 / Ctrl+V / a file); under the photo the make and model written by hand,
+   in a font you choose. The screenshots are kept in their own file (data/photos.json; this browser: gtaMPhotos),
+   so the Production Manager data stays small. */
+const M_FONTS = [["greatvibes", "Great Vibes", "'Great Vibes', cursive"], ["allura", "Allura", "'Allura', cursive"], ["parisienne", "Parisienne", "'Parisienne', cursive"],
+  ["pinyon", "Pinyon Script", "'Pinyon Script', cursive"], ["dancing", "Dancing Script", "'Dancing Script', cursive"], ["cinzel", "Cinzel", "'Cinzel', serif"], ["playfair", "Playfair Display", "'Playfair Display', serif"]];
+function mFontsLoad() {
+  if (document.getElementById("mFontsCss")) return;
+  const l = document.createElement("link"); l.id = "mFontsCss"; l.rel = "stylesheet";
+  l.href = "https://fonts.googleapis.com/css2?family=Great+Vibes&family=Allura&family=Parisienne&family=Pinyon+Script&family=Dancing+Script:wght@600&family=Cinzel:wght@500&family=Playfair+Display:ital,wght@1,500&display=swap";
+  document.head.appendChild(l);
+}
+const mFont = k => (M_FONTS.find(f => f[0] === k) || M_FONTS[0]);
+const MPhotos = {
+  FILE: "data/photos.json", KEY: "gtaMPhotos",
+  all() { return LS.get(this.KEY, null) || { savedAt: 0, shots: {} }; },
+  get(k) { return (this.all().shots || {})[k] || null; },
+  set(k, img) { const a = this.all(); a.shots = a.shots || {}; if (img) a.shots[k] = { img, at: Date.now() }; else delete a.shots[k]; a.savedAt = Date.now(); LS.set(this.KEY, a);
+    if (Auth.on) Sync.save(this.FILE, () => JSON.stringify(this.all()), 1500); },
+  async pull() {
+    try { const r = await GH.getJson(this.FILE), a = this.all();
+      if (r && (r.savedAt || 0) > (a.savedAt || 0)) { LS.set(this.KEY, r); if (String(VIEW).startsWith("mansion_")) { focusEl._last = null; renderFocus(); } }
+      else if (Auth.on && (a.savedAt || 0) > ((r && r.savedAt) || 0)) Sync.save(this.FILE, () => JSON.stringify(this.all()), 1500);
+    } catch (e) {}
+  }
+};
+MPhotos.pull(); Bus.on("auth", on => { if (on) MPhotos.pull(); });
+// a pasted / chosen picture → 16:9, 960 px wide, webp (jpeg if the browser can't)
+async function mShot(blob) {
+  const bmp = await createImageBitmap(blob), W = 960, H = 540, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const r = Math.max(W / bmp.width, H / bmp.height), w = bmp.width * r, h = bmp.height * r;
+  c.getContext("2d").drawImage(bmp, (W - w) / 2, (H - h) / 2, w, h);
+  let u = c.toDataURL("image/webp", .8); if (!u.startsWith("data:image/webp")) u = c.toDataURL("image/jpeg", .82);
+  return u;
+}
+let mPasteTo = null;   // the car a Ctrl+V goes to
 function mCarsHtml(id) {
+  mFontsLoad();
   const m = pr().m[id];
   const slots = [...(m.up.podium ? [["podium", 0]] : []), ["drive", 0], ["drive", 1]];
   const label = (k, i) => k === "podium" ? t("mPodium") : t("mDrive", i + 1);
   const set = [], empty = [];
   slots.forEach(([k, i]) => { const slot = k === "podium" ? m.podium : m.drive[i], c = slot && carById(slot.car);
-    if (slot) set.push(`<div class="m-car ${k}">
-        <div class="m-car-pic">${c && c.image ? `<img src="${c.image}" alt="">` : "<span>🚗</span>"}</div>
-        <div class="m-car-info"><small>${label(k, i)}</small><b>${escapeHtml(c ? carName(c) : slot.name || "")}</b>${c ? `<small class="muted">${escapeHtml(c.garage || "")}${c.spot ? " · " + escapeHtml(c.spot) : ""}</small>` : ""}</div>
-        <div class="m-car-act"><button class="icon-btn" data-pick="${k}:${i}" title="${t("mChange")}" aria-label="${t("mChange")}">✎</button><button class="icon-btn" data-clear="${k}:${i}" title="${t("mRemove")}" aria-label="${t("mRemove")}">✕</button></div></div>`);
-    else empty.push(`<button class="btn small m-add" data-pick="${k}:${i}">＋ ${label(k, i)}</button>`); });
+    if (!slot) { empty.push(`<button class="btn small m-add" data-pick="${k}:${i}">＋ ${label(k, i)}</button>`); return; }
+    const key = `${id}:${k}:${i}`, shot = MPhotos.get(key), img = shot ? shot.img : c && c.image, f = mFont(slot.font);
+    const make = c ? (c.brand || "") : "", model = c ? (c.model || "") : slot.name || "";
+    set.push(`<figure class="m-car lux ${k}" data-mkey="${key}">
+        <div class="m-car-pic">${img ? `<img src="${img}" alt="">` : "<span>🚗</span>"}${shot ? `<span class="m-shot-tag">📸</span>` : ""}</div>
+        <figcaption class="m-cap" style="--mfont:${f[2]}"><small>${label(k, i)}</small><span class="m-make">${escapeHtml(make)}</span><span class="m-model">${escapeHtml(model)}</span></figcaption>
+        <div class="m-car-act"><button class="icon-btn" data-pick="${k}:${i}" title="${t("mChange")}" aria-label="${t("mChange")}">✎</button><button class="icon-btn" data-clear="${k}:${i}" title="${t("mRemove")}" aria-label="${t("mRemove")}">✕</button></div>
+        <div class="m-lux-tools"><button class="btn ghost small" data-mpaste="${k}:${i}" title="${t("mPasteT")}">📋 ${t("mPaste")}</button>
+          <label class="btn ghost small m-file" title="${t("mFileT")}">🖼<input type="file" accept="image/*" data-mfile="${k}:${i}" hidden></label>
+          ${shot ? `<button class="btn ghost small" data-mvm="${k}:${i}" title="${t("mVmPhotoT")}">↺</button>` : ""}
+          <select data-mfont="${k}:${i}" aria-label="${t("mFontT")}" title="${t("mFontT")}">${M_FONTS.map(([fk, fn, ff]) => `<option value="${fk}" ${fk === f[0] ? "selected" : ""} style="font-family:${ff}">${fn}</option>`).join("")}</select></div>
+      </figure>`); });
   return `<section class="m-cars ${set.length ? "" : "none"}"><h4>🚘 ${t("mCarsT")}</h4>
-    ${set.length ? `<div class="m-car-row">${set.join("")}</div>` : ""}
+    ${set.length ? `<div class="m-car-row">${set.join("")}</div><p class="hint m-paste-hint">${t("mPasteHint")}</p>` : ""}
     ${empty.length ? `<div class="m-add-row">${empty.join("")}</div>` : ""}
     ${m.up.podium ? "" : `<p class="pr-note">🔒 ${t("mPodiumLocked")}</p>`}</section>`;
 }
@@ -9308,7 +9419,35 @@ function bindProps(root) {
   root.querySelectorAll("[data-clear]").forEach(b => b.onclick = () => { const [k, i] = b.dataset.clear.split(":"), had = k === "podium" ? m.podium : m.drive[+i];
     if (k === "podium") m.podium = null; else m.drive[+i] = null; propsDone();
     toast(t("mRemovedToast"), { label: t("undo"), run: () => { if (k === "podium") m.podium = had; else m.drive[+i] = had; propsDone(); } }); });
+  // idea 126: screenshots and fonts of the cars on show
+  const slotOf = ki => { const [k, i] = ki.split(":"); return k === "podium" ? m.podium : m.drive[+i]; };
+  const keyOf = ki => id + ":" + ki;
+  const redraw = () => { focusEl._last = null; const sc = focusEl.scrollTop; renderFocus(); focusEl.scrollTop = sc; };
+  const put = async (ki, blob) => { try { MPhotos.set(keyOf(ki), await mShot(blob)); redraw(); toast(t("mShotDone")); } catch (e) { toast(t("mShotFail")); } };
+  root.querySelectorAll("[data-mpaste]").forEach(b => b.onclick = async () => {
+    mPasteTo = b.dataset.mpaste;
+    try {
+      const items = await navigator.clipboard.read();
+      for (const it of items) { const ty = it.types.find(x => x.startsWith("image/")); if (ty) return put(mPasteTo, await it.getType(ty)); }
+      toast(t("mPasteNone"));
+    } catch (e) { toast(t("mPasteKeys")); }
+  });
+  root.querySelectorAll("[data-mfile]").forEach(inp => inp.onchange = () => { if (inp.files[0]) put(inp.dataset.mfile, inp.files[0]); });
+  root.querySelectorAll("[data-mvm]").forEach(b => b.onclick = () => { const ki = b.dataset.mvm, had = MPhotos.get(keyOf(ki)); MPhotos.set(keyOf(ki), null); redraw();
+    toast(t("mVmPhotoToast"), { label: t("undo"), run: () => { MPhotos.set(keyOf(ki), had && had.img); redraw(); } }); });
+  root.querySelectorAll("[data-mfont]").forEach(sel => sel.onchange = () => { const sl = slotOf(sel.dataset.mfont); if (sl) { sl.font = sel.value; propsDone(); } });
+  root.querySelectorAll("figure[data-mkey]").forEach(f => f.addEventListener("pointerdown", () => { mPasteTo = f.dataset.mkey.split(":").slice(1).join(":"); }));
+  if (!mPasteTo) { const f = root.querySelector("figure[data-mkey]"); if (f) mPasteTo = f.dataset.mkey.split(":").slice(1).join(":"); }
+  mPasteMansion = id; mPastePut = put;
 }
+// Ctrl+V on a Mansion page: the screenshot goes to the car you last touched (the first one otherwise)
+let mPasteMansion = null, mPastePut = null;
+document.addEventListener("paste", e => {
+  if (!String(VIEW).startsWith("mansion_") || VIEW.slice(8) !== mPasteMansion || !mPasteTo || !mPastePut) return;
+  if (e.target.closest && e.target.closest("input, textarea")) return;
+  const f = [...(e.clipboardData && e.clipboardData.files || [])].find(x => x.type.startsWith("image/"));
+  if (f) { e.preventDefault(); mPastePut(mPasteTo, f); }
+});
 // the map: the Mansions you own are places too (with the Agency); their pin can be dragged like the Agency's
 // idea 88: "b:<id>" = a Production Manager business (its pin is the same one as on the Production Manager map)
 function placeGet(id) { if (id === "agency") return ag().pin; if (id === "ceooffice") return pr().ceo.pin; if (id.startsWith("f:")) return S.fronts[id.slice(2)].pin; if (id.startsWith("b:")) return (S.biz[id.slice(2)] || {}).pin; const m = pr().m[id.slice(2)]; return m && m.pin; }

@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.35.0 (2026-11-01)
+* Property Manager:
+  * Fix: the map showed no property. A class name added in 0.33 for the progress bars of the Job Manager cards was the same as the map pins' own, so it squashed them (the Job Manager map had the same problem).
+  * Change: how you arrange the page stays on the device where you arrange it (not saved to GitHub); the other devices show the default arrangement. The arrangement saved so far moved to the first device that opened this version.
+  * Add: the cars on show in a Mansion look like a showroom: a big photo, and under it the make and model written by hand. Pick the car from the Vehicle Manager first; then 📋 Screenshot (or Ctrl+V after touching the car, or 🖼 a file) puts your own screenshot on it, ↺ brings back the Vehicle Manager photo, and you choose the font: Great Vibes, Allura, Parisienne, Pinyon Script, Dancing Script, Cinzel or Playfair Display. Screenshots are kept in their own file, data/photos.json.
+
 ### v0.34.0 (2026-11-01)
 * Property Manager:
   * Add: the Garages card opens its own page (no longer the Vehicle Manager): the garages for your personal vehicles, separate from the garages of the other properties. Each one shows how many spaces are taken and free, from the Vehicle Manager garage it is linked to. Add one from the list of every Dynasty 8 garage (2, 6 or 10 vehicles, with prices) and the Eclipse Boulevard Garage (50), or type another. The Eclipse Boulevard Garage you already have in the Vehicle Manager is added by itself.
