@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.34.0 (2026-11-01)
+* Property Manager:
+  * Add: the Garages card opens its own page (no longer the Vehicle Manager): the garages for your personal vehicles, separate from the garages of the other properties. Each one shows how many spaces are taken and free, from the Vehicle Manager garage it is linked to. Add one from the list of every Dynasty 8 garage (2, 6 or 10 vehicles, with prices) and the Eclipse Boulevard Garage (50), or type another. The Eclipse Boulevard Garage you already have in the Vehicle Manager is added by itself.
+* Job Manager:
+  * Add: heist cards show the fewest players needed, with a small person icon in the corner ("2+" when it can also be done with more).
+
 ### v0.33.0 (2026-11-01)
 * Job Manager:
   * Change: a new page layout. Tabs on top (All, Heists, Contracts, Jobs); under All, "In progress" (what you've started, with how far you are) and "This week" (the Salvage Yard cars, the Kortz Center targets, the Most Wanted bounty); then each category with its emblem, a line about what it is, and its cards. A started heist or contract has a progress bar on its card.

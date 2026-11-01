@@ -605,6 +605,16 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
   .set-body { padding: 12px; }
   .set-row { flex-wrap: wrap; }
 }
+
+/* idea 122: the garage list (on top of the page) */
+.gar-scroll {overflow-y: auto; padding: 2px;}
+.gar-h {margin: 12px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted);}
+.gar-pick {display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px;}
+.gar-pick button {display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg3); color: var(--text); font: inherit; text-align: left; cursor: pointer;}
+.gar-pick button:hover:not(:disabled) {border-color: var(--accent);} .gar-pick button:disabled {opacity: .55; cursor: default;}
+.gar-pick small {color: var(--muted); font-size: 12px;}
+.gar-own {display: flex; gap: 6px;} .gar-own input {height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: inherit; min-width: 0;}
+.gar-own input[data-gcn] {flex: 1;} .gar-own input[data-gcs] {width: 80px;}
 </style>
 </head>
 <body>
@@ -726,7 +736,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.33";
+const APP_VERSION = "0.34";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1041,6 +1051,38 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.34.0",
+  "date": "2026-11-01",
+  "en": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Add: the Garages card opens its own page (no longer the Vehicle Manager): the garages for your personal vehicles, separate from the garages of the other properties. Each one shows how many spaces are taken and free, from the Vehicle Manager garage it is linked to. Add one from the list of every Dynasty 8 garage (2, 6 or 10 vehicles, with prices) and the Eclipse Boulevard Garage (50), or type another. The Eclipse Boulevard Garage you already have in the Vehicle Manager is added by itself."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Add: heist cards show the fewest players needed, with a small person icon in the corner (\"2+\" when it can also be done with more)."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Nou: cardul Garages își deschide pagina lui (nu mai deschide Vehicle Manager): garajele pentru vehiculele tale personale, separate de garajele celorlalte proprietăți. Fiecare arată câte locuri sunt ocupate și libere, din garajul Vehicle Manager de care e legat. Adaugi unul din lista cu toate garajele Dynasty 8 (2, 6 sau 10 vehicule, cu prețuri) și Eclipse Boulevard Garage (50) sau scrii altul. Eclipse Boulevard Garage, pe care îl ai deja în Vehicle Manager, se adaugă singur."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Nou: cardurile de heist arată numărul minim de jucători, cu o iconiță de persoană în colț („2+” când se poate și cu mai mulți)."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.33.0",
   "date": "2026-11-01",
@@ -3006,6 +3048,7 @@ const ROUTES = {
   props:      { sec: "production", title: "Property Manager",       view: "props" },
   mansions:   { sec: "production", title: "Mansions",               view: "mansions" },
   ceooffice:  { sec: "production", title: "CEO Office",             view: "ceooffice" },
+  garages:    { sec: "production", title: "Garages",                view: "garages" },
   richman:    { sec: "production", title: "Richman Villa",          view: "mansion_richman" },
   vinewood:   { sec: "production", title: "The Vinewood Residence", view: "mansion_vinewood" },
   tongva:     { sec: "production", title: "The Tongva Estate",      view: "mansion_tongva" },
@@ -6614,6 +6657,24 @@ Section({
 #sec-production .jm-grid {grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;}
 #sec-production .jm-grid > .job-card {height: 108px;}
 }
+#sec-production .gar-sum {display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;}
+#sec-production .gar-sum .btn {margin-left: auto;}
+#sec-production .gar-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px;}
+#sec-production .gar-card {display: flex; flex-direction: column; gap: 8px;}
+#sec-production .gar-top {display: flex; align-items: center; gap: 12px;}
+#sec-production .gar-top > div {flex: 1; min-width: 0;}
+#sec-production .gar-top h4 {margin: 0;}
+#sec-production .gar-size {display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: color-mix(in srgb, #1e90ff 22%, var(--panel-2)); border: 1px solid color-mix(in srgb, #1e90ff 50%, var(--line)); font: 700 18px var(--display, sans-serif); flex: none;}
+#sec-production .gar-bar {height: 8px; border-radius: 999px; background: var(--panel-2); overflow: hidden;}
+#sec-production .gar-bar i {display: block; height: 100%; background: var(--sodium);}
+#sec-production .gar-use {margin: 0; font-size: 14px;}
+#sec-production .gar-link {display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--muted);}
+#sec-production .gar-link select {flex: 1; min-width: 160px;}
+#sec-production .gar-card > .btn {align-self: flex-start;}
+#sec-production .op-ppl {position: absolute; left: 6px; bottom: 6px; z-index: 2; display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px 2px 5px; border-radius: 999px;
+  background: rgba(10,14,20,.82); border: 1px solid var(--line); color: var(--text); font: 700 12px/1 var(--body, sans-serif);}
+#sec-production .op-ppl svg {width: 12px; height: 12px; fill: currentColor;}
+#sec-production .jm-grid > .job-card .jm-pb {left: 60px;}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -7342,6 +7403,23 @@ i18n({ en: { "pm.jmDoing": "In progress", "pm.jmWeek": "This week", "pm.jmAll": 
     "pm.jobsSub": "Heists, contracts and the businesses that give you work. Tap one for its missions in order, what each one is, and your progress." },
   ro: { "pm.jmDoing": "În lucru", "pm.jmWeek": "Săptămâna asta", "pm.jmAll": "Toate",
     "pm.jobsSub": "Heist-uri, contracte și afacerile care îți dau de lucru. Apasă pe unul pentru misiunile lui în ordine, ce e fiecare și progresul tău." } });
+// 0.34 (ideas 122, 123)
+i18n({
+  en: { "pm.garSub": "The garages for your personal vehicles (the Agency's, the Office's and the others' are on their own pages). How full each one is comes from the Vehicle Manager.",
+    "pm.garN": n => n === 1 ? "1 garage" : n + " garages", "pm.garTot": (u, s) => `${u} / ${s} spaces taken`, "pm.garAdd": "Add a garage", "pm.garNone": "No garage yet: add the ones you own.",
+    "pm.garCap": n => n + " vehicles", "pm.garDel": "Remove it from the list", "pm.garDelAsk": n => `Remove ${n} from your garages? (The cars in the Vehicle Manager stay.)`,
+    "pm.garUse": (u, s, f) => `<b>${u}</b> / ${s} taken · <b>${f}</b> free`, "pm.garNoVm": "Not linked to a Vehicle Manager garage yet: choose it below.", "pm.garVm": "Vehicle Manager garage:",
+    "pm.garGroup": n => n === 50 ? "50 vehicles (10 per floor, up to 5 floors)" : n + " vehicles", "pm.garHave": "yours", "pm.garOther": "Another garage (not in the list)",
+    "pm.garOtherName": "Name", "pm.garOtherSlots": "Spaces", "pm.garSrc": "The list: Dynasty 8 garages (gamerguides.com, gamertweak.com, gtabase.com, sportskeeda.com).",
+    "pm.opMinPl": n => "At least " + n + (n === 1 ? " player" : " players") },
+  ro: { "pm.garSub": "Garajele pentru vehiculele tale personale (cele de la Agency, Office și celelalte proprietăți sunt pe paginile lor). Cât e de plin fiecare vine din Vehicle Manager.",
+    "pm.garN": n => n === 1 ? "1 garaj" : n + " garaje", "pm.garTot": (u, s) => `${u} / ${s} locuri ocupate`, "pm.garAdd": "Adaugă un garaj", "pm.garNone": "Niciun garaj încă: adaugă-le pe cele pe care le ai.",
+    "pm.garCap": n => n + " vehicule", "pm.garDel": "Scoate-l din listă", "pm.garDelAsk": n => `Scoți ${n} din garajele tale? (Mașinile din Vehicle Manager rămân.)`,
+    "pm.garUse": (u, s, f) => `<b>${u}</b> / ${s} ocupate · <b>${f}</b> libere`, "pm.garNoVm": "Nelegat încă de un garaj din Vehicle Manager: alege-l mai jos.", "pm.garVm": "Garajul din Vehicle Manager:",
+    "pm.garGroup": n => n === 50 ? "50 de vehicule (10 pe etaj, până la 5 etaje)" : n + " vehicule", "pm.garHave": "al tău", "pm.garOther": "Alt garaj (care nu e în listă)",
+    "pm.garOtherName": "Nume", "pm.garOtherSlots": "Locuri", "pm.garSrc": "Lista: garajele Dynasty 8 (gamerguides.com, gamertweak.com, gtabase.com, sportskeeda.com).",
+    "pm.opMinPl": n => "Minimum " + n + (n === 1 ? " jucător" : " jucători") }
+});
 
 /* ======================================================================
    Ideas 112–114 (01.11.2026): every heist and contract of GTA Online, with its missions in order.
@@ -8481,7 +8559,7 @@ function jobCardHtml(k) {
   if (k === "dre") { const [n, all] = dreCount(); return `<a class="job-card open" href="#dre" title="Dr. Dre Contract"><span class="soon-tag on">${n} / ${all}</span><img src="${prImg(JOB_IMG.dre)}" alt="Dr. Dre Contract"></a>`; }
   if (k === "agency") return `<a class="job-card open" href="#agency" title="Agency"><span class="soon-tag on">${ag().owned ? money(ag().safe) : t("agOpenTag")}</span><img src="${prImg(JOB_IMG.agency)}" alt="Agency"></a>`;
   if (k === "fronts") return `<a class="job-card open" href="#fronts" title="${t("frontsOpen")}"><span class="soon-tag on">${t("frontsOwned", FRONTS.filter(([f]) => frontOwned(f)).length)}</span><img src="${prImg(JOB_IMG.fronts)}" alt="Money Fronts"></a>`;
-  if (k === "kortz") return `<a class="job-card open" href="#op-kortz" title="${kortzReady() ? t("kortzOk") : t("kortzNeed")}"><span class="soon-tag ${kortzReady() ? "on" : "warn"}">${kortzReady() ? "🎨 " + t("kortzOkTag") : "⚠ " + t("kortzNeedTag")}</span><img src="${prImg(JOB_IMG[k])}" alt="${JOB_NAMES[k]}" loading="lazy"></a>`;
+  if (k === "kortz") return `<a class="job-card open" href="#op-kortz" title="${kortzReady() ? t("kortzOk") : t("kortzNeed")}"><span class="soon-tag ${kortzReady() ? "on" : "warn"}">${kortzReady() ? "🎨 " + t("kortzOkTag") : "⚠ " + t("kortzNeedTag")}</span>${opPlayersHtml(OPS.kortz)}<img src="${prImg(JOB_IMG[k])}" alt="${JOB_NAMES[k]}" loading="lazy"></a>`;
   if (OPS[k]) return opCardHtml(k);
   return `<div class="job-card soon" aria-disabled="true"><span class="soon-tag">${t("soon2")}</span><img src="${prImg(JOB_IMG[k])}" alt="${JOB_NAMES[k]}" loading="lazy"></div>`;
 }
@@ -8526,13 +8604,16 @@ function opWeekTag(id) {
   if (id === "bounties") return w && w.bounty.length ? "🎯 " + w.bounty[0] : "";
   return "";
 }
+// idea 123: the fewest players a heist needs, with a small person icon, in the card's corner
+const OP_PERSON = `<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="4.6" r="3.1"/><path d="M1.8 15.2c0-3.6 2.8-6.1 6.2-6.1s6.2 2.5 6.2 6.1z"/></svg>`;
+function opPlayersHtml(o) { const n = parseInt(o.players, 10); return n ? `<span class="op-ppl" title="${escapeHtml(t("opMinPl", n))}">${OP_PERSON}${n}${/[–-]/.test(o.players) ? "+" : ""}</span>` : ""; }
 function opCardHtml(k) {
   const o = OPS[k], img = o.img && JOB_IMG[o.img];
   const parts = o.parts.length, runs = o.parts.reduce((a, p) => a + opGet(k, p.id).n, 0);
   let tag = opWeekTag(k);
   if (!tag && parts === 1) { const [a, b] = opProg(k, o.parts[0]); tag = a ? `${a} / ${b}` : runs ? t("opRuns", runs) : ""; }
   if (!tag && parts > 1) tag = o.unit === "acts" ? t("opActs", o.parts.filter(p => opGet(k, p.id).n > 0).length, parts) : runs ? t("opRuns", runs) : t("opParts", parts);
-  const tg = tag ? `<span class="soon-tag on">${escapeHtml(tag)}</span>` : "";
+  const tg = (tag ? `<span class="soon-tag on">${escapeHtml(tag)}</span>` : "") + (o.cat === "heist" ? opPlayersHtml(o) : "");
   const pp = parts === 1 ? opProg(k, o.parts[0]) : [0, 0], bar = pp[0] ? `<i class="jm-pb" style="--p:${pp[0] / pp[1] * 100}%"></i>` : "";
   if (img) return `<a class="job-card open" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<img src="${prImg(img)}" alt="${escapeHtml(o.name)}" loading="lazy">${bar}</a>`;
   // no emblem yet: the name on the card (idea 113)
@@ -8664,7 +8745,7 @@ function pr() {
 }
 const mDef = id => MANSIONS.find(m => m[0] === id);
 const mOwned = () => MANSIONS.filter(([id]) => pr().m[id].owned);
-const propView = () => ["props", "mansions", "ceooffice"].includes(VIEW) || String(VIEW).startsWith("mansion_");
+const propView = () => ["props", "mansions", "ceooffice", "garages"].includes(VIEW) || String(VIEW).startsWith("mansion_");
 const kortzReady = () => mOwned().length > 0 && !!pr().art;
 // Vehicle Manager's cars (it starts quietly in the background the first time a Mansion page needs them)
 function vmCars() {
@@ -8761,7 +8842,7 @@ function propCards() {
     ["bail", JOB_IMG.bail, "Bail Office", "", false, "soon"],
     ["apartment", (window.PRM_IMG || {}).apt, "Apartment", "", false, "soon"],
     ["facility", (window.PRM_IMG || {}).fac, "Facility", "", false, "soon"],
-    ["garage", (window.PRM_IMG || {}).garage, "Garage", "#vehicles", true, "Vehicle Manager"],
+    ["garage", (window.PRM_IMG || {}).garage, "Garages", "#garages", garList().length > 0, garList().length ? t("garN", garList().length) : ""],
     ["mckenzie", (window.PRM_IMG || {}).mckenzie, "McKenzie Field Hangar", "", false, "soon"]];
 }
 function prLayout() {
@@ -8960,6 +9041,86 @@ function bindPropsHub(root) {
   });
   root.querySelectorAll(".pr-empty").forEach(b => b.onclick = () => prPickOpen(+b.dataset.slot, redraw));
 }
+/* ---------- idea 122: Garages, the garages for your personal vehicles (separate from the garages of the other properties) ----------
+   Owned ones in S.props.garages = [{ id, name, slots, vm }]; vm = the Vehicle Manager garage it is, for "occupied / free".
+   The list: Dynasty 8 garages (gamerguides.com, gamertweak.com, gtabase.com, sportskeeda.com) and the Eclipse Boulevard Garage. */
+const GARAGES = [
+  ["Little Bighorn Ave", 2, 25000], ["Unit 124 Popular St", 2, 25000], ["1 Strawberry Ave", 2, 26000], ["142 Paleto Blvd", 2, 26500],
+  ["1920 Senora Way", 2, 32000], ["634 Blvd Del Perro", 2, 33500], ["0897 Mirror Park Blvd", 2, 0], ["Garage Innocence Blvd", 2, 34000],
+  ["870 Route 68 Approach", 6, 62500], ["8754 Route 68", 6, 65000], ["4531 Dry Dock St", 6, 67500], ["0432 Davis Ave", 6, 72500],
+  ["1905 Davis Ave", 6, 75000], ["Unit 14 Popular St", 6, 77500], ["0552 Roy Lowenstein Blvd", 6, 80000],
+  ["1623 South Shambles St", 10, 105000], ["1337 Exceptionalists Way", 10, 112500], ["Unit 76 Greenwich Pkwy", 10, 120500],
+  ["331 Supply St", 10, 135000], ["Unit 2 Popular St", 10, 142500], ["0120 Murrieta Heights", 10, 150000],
+  ["Eclipse Boulevard Garage", 50, 0]
+];
+const gNorm = x => String(x || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+// the VM garage a name stands for (same name, or one contains the other)
+const gVmMatch = (name, vmg) => { const n = gNorm(name); return (vmg.find(g => gNorm(g.name) === n) || vmg.find(g => n && (gNorm(g.name).includes(n) || n.includes(gNorm(g.name)))) || {}).name || ""; };
+function garList() {
+  const p = pr();
+  if (!Array.isArray(p.garages)) {
+    // the first time: the catalogue garages the Vehicle Manager already has (yours: Eclipse Boulevard Garage)
+    const vmg = (SECTIONS.vehicles && SECTIONS.vehicles.getGarages && SECTIONS.vehicles.getGarages()) || [];
+    if (!vmg.length) return [];
+    p.garages = GARAGES.filter(([n]) => vmg.some(g => gNorm(g.name) === gNorm(n))).map(([n, sl]) => ({ id: gNorm(n), name: n, slots: sl, vm: gVmMatch(n, vmg) }));
+    save(true);
+  }
+  return p.garages;
+}
+function garUse(g) {
+  const cars = vmCars(), vmg = (SECTIONS.vehicles && SECTIONS.vehicles.getGarages && SECTIONS.vehicles.getGarages()) || [];
+  const v = g.vm && vmg.find(x => x.name === g.vm);
+  const slots = (v && v.slots) || g.slots, used = g.vm ? cars.filter(c => c.garage === g.vm).length : 0;
+  return { slots, used, linked: !!v };
+}
+function garagesHtml() {
+  vmCars();
+  const list = garList(), vmg = (SECTIONS.vehicles && SECTIONS.vehicles.getGarages && SECTIONS.vehicles.getGarages()) || [];
+  const tot = list.reduce((a, g) => { const u = garUse(g); a.s += u.slots; a.u += u.used; return a; }, { s: 0, u: 0 });
+  const card = (g, i) => { const u = garUse(g), pc = u.slots ? Math.min(100, u.used / u.slots * 100) : 0;
+    return `<section class="adv-card gar-card"><div class="gar-top"><span class="gar-size">${g.slots}</span><div><h4>${escapeHtml(g.name)}</h4><small class="muted">${t("garCap", g.slots)}</small></div>
+        <button class="btn ghost small" data-gar-del="${i}" title="${t("garDel")}">✕</button></div>
+      <div class="gar-bar"><i style="width:${pc}%"></i></div>
+      <p class="gar-use">${u.linked ? t("garUse", u.used, u.slots, Math.max(0, u.slots - u.used)) : `<span class="muted">${t("garNoVm")}</span>`}</p>
+      <label class="gar-link"><span>${t("garVm")}</span><select data-gar-vm="${i}"><option value="">—</option>${vmg.map(x => `<option value="${escapeHtml(x.name)}" ${x.name === g.vm ? "selected" : ""}>${escapeHtml(x.name)} (${x.slots})</option>`).join("")}</select></label>
+      <a class="btn small" href="#vehicles">🚗 Vehicle Manager →</a></section>`; };
+  return `<div class="focus-head">${PRM_IMG && PRM_IMG.garage ? `<img class="ag-logo" src="${prImg(PRM_IMG.garage)}" alt="">` : ""}<div><h2>Garages</h2><p class="muted">${t("garSub")}</p></div>
+      <div class="m-head-btns"><a class="btn small" href="#props">← Property Manager</a></div></div>
+    <section class="adv-card gar-sum"><b>${t("garN", list.length)}</b>${list.length ? ` · ${t("garTot", tot.u, tot.s)}` : ""}
+      <button class="btn primary small" data-gar-add>＋ ${t("garAdd")}</button></section>
+    ${vmLoading() ? `<p class="hint">${t("mPickLoading")}</p>` : ""}
+    <div class="gar-grid">${list.map(card).join("") || `<p class="hint">${t("garNone")}</p>`}</div>
+    <p class="muted op-src">${t("garSrc")}</p>`;
+}
+// the list of every garage in the game; a choice adds it (linked to the VM garage of the same name, if there is one)
+function garPickOpen(redraw) {
+  const list = garList(), vmg = (SECTIONS.vehicles && SECTIONS.vehicles.getGarages && SECTIONS.vehicles.getGarages()) || [];
+  const box = document.createElement("div");
+  box.className = "m-pick-back pr-pick-back";
+  const grp = n => `<h5 class="gar-h">${t("garGroup", n)}</h5><div class="gar-pick">${GARAGES.filter(g => g[1] === n).map(([nm, sl, price]) => {
+      const have = list.some(g => g.id === gNorm(nm));
+      return `<button type="button" data-gpick="${escapeHtml(nm)}" ${have ? "disabled" : ""}><b>${escapeHtml(nm)}</b><small>${have ? "✓ " + t("garHave") : price ? money(price) : ""}</small></button>`; }).join("")}</div>`;
+  box.innerHTML = `<div class="m-pick pr-pick" role="dialog" aria-modal="true"><div class="m-pick-head"><b>${t("garAdd")}</b><button type="button" class="pr-x" data-x aria-label="✕">✕</button></div>
+    <div class="gar-scroll">${[2, 6, 10, 50].map(grp).join("")}
+      <h5 class="gar-h">${t("garOther")}</h5><div class="gar-own"><input data-gcn placeholder="${t("garOtherName")}" maxlength="40"><input data-gcs type="number" min="1" max="100" value="10" aria-label="${t("garOtherSlots")}"><button type="button" class="btn small" data-gcadd>＋</button></div></div></div>`;
+  const close = () => { box.remove(); removeEventListener("keydown", onEsc); };
+  const onEsc = e => { if (e.key === "Escape") close(); };
+  const add = (name, slots) => { const p = pr(); garList(); if (!Array.isArray(p.garages)) p.garages = [];
+    p.garages.push({ id: gNorm(name), name, slots, vm: gVmMatch(name, vmg) }); save(true); ghMarkDirty(); close(); redraw(); };
+  box.querySelector("[data-x]").onclick = close;
+  box.onclick = e => { if (e.target === box) close(); };
+  box.querySelectorAll("[data-gpick]").forEach(b => b.onclick = () => { const g = GARAGES.find(x => x[0] === b.dataset.gpick); add(g[0], g[1]); });
+  box.querySelector("[data-gcadd]").onclick = () => { const n = box.querySelector("[data-gcn]").value.trim(), sl = Math.max(1, Math.min(100, +box.querySelector("[data-gcs]").value || 1)); if (n) add(n, sl); };
+  addEventListener("keydown", onEsc);
+  document.body.appendChild(box);
+}
+function bindGarages(root) {
+  const redraw = () => { focusEl._last = null; const sc = focusEl.scrollTop; renderFocus(); focusEl.scrollTop = sc; };
+  const b = root.querySelector("[data-gar-add]"); if (b) b.onclick = () => garPickOpen(redraw);
+  root.querySelectorAll("[data-gar-del]").forEach(x => x.onclick = () => { const p = pr(), g = p.garages[+x.dataset.garDel];
+    if (g && confirm(t("garDelAsk", g.name))) { p.garages.splice(+x.dataset.garDel, 1); save(true); ghMarkDirty(); redraw(); } });
+  root.querySelectorAll("[data-gar-vm]").forEach(x => x.onchange = () => { pr().garages[+x.dataset.garVm].vm = x.value; save(true); ghMarkDirty(); redraw(); });
+}
 // #mansions: the three villas (owned bright, the others faded: tap to add) and, on the right, what counts for all of them
 function mansionsHtml() {
   const p = pr();
@@ -9115,6 +9276,7 @@ function mPickOpen(id, key, i) {
 function bindProps(root) {
   const p = pr();
   if (VIEW === "props") return bindPropsHub(root);
+  if (VIEW === "garages") return bindGarages(root);
   root.querySelectorAll("[data-villa]").forEach(b => b.onclick = () => { const id = b.dataset.villa; if (p.m[id].owned) location.hash = "#" + id; else mSetOpen(id, true); });
   const al = root.querySelector("[data-mallset]"); if (al) al.onclick = mAllOpen;
   root.querySelectorAll("[data-mboost]").forEach(b => b.onclick = () => {
@@ -11948,7 +12110,7 @@ function renderFocus() {
     focusEl._last = key; focusEl.innerHTML = html;
     if (VIEW === "dre") bindDre(focusEl); else bindAgency(focusEl);
   } else if (propView()) {
-    const html = VIEW === "props" ? propsHtml() : VIEW === "mansions" ? mansionsHtml() : VIEW === "ceooffice" ? ceoOfficeHtml() : mansionHtml(VIEW.slice(8)), key = html.replace(/data-live-timer="[^"]*">[^<]*</g, "");
+    const html = VIEW === "props" ? propsHtml() : VIEW === "mansions" ? mansionsHtml() : VIEW === "ceooffice" ? ceoOfficeHtml() : VIEW === "garages" ? garagesHtml() : mansionHtml(VIEW.slice(8)), key = html.replace(/data-live-timer="[^"]*">[^<]*</g, "");
     if (key === focusEl._last) return;
     focusEl._last = key; focusEl.innerHTML = html;
     bindProps(focusEl);
