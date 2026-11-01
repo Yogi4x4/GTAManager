@@ -49,12 +49,28 @@ jobs:
               except Exception as e2:
                   print("rss failed:", e2)
           posts = [p for p in posts if re.search(r"twitch\s*drop", p["title"], re.I)]
+          # 2b. news sites (Google News RSS): Rockstar announces some drops only on its Newswire / X, with no Reddit post titled "Twitch Drops"
+          #     (missed this way: the Grotti Turismo Omaggio drop, Oct 30 – Nov 1, 2026). Only articles from the last 10 days count.
+          if not posts:
+              try:
+                  root = ET.fromstring(get("https://news.google.com/rss/search?q=" + urllib.parse.quote('"GTA Online" "Twitch Drops" when:10d') + "&hl=en-US&gl=US&ceid=US:en"))
+                  for it in root.iter("item"):
+                      t = html.unescape(it.findtext("title", "") or ""); u = it.findtext("link", "") or ""
+                      pd = it.findtext("pubDate", "") or ""
+                      try: posted = datetime.datetime.strptime(pd[:25].strip(), "%a, %d %b %Y %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
+                      except ValueError: continue
+                      body = re.sub(r"<[^>]+>", " ", html.unescape(it.findtext("description", "") or ""))
+                      if re.search(r"twitch\s*drop", t, re.I) and re.search(r"gta", t, re.I) and now - posted < datetime.timedelta(days=10):
+                          posts.append({"title": re.sub(r"\s+-\s+[^-]+$", "", t), "url": u, "posted": posted, "text": body, "news": True})
+                  posts.sort(key=lambda p: p["posted"], reverse=True)
+              except Exception as e3:
+                  print("news failed:", e3)
           posts.sort(key=lambda p: p["posted"], reverse=True)
           out = {"active": False, "fetched": now.strftime("%Y-%m-%dT%H:%MZ"), "page": "https://www.rockstargames.com/gta-online/twitch-drops"}
           MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
           def until_of(s, posted):
               # "until November 12", "through Nov 12th", "ends 12 November", "Oct 30 - Nov 5"
-              m = re.search(r"(?:until|through|thru|till|ends?|ending|to|-|–)\s+(?:\w+day,?\s+)?([A-Za-z]{3,9})\.?\s+(\d{1,2})", s, re.I) or re.search(r"(?:until|through|ends?)\s+(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,9})", s, re.I)
+              m = re.search(r"(?:(?:until|through|thru|till|ends?|ending|to)\s+|[-–]\s*)(?:\w+day,?\s+)?([A-Za-z]{3,9})\.?\s+(\d{1,2})", s, re.I) or re.search(r"(?:until|through|ends?)\s+(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,9})", s, re.I)
               if not m: return None
               a, b = m.groups()
               mon, day = (a, b) if a[:1].isalpha() else (b, a)
@@ -65,16 +81,32 @@ jobs:
               except ValueError: return None
           if posts:
               p = posts[0]
-              until = until_of(p["title"] + "\n" + p["text"], p["posted"]) or p["posted"] + datetime.timedelta(days=7)
+              until = until_of(p["title"] + "\n" + p["text"], p["posted"]) or p["posted"] + datetime.timedelta(days=3 if p.get("news") else 7)
               items = [re.sub(r"[*_#>`]+", "", l).strip(" -•") for l in p["text"].splitlines() if re.match(r"\s*[-*•]\s+\S", l)][:8]
               out.update({"title": p["title"], "url": p["url"], "posted": p["posted"].strftime("%Y-%m-%dT%H:%MZ"), "until": until.strftime("%Y-%m-%dT%H:%MZ"),
                           "items": items, "active": p["posted"] <= now <= until and now - p["posted"] < datetime.timedelta(days=21)})
+          # 3. no Reddit post found (Reddit often refuses GitHub's servers): the weekly post in data/weekly.json mentions Twitch Drops when they are on
+          if not posts:
+              try:
+                  w = json.load(open("data/weekly.json"))
+                  lines = [i for s in w.get("sections", []) for i in [s.get("title", "")] + s.get("items", []) if re.search(r"twitch\s*drop", i, re.I)]
+                  wp = datetime.datetime.fromisoformat((w.get("posted") or "").replace("Z", "+00:00")) if w.get("posted") else None
+                  if lines and wp:
+                      until = until_of(" ".join(lines), wp) or until_of(w.get("title", ""), wp) or wp + datetime.timedelta(days=7)
+                      out.update({"title": lines[0][:140], "url": w.get("url", ""), "posted": wp.strftime("%Y-%m-%dT%H:%MZ"), "until": until.strftime("%Y-%m-%dT%H:%MZ"),
+                                  "items": lines[1:8], "source": "weekly", "active": wp <= now <= until})
+              except Exception as e3:
+                  print("weekly fallback failed:", e3)
+          out["checked"] = out["fetched"]
           os.makedirs("data", exist_ok=True)
           old = None
           try: old = json.load(open("data/drops.json"))
           except Exception: pass
-          same = old and {k: v for k, v in old.items() if k != "fetched"} == {k: v for k, v in out.items() if k != "fetched"}
-          if not same:
+          skip = ("fetched", "checked")
+          same = old and {k: v for k, v in old.items() if k not in skip} == {k: v for k, v in out.items() if k not in skip}
+          # also once a day when nothing changed, so the page can tell the check still runs
+          stale = not old or (now - datetime.datetime.fromisoformat((old.get("checked") or old.get("fetched") or "2000-01-01T00:00Z").replace("Z", "+00:00"))) > datetime.timedelta(hours=20)
+          if not same or stale:
               json.dump(out, open("data/drops.json", "w"), ensure_ascii=False, indent=1)
           print(json.dumps(out, ensure_ascii=False)[:600])
           PY
