@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.33.0 (2026-11-01)
+* Job Manager:
+  * Change: a new page layout. Tabs on top (All, Heists, Contracts, Jobs); under All, "In progress" (what you've started, with how far you are) and "This week" (the Salvage Yard cars, the Kortz Center targets, the Most Wanted bounty); then each category with its emblem, a line about what it is, and its cards. A started heist or contract has a progress bar on its card.
+  * Add: every mission on the heist and contract pages has a short line about what it is, and every heist / contract a few words on top.
+  * Add: emblems for the five classic heists (The Fleeca Job, The Prison Break, The Humane Labs Raid, Series A Funding, The Pacific Standard Job).
+* Property Manager:
+  * Fix: on a phone, arranging was slow and cards changed places by themselves. A card is now dragged only after a long press (a short buzz); a swipe scrolls the page, a tap opens the list of the place. Nothing redraws while you arrange, and the page is much lighter (the emblems are no longer copied into it at every redraw).
+  * Add: the five MC businesses as properties: Weed Farm, Counterfeit Cash Factory, Cocaine Lockup, Methamphetamine Lab, Document Forgery Office (their name on the card until they have an emblem; they open the MC Business page).
+* Vehicle Manager:
+  * Add: a "Special Upgrades" button next to Filters, to the page of HSW / Imani Tech / Benny's vehicles (before, it was only in the pages menu).
+* Home:
+  * Change: Twitch Drops: when none are on, a small line says so and when it was last checked; if the automatic check stops running, it says that too.
+  * Fix: the Twitch Drops check missed the Grotti Turismo Omaggio drop (Oct 30 – Nov 1, 2026), announced only on Rockstar's Newswire and X. It now also reads the news sites (Google News, last 10 days) and the weekly post, understands dates like "Oct. 30-Nov. 1", and notes a check at least once a day. Needs the new .github/workflows/drops.yml.
+
 ### v0.32.1 (2026-11-01)
 * Job Manager:
   * Change: the three categories are one under the other, Heists, Contracts, Jobs, all the same size: full width, the same emblem height and the same card height (they were side by side and uneven).
