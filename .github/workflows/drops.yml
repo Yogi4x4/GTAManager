@@ -79,12 +79,44 @@ jobs:
               y = posted.year + (1 if mi < posted.month - 6 else 0)
               try: return datetime.datetime(y, mi, int(day), 23, 59, tzinfo=datetime.timezone.utc)
               except ValueError: return None
+          # idea 127: the dates are only ever read, never made up. "between October 30 – November 1" = watch on Twitch;
+          # "claim ... through November 11" = pick it up in the game. Rockstar's own page is tried first for both.
+          MON = r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?"
+          def mkdate(mon, day, ref, end):
+              mi = MONTHS.get(mon[:3].lower())
+              if not mi: return None
+              y = ref.year + (1 if mi < ref.month - 6 else 0) - (1 if mi > ref.month + 6 else 0)
+              try: return datetime.datetime(y, mi, int(day), 23 if end else 0, 59 if end else 0, tzinfo=datetime.timezone.utc)
+              except ValueError: return None
+          def range_of(s, ref):
+              m = re.search(MON + r"\s+(\d{1,2})(?:st|nd|rd|th)?\s*(?:[-–—]|to|through|until)\s*(?:" + MON + r"\s+)?(\d{1,2})", s, re.I)
+              if not m: return None, None
+              a = mkdate(m.group(1), m.group(2), ref, False)
+              b = mkdate(m.group(3) or m.group(1), m.group(4), ref, True)
+              return (a, b) if a and b and b >= a else (None, None)
+          def claim_of(s, ref):
+              m = re.search(r"claim\w*[^.]{0,60}?(?:though|through|until|by|before)\s+(?:\w+day,?\s+)?" + MON + r"\s+(\d{1,2})", s, re.I)
+              return mkdate(m.group(1), m.group(2), ref, True) if m else None
+          def strip(h): return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", h))))
+          rs_text = ""
+          try: rs_text = strip(get(out["page"]))
+          except Exception as e4: print("rockstar page failed:", e4)
           if posts:
               p = posts[0]
-              until = until_of(p["title"] + "\n" + p["text"], p["posted"]) or p["posted"] + datetime.timedelta(days=3 if p.get("news") else 7)
+              txt = p["title"] + "\n" + p["text"]
+              start, until = range_of(rs_text, now) if re.search(r"twitch", rs_text, re.I) else (None, None)
+              if not until: start, until = range_of(txt, p["posted"])
+              if not until:
+                  u = until_of(txt, p["posted"])
+                  if u: start, until = None, u
+              claim = claim_of(rs_text, now) or claim_of(txt, p["posted"])
               items = [re.sub(r"[*_#>`]+", "", l).strip(" -•") for l in p["text"].splitlines() if re.match(r"\s*[-*•]\s+\S", l)][:8]
-              out.update({"title": p["title"], "url": p["url"], "posted": p["posted"].strftime("%Y-%m-%dT%H:%MZ"), "until": until.strftime("%Y-%m-%dT%H:%MZ"),
-                          "items": items, "active": p["posted"] <= now <= until and now - p["posted"] < datetime.timedelta(days=21)})
+              recent = now - p["posted"] < datetime.timedelta(days=3 if p.get("news") else 7)
+              out.update({"title": p["title"], "url": p["url"], "posted": p["posted"].strftime("%Y-%m-%dT%H:%MZ"),
+                          "start": start.strftime("%Y-%m-%dT%H:%MZ") if start else None, "until": until.strftime("%Y-%m-%dT%H:%MZ") if until else None,
+                          "claim": claim.strftime("%Y-%m-%dT%H:%MZ") if claim else None, "items": items, "source": "news" if p.get("news") else "reddit",
+                          # with no end date: "on" only while the post is fresh, and the page says the period is unknown
+                          "active": (now <= until) if until else recent})
           # 3. no Reddit post found (Reddit often refuses GitHub's servers): the weekly post in data/weekly.json mentions Twitch Drops when they are on
           if not posts:
               try:
@@ -92,9 +124,11 @@ jobs:
                   lines = [i for s in w.get("sections", []) for i in [s.get("title", "")] + s.get("items", []) if re.search(r"twitch\s*drop", i, re.I)]
                   wp = datetime.datetime.fromisoformat((w.get("posted") or "").replace("Z", "+00:00")) if w.get("posted") else None
                   if lines and wp:
-                      until = until_of(" ".join(lines), wp) or until_of(w.get("title", ""), wp) or wp + datetime.timedelta(days=7)
-                      out.update({"title": lines[0][:140], "url": w.get("url", ""), "posted": wp.strftime("%Y-%m-%dT%H:%MZ"), "until": until.strftime("%Y-%m-%dT%H:%MZ"),
-                                  "items": lines[1:8], "source": "weekly", "active": wp <= now <= until})
+                      st, until = range_of(" ".join(lines), wp)
+                      until = until or until_of(" ".join(lines), wp) or until_of(w.get("title", ""), wp)   # the weekly post's own end (its title says "to November 5th")
+                      out.update({"title": lines[0][:140], "url": w.get("url", ""), "posted": wp.strftime("%Y-%m-%dT%H:%MZ"), "start": st.strftime("%Y-%m-%dT%H:%MZ") if st else None,
+                                  "until": until.strftime("%Y-%m-%dT%H:%MZ") if until else None, "claim": None,
+                                  "items": lines[1:8], "source": "weekly", "active": (wp <= now <= until) if until else now - wp < datetime.timedelta(days=3)})
               except Exception as e3:
                   print("weekly fallback failed:", e3)
           out["checked"] = out["fetched"]
