@@ -755,7 +755,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.35.2";
+const APP_VERSION = "0.36";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1070,6 +1070,38 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.36.0",
+  "date": "2026-11-01",
+  "en": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Change: the Mansion page, all new (variant A of the mockups): a banner with the house's photo behind its emblem, name, price and the upgrades (yours lit); three small figures (cars on show, the boost that's on, upgrades); then the showroom, the podium car big with the two driveway places next to it (empty places are dashed boxes you tap to fill), and beside it the boost and, folded, what a Mansion has and the rules. On a phone everything stacks in one column."
+    ]
+   },
+   {
+    "area": "Home",
+    "items": [
+     "Fix: Twitch Drops showed made-up dates (1–4 November instead of 30 October – 1 November). When a drop was found only through a news article with no dates, the check took the article's day as the start and added three days. Now dates are only read, never made up: Rockstar's own Twitch Drops page is tried first, \"between October 30 – November 1\" and \"Oct. 30-Nov. 1\" are understood, and so is the day you can claim the reward in the game until. The card says \"watch on Twitch 30 October – 1 November · claim in the game until 11 November\", keeps showing the claim date after the watching is over, and says \"period unknown\" when no date was found. Needs the new .github/workflows/drops.yml."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Schimbat: pagina Mansion, refăcută complet (varianta A din machete): o bandă cu poza casei în spatele emblemei, numelui, prețului și upgrade-urilor (cele pe care le ai, aprinse); trei cifre mici (mașini expuse, boost-ul activ, upgrade-uri); apoi showroom-ul, mașina de pe podium mare și cele două locuri din driveway lângă ea (locurile goale sunt chenare punctate pe care apeși ca să le umpli), iar alături boost-ul și, pliate, ce are un Mansion și regulile. Pe telefon totul se așază pe o coloană."
+    ]
+   },
+   {
+    "area": "Acasă",
+    "items": [
+     "Reparat: Twitch Drops arăta date inventate (1–4 noiembrie în loc de 30 octombrie – 1 noiembrie). Când un drop era găsit doar printr-un articol de știri fără date, verificarea lua ziua articolului ca început și adăuga trei zile. Acum datele sunt doar citite, niciodată inventate: întâi pagina Rockstar de Twitch Drops, apoi „between October 30 – November 1” și „Oct. 30-Nov. 1”, plus ziua până la care revendici premiul în joc. Cardul spune „urmărești pe Twitch 30 octombrie – 1 noiembrie · revendici în joc până pe 11 noiembrie”, arată în continuare data revendicării după ce s-a terminat vizionarea și spune „perioadă necunoscută” când nu găsește nicio dată. Cere noul .github/workflows/drops.yml."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.35.2",
   "date": "2026-11-01",
@@ -4060,7 +4092,7 @@ i18n({
         "home.tk": "Export cars, collections and earnings.",
         "home.pr": "Properties, offices and homes.", "home.fi": "Income, spending and balance.", "home.jo": "Jobs to collect, deliver, finish.", "home.soon": "Coming soon",
         "home.foot": "A free fan project, not affiliated with Rockstar Games. Everything is entered by hand.",
-        "home.drTitle": d => `Twitch Drops are on, until ${d}`, "home.drOpen": "Rockstar page", "home.drNone": "Twitch Drops: none on right now", "home.drChecked": w => "Checked by itself: " + w, "home.drStale": w => "The automatic check hasn't run since " + w + " (GitHub → Actions → Twitch Drops → Run workflow)", "home.drNote": d => `Twitch Drops for GTA Online are on, until ${d}.`,
+        "home.drTitle": d => `Twitch Drops are on, until ${d}`, "home.drOpen": "Rockstar page", "home.drWatch": (r, range) => `Twitch Drops: watch on Twitch ${range ? r : "until " + r}`, "home.drWatchUnknown": "Twitch Drops are on (period unknown)", "home.drClaimOnly": d => `Twitch Drops: claim your reward in the game until ${d}`, "home.drClaim": d => `claim in the game until ${d}`, "home.drUnknownNote": "the dates weren't found: see the Rockstar page", "home.drNone": "Twitch Drops: none on right now", "home.drChecked": w => "Checked by itself: " + w, "home.drStale": w => "The automatic check hasn't run since " + w + " (GitHub → Actions → Twitch Drops → Run workflow)", "home.drNote": d => `Twitch Drops for GTA Online: watch on Twitch ${d}.`,
         "home.wkTitle": "This week in GTA Online", "home.wkMore": n => `Show all (${n} more)`, "home.wkLess": "Show less", "home.wkSource": "Source", "home.wkOpen": "Open", "home.wkClose": "Make small",
         "home.ordHint": "Tip: drag a card to change the order (on a phone, hold it first).", "home.ordReset": "Default order",
         "home.wkUpdated": d => `updated ${d}`, "home.wkOld": "Not this week's list yet: the new one comes on Thursday.",
@@ -4075,7 +4107,7 @@ i18n({
         "home.tk": "Mașini de export, colecții și câștig.",
         "home.pr": "Proprietăți, birouri și case.", "home.fi": "Venituri, cheltuieli și sold.", "home.jo": "Misiuni de luat, livrat, terminat.", "home.soon": "În curând",
         "home.foot": "Proiect gratuit de fani, fără legătură cu Rockstar Games. Totul se introduce manual.",
-        "home.drTitle": d => `Twitch Drops active, până pe ${d}`, "home.drOpen": "Pagina Rockstar", "home.drNone": "Twitch Drops: niciunul activ acum", "home.drChecked": w => "Verificat automat: " + w, "home.drStale": w => "Verificarea automată nu a mai rulat din " + w + " (GitHub → Actions → Twitch Drops → Run workflow)", "home.drNote": d => `Twitch Drops pentru GTA Online sunt active, până pe ${d}.`,
+        "home.drTitle": d => `Twitch Drops active, până pe ${d}`, "home.drOpen": "Pagina Rockstar", "home.drWatch": (r, range) => `Twitch Drops: urmărești pe Twitch ${range ? r : "până pe " + r}`, "home.drWatchUnknown": "Twitch Drops active (perioadă necunoscută)", "home.drClaimOnly": d => `Twitch Drops: revendici premiul în joc până pe ${d}`, "home.drClaim": d => `revendici în joc până pe ${d}`, "home.drUnknownNote": "datele nu au fost găsite: vezi pagina Rockstar", "home.drNone": "Twitch Drops: niciunul activ acum", "home.drChecked": w => "Verificat automat: " + w, "home.drStale": w => "Verificarea automată nu a mai rulat din " + w + " (GitHub → Actions → Twitch Drops → Run workflow)", "home.drNote": d => `Twitch Drops pentru GTA Online: urmărești pe Twitch ${d}.`,
         "home.wkTitle": "Săptămâna asta în GTA Online", "home.wkMore": n => `Arată tot (încă ${n})`, "home.wkLess": "Arată mai puțin", "home.wkSource": "Sursa", "home.wkOpen": "Deschide", "home.wkClose": "Micșorează",
         "home.ordHint": "Sfat: trage un card ca să schimbi ordinea (pe telefon, ține-l apăsat întâi).", "home.ordReset": "Ordinea inițială",
         "home.wkUpdated": d => `actualizat ${d}`, "home.wkOld": "Încă nu e lista săptămânii acesteia: cea nouă apare joi.",
@@ -4145,7 +4177,9 @@ Section({
     const dr = $("#drops");
     let drData = null;
     const drRender = () => {
-      const d = drData, on = d && d.active && Date.parse(d.until) > Date.now();
+      // idea 127: watch on Twitch (start – until, or "period unknown" when no date was found) and claim in the game (until claim)
+      const d = drData, now = Date.now(), wEnd = d && d.until ? Date.parse(d.until) : NaN;
+      const watch = !!(d && d.active && (isNaN(wEnd) || wEnd > now)), claimOn = !!(d && d.claim && Date.parse(d.claim) > now), on = watch || claimOn;
       dr.hidden = !d;
       dr.classList.toggle("off", !on);
       if (!d) return;
@@ -4156,9 +4190,11 @@ Section({
         dr.innerHTML = `<span class="dr-ico">🎁</span><span><b>${t("home.drNone")}</b><small>${h > 30 ? "⚠ " + t("home.drStale", when) : t("home.drChecked", when)}</small></span><span class="dr-go">${t("home.drOpen")} ↗</span>`;
         return;
       }
-      const until = new Date(Date.parse(d.until)).toLocaleDateString(lang === "ro" ? "ro-RO" : "en-GB", { day: "numeric", month: "long" });
+      const day = x => new Date(Date.parse(x)).toLocaleDateString(lang === "ro" ? "ro-RO" : "en-GB", { day: "numeric", month: "long" });
+      const head = watch ? (d.until ? t("home.drWatch", d.start ? day(d.start) + " – " + day(d.until) : day(d.until), !!d.start) : t("home.drWatchUnknown")) : t("home.drClaimOnly", day(d.claim));
+      const sub = [watch && claimOn ? t("home.drClaim", day(d.claim)) : "", watch && !d.until ? t("home.drUnknownNote") : "", esc(d.title || "")].filter(Boolean).join(" · ");
       dr.href = d.page || d.url;
-      dr.innerHTML = `<span class="dr-ico">🎁</span><span><b>${t("home.drTitle", until)}</b><small>${esc(d.title || "")}</small></span><span class="dr-go">${t("home.drOpen")} ↗</span>`;
+      dr.innerHTML = `<span class="dr-ico">🎁</span><span><b>${head}</b><small>${sub}</small></span><span class="dr-go">${t("home.drOpen")} ↗</span>`;
     };
     const drLoad = async () => {
       try {
@@ -6780,6 +6816,72 @@ Section({
 #sec-production .m-car.lux[data-medit] {cursor: pointer; transition: transform .15s, box-shadow .15s;}
 #sec-production .m-car.lux[data-medit]:hover, #sec-production .m-car.lux[data-medit]:focus-visible {transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0,0,0,.45), 0 0 0 1px #d4af37; outline: none;}
 #sec-production .m-car.lux .m-cap {padding-bottom: 12px;}
+#sec-production .mh-hero {position: relative; height: 250px; margin: 0 0 12px; border-radius: 18px; overflow: hidden; border: 1px solid color-mix(in srgb, #d4af37 45%, var(--line));
+  background: var(--mh-photo, none) center 28% / cover no-repeat, var(--panel-2);}
+#sec-production .mh-hero::after {content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,13,18,.93) 0, rgba(10,13,18,.6) 45%, rgba(10,13,18,.05) 78%);}
+#sec-production .mh-hero.off {filter: grayscale(.5);}
+#sec-production .mh-btns {position: absolute; top: 12px; right: 12px; z-index: 2; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;}
+#sec-production .mh-btns .btn {background: rgba(14,18,24,.82); backdrop-filter: blur(4px);}
+#sec-production .mh-in {position: absolute; inset: 0; z-index: 1; display: flex; align-items: flex-end; gap: 16px; padding: 18px 20px;}
+#sec-production .mh-emb {height: 112px; width: auto; flex: none; filter: drop-shadow(0 8px 18px rgba(0,0,0,.55));}
+#sec-production .mh-txt {min-width: 0;}
+#sec-production .mh-txt h2 {margin: 0; font: 600 32px/1.1 Georgia, 'Times New Roman', serif; color: #f3e7c3; text-shadow: 0 2px 12px rgba(0,0,0,.6);}
+#sec-production .mh-txt p {margin: 3px 0 10px; color: #d3dae3;}
+#sec-production .mh-chips {display: flex; flex-wrap: wrap; gap: 5px;}
+#sec-production .mh-chip {display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(14,18,24,.7); font-size: 12px; color: var(--muted);}
+#sec-production .mh-chip b {font-weight: 500;}
+#sec-production .mh-chip.on {border-color: var(--sodium); color: var(--sodium);}
+#sec-production .mh-stats {display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 0 12px;}
+#sec-production .mh-stat {padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent);}
+#sec-production .mh-stat b {display: block; font-size: 20px; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+#sec-production .mh-stat small {color: var(--muted);}
+#sec-production .mh-grid {display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); gap: 14px; align-items: start;}
+#sec-production .mh-side {display: grid; gap: 12px;}
+#sec-production .mh-side .adv-card {margin: 0;}
+#sec-production .mh-show .m-cars {padding: 14px; border-radius: 16px;}
+#sec-production .mh-show .m-car-row {display: grid; gap: 12px; margin-bottom: 8px; align-items: stretch;}
+#sec-production .mh-show .m-car-row.pod {grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);}
+#sec-production .mh-show .m-car-row.pod > .podium {grid-row: span 2;}
+#sec-production .mh-show .m-car-row.nopod {grid-template-columns: 1fr 1fr;}
+#sec-production .mh-show .m-car.lux, #sec-production .mh-show .m-car.lux.podium {max-width: none; flex: none;}
+#sec-production .mh-show .m-car.lux:not(.podium) .m-model {font-size: 24px;}
+#sec-production .mh-show .m-car.lux:not(.podium) .m-cap {padding: 4px 8px 8px;}
+#sec-production .m-empty {display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 120px; border-radius: 14px; border: 1.5px dashed color-mix(in srgb, #d4af37 45%, transparent);
+  background: rgba(212,175,55,.03); color: var(--muted); font: inherit; cursor: pointer;}
+#sec-production .m-empty span {font-size: 24px; color: #d4af37;}
+#sec-production .m-empty:hover {border-color: #d4af37; color: var(--text);}
+#sec-production .mh-fold h4 {margin: 0 0 6px;}
+#sec-production .mh-acc {border-top: 1px solid var(--line);}
+#sec-production .mh-fold > h4 + .mh-acc {border-top: 0;}
+#sec-production .mh-acc summary {display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 0; cursor: pointer; list-style: none;}
+#sec-production .mh-acc summary::-webkit-details-marker {display: none;}
+#sec-production .mh-acc summary > span {color: var(--muted); font-size: 12px;}
+#sec-production .mh-acc summary > span::after {content: " ▸"; display: inline-block; transition: transform .15s;}
+#sec-production .mh-acc[open] summary > span::after {transform: rotate(90deg);}
+#sec-production .mh-acc summary h4 {margin: 0;}
+#sec-production .mh-acc .pr-fac-chips, #sec-production .mh-acc .pr-rules {padding-bottom: 10px;}
+@media (max-width: 760px) {
+#sec-production .mh-grid {grid-template-columns: 1fr;}
+}
+@media (max-width: 600px) {
+#sec-production .mh-hero {height: 210px;}
+#sec-production .mh-hero::after {background: linear-gradient(0deg, rgba(10,13,18,.95) 0, rgba(10,13,18,.6) 45%, rgba(10,13,18,0) 78%);}
+#sec-production .mh-in {padding: 12px; gap: 10px;}
+#sec-production .mh-emb {height: 64px;}
+#sec-production .mh-txt h2 {font-size: 22px;}
+#sec-production .mh-txt p {font-size: 12px; margin-bottom: 0;}
+#sec-production .mh-chips {display: none;}
+#sec-production .mh-btns {top: 8px; right: 8px; gap: 4px;}
+#sec-production .mh-btns .btn {height: 30px; padding: 0 8px; font-size: 12px;}
+#sec-production .mh-btns .mh-pin, #sec-production .mh-btns a span {display: none;}
+#sec-production .mh-stats {gap: 6px;}
+#sec-production .mh-stat {padding: 8px 10px;}
+#sec-production .mh-stat b {font-size: 16px;}
+#sec-production .mh-show .m-car-row.pod {grid-template-columns: 1fr 1fr;}
+#sec-production .mh-show .m-car-row.pod > .podium {grid-column: 1 / -1; grid-row: auto;}
+#sec-production .mh-show .m-car.lux:not(.podium) .m-model {font-size: 19px;}
+#sec-production .mh-show .m-car.lux:not(.podium) .m-make {font-size: 13px;}
+}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -7547,6 +7649,9 @@ i18n({
     "pm.mEditTitle": "Editează mașina expusă", "pm.mEditPhoto": "Poza", "pm.mFile": "De pe dispozitiv", "pm.mVmPhoto": "Poza din Vehicle Manager",
     "pm.mEditPasteHint": "Sau Ctrl+V cât e deschisă fereastra (întâi Print Screen în joc).", "pm.mEditDone": "Gata" }
 });
+// 0.36 (idea 128: the Mansion page, variant A)
+i18n({ en: { "pm.mhCars": "cars on show", "pm.mhBoost": "boost on", "pm.mhUps": "upgrades" },
+  ro: { "pm.mhCars": "mașini expuse", "pm.mhBoost": "boost activ", "pm.mhUps": "upgrade-uri" } });
 
 /* ======================================================================
    Ideas 112–114 (01.11.2026): every heist and contract of GTA Online, with its missions in order.
@@ -9355,27 +9460,39 @@ function mCarsHtml(id) {
   const label = (k, i) => k === "podium" ? t("mPodium") : t("mDrive", i + 1);
   const set = [], empty = [];
   slots.forEach(([k, i]) => { const slot = k === "podium" ? m.podium : m.drive[i], c = slot && carById(slot.car);
-    if (!slot) { empty.push(`<button class="btn small m-add" data-pick="${k}:${i}">＋ ${label(k, i)}</button>`); return; }
+    if (!slot) { set.push(`<button type="button" class="m-empty ${k}" data-pick="${k}:${i}"><span>＋</span>${label(k, i)}</button>`); return; }
     const key = `${id}:${k}:${i}`, shot = MPhotos.get(key), img = shot ? shot.img : c && c.image, f = mFont(slot.font);
     const make = c ? (c.brand || "") : "", model = c ? (c.model || "") : slot.name || "";
     set.push(`<figure class="m-car lux ${k}" data-mkey="${key}" data-medit="${k}:${i}" role="button" tabindex="0" aria-label="${escapeHtml(t("mEditCar", make + " " + model))}" title="${escapeHtml(t("mEditCarT"))}">
         <div class="m-car-pic">${img ? `<img src="${img}" alt="">` : "<span>🚗</span>"}</div>
         <figcaption class="m-cap" style="--mfont:${f[2]}"><small>${label(k, i)}</small><span class="m-make">${escapeHtml(make)}</span><span class="m-model">${escapeHtml(model)}</span></figcaption>
       </figure>`); });
-  return `<section class="m-cars ${set.length ? "" : "none"}"><h4>🚘 ${t("mCarsT")}</h4>
-    ${set.length ? `<div class="m-car-row">${set.join("")}</div><p class="hint m-paste-hint">✎ ${t("mEditHint")}</p>` : ""}
+  return `<section class="m-cars"><h4>🚘 ${t("mCarsT")}</h4>
+    <div class="m-car-row ${m.up.podium ? "pod" : "nopod"}">${set.join("")}</div>${set.some(x => x.startsWith("<figure")) ? `<p class="hint m-paste-hint">✎ ${t("mEditHint")}</p>` : ""}
     ${empty.length ? `<div class="m-add-row">${empty.join("")}</div>` : ""}
     ${m.up.podium ? "" : `<p class="pr-note">🔒 ${t("mPodiumLocked")}</p>`}</section>`;
 }
+/* idea 128, variant A (chosen by Mihai): a banner with the house's photo behind its emblem, name, price and upgrades;
+   three small figures; then the showroom (the podium big, the driveway next to it) and, beside it, the boost and
+   what a Mansion has / the rules, folded. */
 function mansionHtml(id) {
-  const [, name, area, price] = mDef(id), m = pr().m[id];
-  const head = `<div class="focus-head m-head"><img class="m-emb ${m.owned ? "" : "off"}" src="${M_IMG[id] || PROP_IMG}" alt="${escapeHtml(name)}">
-      <div><h2>${name}</h2><p class="muted">${area} · ${money(price)}</p>${m.owned ? `<div class="m-upicons">${mUpIcons(m, true)}</div>` : ""}</div>
-      <div class="m-head-btns">${m.owned ? `<button class="btn small" data-mset="1">⚙ ${t("mSettings")}</button><button class="btn small" data-mmap="1">🗺 ${t("mPinMap")}</button>${m.pin ? `<button class="btn ghost small" data-mpinreset="1">${t("agPinReset")}</button>` : ""}` : ""}<a class="btn small" href="#mansions">← Mansions</a></div></div>`;
-  if (!m.owned) return head + `<section class="adv-card ag-top m-notown"><p>${t("mNotOwned")}</p><button class="btn primary" data-madd="1">＋ ${t("mAddBtn")}</button></section>`;
-  return head + `<div class="m-grid">
-      <div class="m-main">${M_PHOTO[id] ? `<img class="m-shot" src="${M_PHOTO[id]}" alt="${escapeHtml(name)}">` : ""}${mCarsHtml(id)}</div>
-      <aside class="pr-side">${mBoostHtml()}${mFacHtml()}${mRulesHtml()}</aside></div>`;
+  const [, name, area, price] = mDef(id), m = pr().m[id], p = pr();
+  const btns = `${m.owned ? `<button class="btn small" data-mset="1">⚙ ${t("mSettings")}</button><button class="btn small" data-mmap="1">🗺 ${t("mPinMap")}</button>${m.pin ? `<button class="btn ghost small mh-pin" data-mpinreset="1">${t("agPinReset")}</button>` : ""}` : ""}<a class="btn small" href="#mansions">← <span>Mansions</span></a>`;
+  const ups = [...M_UPS.map(([k, , ico]) => [ico, t("mUp_" + k), !!m.up[k]]), ...M_ALL.map(([k, , ico]) => [ico, t("mUp_" + k), !!p[k]])];
+  const hero = `<section class="mh-hero ${m.owned ? "" : "off"}" ${M_PHOTO[id] ? `style="--mh-photo:url('${prImg(M_PHOTO[id])}')"` : ""}>
+      <div class="mh-btns">${btns}</div>
+      <div class="mh-in"><img class="mh-emb" src="${prImg(M_IMG[id] || PROP_IMG)}" alt=""><div class="mh-txt"><h2>${escapeHtml(name)}</h2><p>${escapeHtml(area)} · ${money(price)}${m.owned ? " · " + t("mOwnedTag") : ""}</p>
+        ${m.owned ? `<div class="mh-chips">${ups.map(([ico, n, on]) => `<span class="mh-chip ${on ? "on" : ""}" title="${escapeHtml(n)}${on ? " ✓" : " ✗"}">${ico}<b>${escapeHtml(n)}</b></span>`).join("")}</div>` : ""}</div></div></section>`;
+  if (!m.owned) return hero + `<section class="adv-card ag-top m-notown"><p>${t("mNotOwned")}</p><button class="btn primary" data-madd="1">＋ ${t("mAddBtn")}</button></section>`;
+  const slots = [m.up.podium ? m.podium : undefined, m.drive[0], m.drive[1]].filter(x => x !== undefined), shown = slots.filter(Boolean).length;
+  const bo = S.boost, bOn = bo && bo.biz && Date.now() < bo.until, upN = ups.filter(u => u[2]).length;
+  const stat = (v, l) => `<div class="mh-stat"><b>${v}</b><small>${l}</small></div>`;
+  return hero + `<div class="mh-stats">${stat(`${shown} / ${slots.length}`, t("mhCars"))}${stat(bOn ? escapeHtml(bizName(bo.biz)) : "—", t("mhBoost"))}${stat(`${upN} / ${ups.length}`, t("mhUps"))}</div>
+    <div class="mh-grid"><div class="mh-show">${mCarsHtml(id)}</div>
+      <aside class="mh-side">${mBoostHtml()}
+        <section class="adv-card pr-card mh-fold"><h4>🏠 ${t("mFacT")}</h4>${M_FAC.map(([h, list]) => `<details class="mh-acc"><summary>${t(h)}<span>${list.length}</span></summary><div class="pr-fac-chips">${list.map(k => `<span>${t(k)}</span>`).join("")}</div></details>`).join("")}</section>
+        <section class="adv-card pr-card mh-fold"><details class="mh-acc"><summary><h4>📜 ${t("mRulesT")}</h4><span>6</span></summary><ul class="pr-rules">${[1, 2, 3, 4, 5, 6].map(i => `<li><span>${M_RULE_ICO[i - 1]}</span>${t("mRule" + i)}</li>`).join("")}</ul></details></section>
+      </aside></div>`;
 }
 /* the settings window of a Mansion (also used when adding one) and the one of the two shared things.
    rows: [key, icon, name, price, text, on]; save(values) */
@@ -13206,10 +13323,13 @@ if (Auth.on) Bus.emit("auth", true);   // every section pulls its newest data fr
     try {
       const r = await fetch("data/drops.json?v=" + Math.floor(Date.now() / 600000), { cache: "no-store" });
       if (!r.ok) return;
-      const d = await r.json(), key = d && (d.url || d.posted), until = d && Date.parse(d.until);
-      if (!d || !d.active || !(until > Date.now()) || !key || LS.raw("gtaDropsSeen") === key) return;
+      const d = await r.json(), key = d && (d.url || d.posted), until = d && d.until ? Date.parse(d.until) : NaN;
+      if (!d || !d.active || until <= Date.now() || !key || LS.raw("gtaDropsSeen") === key) return;
       LS.set("gtaDropsSeen", key);
-      Notes.add(t("home.drNote", new Date(until).toLocaleDateString(lang === "ro" ? "ro-RO" : "en-GB", { day: "numeric", month: "long" })), "ok", { go: "#", chime: true, desktop: true, icon: "🎁", all: true });
+      const day = x => new Date(x).toLocaleDateString(lang === "ro" ? "ro-RO" : "en-GB", { day: "numeric", month: "long" });
+      // idea 127: the real dates, or none at all
+      Notes.add(isNaN(until) ? t("home.drWatchUnknown") : t("home.drWatch", (d.start ? day(Date.parse(d.start)) + " – " : "") + day(until), !!d.start) + "." + (d.claim ? " " + (c => c[0].toUpperCase() + c.slice(1))(t("home.drClaim", day(Date.parse(d.claim)))) + "." : ""),
+        "ok", { go: "#", chime: true, desktop: true, icon: "🎁", all: true });
     } catch (e) {}
   };
   setTimeout(check, 4000); setInterval(check, 60 * 60000);

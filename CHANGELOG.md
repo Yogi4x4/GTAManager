@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.36.0 (2026-11-01)
+* Property Manager:
+  * Change: the Mansion page, all new (variant A of the mockups): a banner with the house's photo behind its emblem, name, price and the upgrades (yours lit); three small figures (cars on show, the boost that's on, upgrades); then the showroom, the podium car big with the two driveway places next to it (empty places are dashed boxes you tap to fill), and beside it the boost and, folded, what a Mansion has and the rules. On a phone everything stacks in one column.
+* Home:
+  * Fix: Twitch Drops showed made-up dates (1–4 November instead of 30 October – 1 November). When a drop was found only through a news article with no dates, the check took the article's day as the start and added three days. Now dates are only read, never made up: Rockstar's own Twitch Drops page is tried first, "between October 30 – November 1" and "Oct. 30-Nov. 1" are understood, and so is the day you can claim the reward in the game until. The card says "watch on Twitch 30 October – 1 November · claim in the game until 11 November", keeps showing the claim date after the watching is over, and says "period unknown" when no date was found. Needs the new .github/workflows/drops.yml.
+
 ### v0.35.2 (2026-11-01)
 * Property Manager:
   * Fix: the Vinewood Residence page showed mostly the hills above it: a new, closer photo of the whole Mansion (Mihai's), and a Mansion's photo is never cut any more (shown whole, at the page's width).
