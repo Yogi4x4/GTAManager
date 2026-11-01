@@ -615,6 +615,25 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 .gar-pick small {color: var(--muted); font-size: 12px;}
 .gar-own {display: flex; gap: 6px;} .gar-own input {height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: inherit; min-width: 0;}
 .gar-own input[data-gcn] {flex: 1;} .gar-own input[data-gcs] {width: 80px;}
+/* idea 126: the edit window of a car on show (opened on top of the page) */
+.m-edit {width: min(620px, 100%); gap: 12px;}
+.m-edit .pr-x {width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); color: var(--text); cursor: pointer;}
+.m-edit-prev {margin: 0; max-width: none; border: 1px solid #d4af37; border-radius: 12px; overflow: hidden; background: linear-gradient(180deg, rgba(212,175,55,.07), var(--bg2));}
+.m-edit-prev .m-car-pic {aspect-ratio: 16 / 9; display: grid; place-items: center; font-size: 34px; background: var(--bg3);}
+.m-edit-prev .m-car-pic img {width: 100%; height: 100%; object-fit: cover; display: block;}
+.m-edit-prev .m-cap {display: flex; flex-direction: column; align-items: center; padding: 8px 10px 12px;}
+.m-edit-prev .m-make {font-family: var(--mfont); font-size: 18px; color: #e9dcb5;} .m-edit-prev .m-model {font-family: var(--mfont); font-size: 36px; line-height: 1.15; color: #f3e7c3;}
+.m-edit-row {display: flex; align-items: center; gap: 8px; flex-wrap: wrap;} .m-edit-row > b {width: 100%; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted);}
+.m-edit-row small {width: 100%; font-size: 12px;}
+.m-edit .btn {height: 34px;} .m-edit .m-file {display: inline-flex; align-items: center; cursor: pointer;}
+.m-fonts {display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; width: 100%;}
+.m-font {padding: 8px 10px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg3); color: #f3e7c3; font-size: 22px; line-height: 1.15; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.m-font:hover {border-color: #d4af37;} .m-font.on {border-color: #d4af37; box-shadow: 0 0 0 2px rgba(212,175,55,.4);}
+.m-edit-foot {display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 10px;}
+.m-edit-foot .danger-t {color: var(--bad, #e55); margin-right: auto;}
+.m-edit {overflow-y: auto; max-height: calc(100dvh - 24px);}
+.m-edit .m-file {padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg3); color: var(--text); font-size: 13px;}
+.m-font {display: flex; flex-direction: column; align-items: center; gap: 2px;} .m-font small {font: 11px var(--body, sans-serif); color: var(--muted);}
 </style>
 </head>
 <body>
@@ -736,7 +755,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.35";
+const APP_VERSION = "0.35.1";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1051,6 +1070,26 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.35.1",
+  "date": "2026-11-01",
+  "en": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Change: the cars on show in a Mansion are only the photo and the name now, with no buttons on them. A tap on a car opens its edit window: a big preview, 📋 screenshot / 🖼 from the device / Ctrl+V while the window is open, back to the Vehicle Manager photo, the font (each one shows the car's name written with it), change or remove the car."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Schimbat: mașinile expuse la un Mansion sunt acum doar poza și numele, fără butoane pe ele. O atingere pe mașină deschide fereastra ei de editare: o previzualizare mare, 📋 captură / 🖼 de pe dispozitiv / Ctrl+V cât e deschisă fereastra, înapoi la poza din Vehicle Manager, fontul (fiecare arată numele mașinii scris cu el), schimbi sau scoți mașina."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.35.0",
   "date": "2026-11-01",
@@ -6718,6 +6757,9 @@ Section({
 #sec-production .m-car.lux, #sec-production .m-car.lux.podium {flex-basis: 100%; max-width: 100%;}
 #sec-production .m-model {font-size: 26px;}
 }
+#sec-production .m-car.lux[data-medit] {cursor: pointer; transition: transform .15s, box-shadow .15s;}
+#sec-production .m-car.lux[data-medit]:hover, #sec-production .m-car.lux[data-medit]:focus-visible {transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0,0,0,.45), 0 0 0 1px #d4af37; outline: none;}
+#sec-production .m-car.lux .m-cap {padding-bottom: 12px;}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -7475,6 +7517,15 @@ i18n({
     "pm.mPasteHint": "Alegi întâi mașina din Vehicle Manager; apoi 📋 (sau Ctrl+V după ce atingi mașina) îi pune captura ta. Numele de dedesubt e scris cu fontul ales.",
     "pm.mShotDone": "Captura a fost pusă.", "pm.mShotFail": "Poza nu a putut fi citită.", "pm.mPasteNone": "Nu e nicio poză în clipboard: apasă întâi Print Screen în joc.",
     "pm.mPasteKeys": "Browserul nu m-a lăsat să citesc clipboard-ul: apasă Ctrl+V pe această pagină." }
+});
+// 0.36 (idea 126, option 2: the edit window of a car on show)
+i18n({
+  en: { "pm.mEditCar": n => "Edit " + n, "pm.mEditCarT": "Tap to edit: car, screenshot, font", "pm.mEditHint": "Tap a car to change it, put your own screenshot on it or choose the font of its name.",
+    "pm.mEditTitle": "Edit the car on show", "pm.mEditPhoto": "Photo", "pm.mFile": "From the device", "pm.mVmPhoto": "Vehicle Manager photo",
+    "pm.mEditPasteHint": "Or Ctrl+V while this window is open (Print Screen in the game first).", "pm.mEditDone": "Done" },
+  ro: { "pm.mEditCar": n => "Editează " + n, "pm.mEditCarT": "Apasă ca să editezi: mașina, captura, fontul", "pm.mEditHint": "Apasă pe o mașină ca s-o schimbi, să-i pui captura ta sau să alegi fontul numelui.",
+    "pm.mEditTitle": "Editează mașina expusă", "pm.mEditPhoto": "Poza", "pm.mFile": "De pe dispozitiv", "pm.mVmPhoto": "Poza din Vehicle Manager",
+    "pm.mEditPasteHint": "Sau Ctrl+V cât e deschisă fereastra (întâi Print Screen în joc).", "pm.mEditDone": "Gata" }
 });
 
 /* ======================================================================
@@ -9277,7 +9328,6 @@ async function mShot(blob) {
   let u = c.toDataURL("image/webp", .8); if (!u.startsWith("data:image/webp")) u = c.toDataURL("image/jpeg", .82);
   return u;
 }
-let mPasteTo = null;   // the car a Ctrl+V goes to
 function mCarsHtml(id) {
   mFontsLoad();
   const m = pr().m[id];
@@ -9288,17 +9338,12 @@ function mCarsHtml(id) {
     if (!slot) { empty.push(`<button class="btn small m-add" data-pick="${k}:${i}">＋ ${label(k, i)}</button>`); return; }
     const key = `${id}:${k}:${i}`, shot = MPhotos.get(key), img = shot ? shot.img : c && c.image, f = mFont(slot.font);
     const make = c ? (c.brand || "") : "", model = c ? (c.model || "") : slot.name || "";
-    set.push(`<figure class="m-car lux ${k}" data-mkey="${key}">
-        <div class="m-car-pic">${img ? `<img src="${img}" alt="">` : "<span>🚗</span>"}${shot ? `<span class="m-shot-tag">📸</span>` : ""}</div>
+    set.push(`<figure class="m-car lux ${k}" data-mkey="${key}" data-medit="${k}:${i}" role="button" tabindex="0" aria-label="${escapeHtml(t("mEditCar", make + " " + model))}" title="${escapeHtml(t("mEditCarT"))}">
+        <div class="m-car-pic">${img ? `<img src="${img}" alt="">` : "<span>🚗</span>"}</div>
         <figcaption class="m-cap" style="--mfont:${f[2]}"><small>${label(k, i)}</small><span class="m-make">${escapeHtml(make)}</span><span class="m-model">${escapeHtml(model)}</span></figcaption>
-        <div class="m-car-act"><button class="icon-btn" data-pick="${k}:${i}" title="${t("mChange")}" aria-label="${t("mChange")}">✎</button><button class="icon-btn" data-clear="${k}:${i}" title="${t("mRemove")}" aria-label="${t("mRemove")}">✕</button></div>
-        <div class="m-lux-tools"><button class="btn ghost small" data-mpaste="${k}:${i}" title="${t("mPasteT")}">📋 ${t("mPaste")}</button>
-          <label class="btn ghost small m-file" title="${t("mFileT")}">🖼<input type="file" accept="image/*" data-mfile="${k}:${i}" hidden></label>
-          ${shot ? `<button class="btn ghost small" data-mvm="${k}:${i}" title="${t("mVmPhotoT")}">↺</button>` : ""}
-          <select data-mfont="${k}:${i}" aria-label="${t("mFontT")}" title="${t("mFontT")}">${M_FONTS.map(([fk, fn, ff]) => `<option value="${fk}" ${fk === f[0] ? "selected" : ""} style="font-family:${ff}">${fn}</option>`).join("")}</select></div>
       </figure>`); });
   return `<section class="m-cars ${set.length ? "" : "none"}"><h4>🚘 ${t("mCarsT")}</h4>
-    ${set.length ? `<div class="m-car-row">${set.join("")}</div><p class="hint m-paste-hint">${t("mPasteHint")}</p>` : ""}
+    ${set.length ? `<div class="m-car-row">${set.join("")}</div><p class="hint m-paste-hint">✎ ${t("mEditHint")}</p>` : ""}
     ${empty.length ? `<div class="m-add-row">${empty.join("")}</div>` : ""}
     ${m.up.podium ? "" : `<p class="pr-note">🔒 ${t("mPodiumLocked")}</p>`}</section>`;
 }
@@ -9419,34 +9464,65 @@ function bindProps(root) {
   root.querySelectorAll("[data-clear]").forEach(b => b.onclick = () => { const [k, i] = b.dataset.clear.split(":"), had = k === "podium" ? m.podium : m.drive[+i];
     if (k === "podium") m.podium = null; else m.drive[+i] = null; propsDone();
     toast(t("mRemovedToast"), { label: t("undo"), run: () => { if (k === "podium") m.podium = had; else m.drive[+i] = had; propsDone(); } }); });
-  // idea 126: screenshots and fonts of the cars on show
-  const slotOf = ki => { const [k, i] = ki.split(":"); return k === "podium" ? m.podium : m.drive[+i]; };
-  const keyOf = ki => id + ":" + ki;
-  const redraw = () => { focusEl._last = null; const sc = focusEl.scrollTop; renderFocus(); focusEl.scrollTop = sc; };
-  const put = async (ki, blob) => { try { MPhotos.set(keyOf(ki), await mShot(blob)); redraw(); toast(t("mShotDone")); } catch (e) { toast(t("mShotFail")); } };
-  root.querySelectorAll("[data-mpaste]").forEach(b => b.onclick = async () => {
-    mPasteTo = b.dataset.mpaste;
-    try {
-      const items = await navigator.clipboard.read();
-      for (const it of items) { const ty = it.types.find(x => x.startsWith("image/")); if (ty) return put(mPasteTo, await it.getType(ty)); }
-      toast(t("mPasteNone"));
-    } catch (e) { toast(t("mPasteKeys")); }
+  // idea 126 / option 2: the card is only the photo and the name; a tap opens its edit window
+  root.querySelectorAll("figure[data-medit]").forEach(f => {
+    f.onclick = () => mEditOpen(id, f.dataset.medit);
+    f.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); mEditOpen(id, f.dataset.medit); } };
   });
-  root.querySelectorAll("[data-mfile]").forEach(inp => inp.onchange = () => { if (inp.files[0]) put(inp.dataset.mfile, inp.files[0]); });
-  root.querySelectorAll("[data-mvm]").forEach(b => b.onclick = () => { const ki = b.dataset.mvm, had = MPhotos.get(keyOf(ki)); MPhotos.set(keyOf(ki), null); redraw();
-    toast(t("mVmPhotoToast"), { label: t("undo"), run: () => { MPhotos.set(keyOf(ki), had && had.img); redraw(); } }); });
-  root.querySelectorAll("[data-mfont]").forEach(sel => sel.onchange = () => { const sl = slotOf(sel.dataset.mfont); if (sl) { sl.font = sel.value; propsDone(); } });
-  root.querySelectorAll("figure[data-mkey]").forEach(f => f.addEventListener("pointerdown", () => { mPasteTo = f.dataset.mkey.split(":").slice(1).join(":"); }));
-  if (!mPasteTo) { const f = root.querySelector("figure[data-mkey]"); if (f) mPasteTo = f.dataset.mkey.split(":").slice(1).join(":"); }
-  mPasteMansion = id; mPastePut = put;
 }
-// Ctrl+V on a Mansion page: the screenshot goes to the car you last touched (the first one otherwise)
-let mPasteMansion = null, mPastePut = null;
+/* the edit window of a car on show: a big preview, change the car, your screenshot (📋 / Ctrl+V / a file), back to the
+   Vehicle Manager photo, the font (each name shown in its own font), remove the car */
+let mEditCur = null;   // { id, ki, put } while the window is open (Ctrl+V goes there)
+function mEditOpen(id, ki) {
+  const m = pr().m[id], [k, i] = ki.split(":"), key = id + ":" + ki;
+  const slotOf = () => k === "podium" ? m.podium : m.drive[+i];
+  if (!slotOf()) return;
+  const box = document.createElement("div");
+  box.className = "m-pick-back m-edit-back";
+  const redrawPage = () => { focusEl._last = null; const sc = focusEl.scrollTop; renderFocus(); focusEl.scrollTop = sc; };
+  const close = () => { box.remove(); removeEventListener("keydown", onKey); mEditCur = null; };
+  const put = async blob => { try { MPhotos.set(key, await mShot(blob)); draw(); redrawPage(); toast(t("mShotDone")); } catch (e) { toast(t("mShotFail")); } };
+  const draw = () => {
+    const slot = slotOf(); if (!slot) { close(); return; }
+    const c = carById(slot.car), shot = MPhotos.get(key), img = shot ? shot.img : c && c.image, f = mFont(slot.font);
+    const make = c ? (c.brand || "") : "", model = c ? (c.model || "") : slot.name || "";
+    box.innerHTML = `<div class="m-pick m-edit" role="dialog" aria-modal="true" aria-label="${escapeHtml(t("mEditTitle"))}">
+      <div class="m-pick-head"><b>${k === "podium" ? t("mPodium") : t("mDrive", +i + 1)}</b><button type="button" class="pr-x" data-x aria-label="✕">✕</button></div>
+      <figure class="m-car lux m-edit-prev ${k}"><div class="m-car-pic">${img ? `<img src="${img}" alt="">` : "<span>🚗</span>"}</div>
+        <figcaption class="m-cap" style="--mfont:${f[2]}"><span class="m-make">${escapeHtml(make)}</span><span class="m-model">${escapeHtml(model)}</span></figcaption></figure>
+      <div class="m-edit-row"><b>${t("mEditPhoto")}</b>
+        <button type="button" class="btn small" data-e="paste">📋 ${t("mPaste")}</button>
+        <label class="btn small m-file">🖼 ${t("mFile")}<input type="file" accept="image/*" data-e="file" hidden></label>
+        ${shot ? `<button type="button" class="btn ghost small" data-e="vm">↺ ${t("mVmPhoto")}</button>` : ""}
+        <small class="muted">${t("mEditPasteHint")}</small></div>
+      <div class="m-edit-row"><b>${t("mFontT")}</b><div class="m-fonts">${M_FONTS.map(([fk, fn, ff]) => `<button type="button" class="m-font ${fk === f[0] ? "on" : ""}" data-font="${fk}" title="${fn}"><span style="font-family:${ff}">${escapeHtml(model || fn)}</span><small>${fn}</small></button>`).join("")}</div></div>
+      <div class="m-edit-foot"><button type="button" class="btn small" data-e="car">✎ ${t("mChange")}</button><button type="button" class="btn ghost small danger-t" data-e="remove">✕ ${t("mRemove")}</button><button type="button" class="btn primary small" data-x>✓ ${t("mEditDone")}</button></div></div>`;
+    box.querySelectorAll("[data-x]").forEach(b => b.onclick = close);
+    box.querySelector('[data-e="paste"]').onclick = async () => {
+      try { const items = await navigator.clipboard.read();
+        for (const it of items) { const ty = it.types.find(x => x.startsWith("image/")); if (ty) return put(await it.getType(ty)); }
+        toast(t("mPasteNone"));
+      } catch (e) { toast(t("mPasteKeys")); }
+    };
+    box.querySelector('[data-e="file"]').onchange = e => { if (e.target.files[0]) put(e.target.files[0]); };
+    const vm = box.querySelector('[data-e="vm"]'); if (vm) vm.onclick = () => { MPhotos.set(key, null); draw(); redrawPage(); };
+    box.querySelectorAll("[data-font]").forEach(b => b.onclick = () => { slotOf().font = b.dataset.font; save(true); ghMarkDirty(); draw(); redrawPage(); });
+    box.querySelector('[data-e="car"]').onclick = () => { close(); mPickOpen(id, k, +i); };
+    box.querySelector('[data-e="remove"]').onclick = () => { const had = slotOf(); if (k === "podium") m.podium = null; else m.drive[+i] = null; close(); propsDone();
+      toast(t("mRemovedToast"), { label: t("undo"), run: () => { if (k === "podium") m.podium = had; else m.drive[+i] = had; propsDone(); } }); };
+  };
+  const onKey = e => { if (e.key === "Escape") close(); };
+  box.onclick = e => { if (e.target === box) close(); };
+  addEventListener("keydown", onKey);
+  mEditCur = { put };
+  draw();
+  document.body.appendChild(box);
+}
+// Ctrl+V while a car's edit window is open: the screenshot goes to that car
 document.addEventListener("paste", e => {
-  if (!String(VIEW).startsWith("mansion_") || VIEW.slice(8) !== mPasteMansion || !mPasteTo || !mPastePut) return;
-  if (e.target.closest && e.target.closest("input, textarea")) return;
+  if (!mEditCur) return;
   const f = [...(e.clipboardData && e.clipboardData.files || [])].find(x => x.type.startsWith("image/"));
-  if (f) { e.preventDefault(); mPastePut(mPasteTo, f); }
+  if (f) { e.preventDefault(); mEditCur.put(f); }
 });
 // the map: the Mansions you own are places too (with the Agency); their pin can be dragged like the Agency's
 // idea 88: "b:<id>" = a Production Manager business (its pin is the same one as on the Production Manager map)
