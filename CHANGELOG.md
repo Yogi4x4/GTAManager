@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.36.2 (2026-11-02)
+* Home:
+  * Change: the Twitch Drops card is small and sits right on top of "This week in GTA Online", moving with it when you open or fold it (on narrower screens, right above it in the page). One short line with the dates ("Twitch Drops · 30 Oct – 1 Nov"), the claim date under it. It shows only while there are drops to watch or a reward to claim; otherwise it is hidden.
+
 ### v0.36.1 (2026-11-01)
 * Property Manager:
   * Fix: on a phone, the name of a car on show was partly under its photo (the make and "Car podium" hidden). An old phone rule from the small cards capped the photo's box at 150 px while the picture kept its full height and spilled over the name. The showroom cards keep their whole 16:9 photo now, and the handwritten name has room for its tall letters.
