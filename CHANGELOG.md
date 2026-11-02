@@ -2,6 +2,13 @@
 
 * * *
 
+### v0.40.0 (2026-11-03)
+* Production Manager:
+  * Change: every business window has three tabs (variant B): Production, open by default (state, supplies with Stash House, stock, sale, resupplied / sold, boosts, Mutt), Upgrades (what the business has) and Settings (owned, pin, location, map layer, value from the game, alert, advanced numbers, timers). The Clubhouse too: bar and bike shop in Production, bed, bike shop and gun locker in Upgrades, timers in Settings. A business you don't own shows only its settings.
+  * Add: a gun locker mark next to the Clubhouse's name (like the bed and the bike shop) and a Gun locker tick on the CEO Office page. The Agency's gun locker comes with its Armory, a Mansion's with its Armory.
+  * Change: Stash House, Yohan and Business Battle are small icons of the same size, without text (what they are: rest the mouse on them); Yohan's wait is a small number on his icon. The Business Battle crate is green on a clear background.
+  * Fix: the "Page" link in the MC Business menu stayed on the page after the menu closed; it now comes and goes with the menu, with a page icon.
+
 ### v0.39.0 (2026-11-02)
 * Production Manager:
   * Fix: on the Nightclub page and in its window, the popularity % above the bar and the "Below 95%" line follow the bar while you drag it; letting go updates the rest of the page at once (it used to wait a few seconds).
