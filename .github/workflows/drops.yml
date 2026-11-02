@@ -95,17 +95,42 @@ jobs:
               b = mkdate(m.group(3) or m.group(1), m.group(4), ref, True)
               return (a, b) if a and b and b >= a else (None, None)
           def claim_of(s, ref):
-              m = re.search(r"claim\w*[^.]{0,60}?(?:though|through|until|by|before)\s+(?:\w+day,?\s+)?" + MON + r"\s+(\d{1,2})", s, re.I)
+              # "available to claim though November 11" / "until November 11, 2026, to log in and claim ... in-game"
+              m = re.search(r"claim\w*[^.]{0,60}?(?:though|through|until|by|before)\s+(?:\w+day,?\s+)?" + MON + r"\s+(\d{1,2})", s, re.I) \
+                  or re.search(r"until\s+" + MON + r"\s+(\d{1,2})(?:st|nd|rd|th)?,?\s*(?:\d{4},?)?\s+to\s+(?:log\s*in\s+and\s+)?claim[^.]{0,80}?in[- ]game", s, re.I)
               return mkdate(m.group(1), m.group(2), ref, True) if m else None
-          def strip(h): return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", h))))
+          def twitch_end_of(s, ref):
+              # "until November 1, 2026, to claim the drop on Twitch"
+              m = re.search(r"until\s+" + MON + r"\s+(\d{1,2})(?:st|nd|rd|th)?,?\s*(?:\d{4},?)?\s+to\s+claim[^.]{0,40}?on\s+Twitch", s, re.I)
+              return mkdate(m.group(1), m.group(2), ref, True) if m else None
+          # Rockstar's pages are built by scripts: the text is inside the page's JSON, so the scripts are kept and \u2013-style escapes undone
+          def strip(h):
+              h = re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), h).replace("\\n", " ").replace('\\"', '"')
+              return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?is)<style[^>]*>.*?</style>", " ", h))))
           rs_text = ""
           try: rs_text = strip(get(out["page"]))
           except Exception as e4: print("rockstar page failed:", e4)
+          # GTA news sites whose RSS has the whole article (dates included): only Twitch Drops articles of the last 10 days
+          for feed in ("https://rockstarintel.com/feed/", "https://www.gtaboom.com/feed"):
+              try:
+                  root = ET.fromstring(get(feed))
+                  for it in root.iter("item"):
+                      t = html.unescape(it.findtext("title", "") or "")
+                      pd = it.findtext("pubDate", "") or ""
+                      try: fp = datetime.datetime.strptime(pd[:25].strip(), "%a, %d %b %Y %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
+                      except ValueError: continue
+                      body = " ".join((x.text or "") for x in it if x.tag.endswith("encoded") or x.tag == "description")
+                      if now - fp < datetime.timedelta(days=10) and re.search(r"twitch\s*drop|twitch[^.]{0,40}(?:supercar|livery|reward)", t + " " + body, re.I):
+                          rs_text += " " + t + ". " + strip(body)
+              except Exception as e5: print("feed failed:", feed, e5)
           if posts:
               p = posts[0]
               txt = p["title"] + "\n" + p["text"]
               start, until = range_of(rs_text, now) if re.search(r"twitch", rs_text, re.I) else (None, None)
               if not until: start, until = range_of(txt, p["posted"])
+              if not until:
+                  u = twitch_end_of(rs_text, now) or twitch_end_of(txt, p["posted"])
+                  if u: start, until = None, u
               if not until:
                   u = until_of(txt, p["posted"])
                   if u: start, until = None, u
