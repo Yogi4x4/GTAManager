@@ -634,6 +634,23 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 .m-edit {overflow-y: auto; max-height: calc(100dvh - 24px);}
 .m-edit .m-file {padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg3); color: var(--text); font-size: 13px;}
 .m-font {display: flex; flex-direction: column; align-items: center; gap: 2px;} .m-font small {font: 11px var(--body, sans-serif); color: var(--muted);}
+/* the photo studio of the cars on show (opened on top of the page) */
+.m-studio {width: min(760px, 100%); gap: 10px; overflow-y: auto; max-height: calc(100dvh - 24px);}
+.m-studio .pr-x {width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); color: var(--text); cursor: pointer;}
+.ms-stage {display: flex; justify-content: center; touch-action: none; user-select: none; -webkit-user-select: none;}
+.ms-wrap {position: relative; line-height: 0;}
+.ms-wrap canvas {display: block; border-radius: 6px;}
+.ms-crop {position: absolute; box-shadow: 0 0 0 9999px rgba(0,0,0,.58); outline: 2px solid #fff; cursor: move;}
+.ms-wrap {overflow: hidden; border-radius: 6px;}
+.ms-crop i {position: absolute; width: 22px; height: 22px; border: 3px solid #fff;}
+.ms-crop i[data-h="nw"] {left: -4px; top: -4px; border-right: 0; border-bottom: 0; cursor: nwse-resize;}
+.ms-crop i[data-h="ne"] {right: -4px; top: -4px; border-left: 0; border-bottom: 0; cursor: nesw-resize;}
+.ms-crop i[data-h="sw"] {left: -4px; bottom: -4px; border-right: 0; border-top: 0; cursor: nesw-resize;}
+.ms-crop i[data-h="se"] {right: -4px; bottom: -4px; border-left: 0; border-top: 0; cursor: nwse-resize;}
+.ms-crop i::after {content: ""; position: absolute; inset: -12px;}
+.ms-sliders {display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 16px;}
+.ms-sliders label {display: grid; grid-template-columns: 92px 1fr 44px; align-items: center; gap: 8px; font-size: 13px;}
+.ms-sliders input {width: 100%; accent-color: #d4af37;} .ms-sliders output {text-align: right; font-variant-numeric: tabular-nums; color: var(--muted);}
 </style>
 </head>
 <body>
@@ -755,7 +772,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.36.2";
+const APP_VERSION = "0.38";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1070,6 +1087,46 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.38.0",
+  "date": "2026-11-02",
+  "en": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Add: a screenshot put on a car on show in a Mansion opens a photo studio, like in the Vehicle Manager: move and resize the 16:9 frame (corners, drag, a tap elsewhere, the wheel or two fingers), zoom, brightness, contrast, saturation, vibrance, warmth. The original and the settings are kept, so \"✂ Edit the screenshot\" in the car's window continues from where you left it."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Nou: o captură pusă pe o mașină expusă la un Mansion deschide un studio foto, ca în Vehicle Manager: muți și redimensionezi chenarul 16:9 (colțuri, tragere, o atingere în altă parte, rotița sau două degete), zoom, luminozitate, contrast, saturație, vibrance, căldură. Originalul și setările se păstrează, așa că „✂ Editează captura” din fereastra mașinii continuă de unde ai rămas."
+    ]
+   }
+  ]
+ },
+ {
+  "v": "0.37.0",
+  "date": "2026-11-02",
+  "en": [
+   {
+    "area": "Production Manager",
+    "items": [
+     "Change: the Nightclub's popularity has three round buttons, like the blips in the game, all blue, each with how much the bar goes up: rebook a DJ (+10%), a troublemaker thrown out (the blue dot, +25%) and a VIP taken home or to hospital (the blue figure, +25%). Both 25% values checked by Mihai in the game. Hold a button for what it is."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Production Manager",
+    "items": [
+     "Schimbat: popularitatea Nightclub-ului are trei butoane rotunde, ca blip-urile din joc, toate albastre, fiecare cu cât urcă bara: DJ rechemat (+10%), troublemaker dat afară (punctul albastru, +25%) și VIP dus acasă sau la spital (silueta albastră, +25%). Ambele valori de 25% verificate de Mihai în joc. Ține apăsat pe un buton ca să vezi ce e."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.36.2",
   "date": "2026-11-02",
@@ -6943,6 +7000,13 @@ Section({
 #sec-production .m-car.lux .m-model {line-height: 1.35; padding: 2px 6px 4px;}
 #sec-production .mh-show .m-car-row.pod > .podium {align-self: stretch;}
 #sec-production .m-car.lux .m-car-pic {background: var(--panel);}
+#sec-production .nc-boosts {display: inline-flex; gap: 14px; flex: none; align-items: center; padding: 2px 4px 8px;}
+#sec-production .nc-blip {position: relative; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,.85); cursor: pointer;
+  background: radial-gradient(circle at 50% 40%, #1f2937, #0b0f15); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.45); transition: transform .12s, border-color .12s;}
+#sec-production .nc-blip svg {width: 26px; height: 26px; display: block;}
+#sec-production .nc-blip:hover {border-color: #4aa3ff; transform: translateY(-1px);}
+#sec-production .nc-blip:active {transform: scale(.94);}
+#sec-production .nc-blip b {position: absolute; right: -10px; bottom: -7px; padding: 1px 5px; border-radius: 999px; background: #4aa3ff; color: #06111f; font: 700 10.5px/1.3 var(--body, sans-serif);}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -7713,6 +7777,18 @@ i18n({
 // 0.36 (idea 128: the Mansion page, variant A)
 i18n({ en: { "pm.mhCars": "cars on show", "pm.mhBoost": "boost on", "pm.mhUps": "upgrades" },
   ro: { "pm.mhCars": "mașini expuse", "pm.mhBoost": "boost activ", "pm.mhUps": "upgrade-uri" } });
+// 0.37 (idea 129: Nightclub popularity boosts as icons)
+i18n({ en: { "pm.ncB_dj": "Rebook a DJ ($10,000): +10% popularity", "pm.ncB_tm": "Troublemaker thrown out (the blue dot in the club): +25% popularity", "pm.ncB_vip": "VIP taken home or to hospital (the blue figure): +25% popularity" },
+  ro: { "pm.ncB_dj": "DJ rechemat ($10,000): +10% popularitate", "pm.ncB_tm": "Troublemaker dat afară (punctul albastru din club): +25% popularitate", "pm.ncB_vip": "VIP dus acasă sau la spital (silueta albastră): +25% popularitate" } });
+// 0.38 (the photo studio for the cars on show)
+i18n({
+  en: { "pm.msTitle": "Edit the screenshot", "pm.msEdit": "Edit the screenshot", "pm.msApply": "Apply", "pm.msReset": "Start over",
+    "pm.ms_zoom": "Zoom", "pm.ms_bright": "Brightness", "pm.ms_contrast": "Contrast", "pm.ms_sat": "Saturation", "pm.ms_vib": "Vibrance", "pm.ms_warm": "Warmth",
+    "pm.msHint": "Drag the frame to move it, a corner to make it bigger or smaller (it stays 16:9); the wheel or two fingers zoom. Only what is inside the frame is kept." },
+  ro: { "pm.msTitle": "Editează captura", "pm.msEdit": "Editează captura", "pm.msApply": "Aplică", "pm.msReset": "De la început",
+    "pm.ms_zoom": "Zoom", "pm.ms_bright": "Luminozitate", "pm.ms_contrast": "Contrast", "pm.ms_sat": "Saturație", "pm.ms_vib": "Vibrance", "pm.ms_warm": "Căldură",
+    "pm.msHint": "Tragi chenarul ca să-l muți, un colț ca să-l mărești sau micșorezi (rămâne 16:9); rotița sau două degete fac zoom. Se păstrează doar ce e în chenar." }
+});
 
 /* ======================================================================
    Ideas 112–114 (01.11.2026): every heist and contract of GTA Online, with its missions in order.
@@ -9496,7 +9572,7 @@ const MPhotos = {
   FILE: "data/photos.json", KEY: "gtaMPhotos",
   all() { return LS.get(this.KEY, null) || { savedAt: 0, shots: {} }; },
   get(k) { return (this.all().shots || {})[k] || null; },
-  set(k, img) { const a = this.all(); a.shots = a.shots || {}; if (img) a.shots[k] = { img, at: Date.now() }; else delete a.shots[k]; a.savedAt = Date.now(); LS.set(this.KEY, a);
+  set(k, img, extra) { const a = this.all(); a.shots = a.shots || {}; if (img) a.shots[k] = { img, at: Date.now(), ...(extra || {}) }; else delete a.shots[k]; a.savedAt = Date.now(); LS.set(this.KEY, a);
     if (Auth.on) Sync.save(this.FILE, () => JSON.stringify(this.all()), 1500); },
   async pull() {
     try { const r = await GH.getJson(this.FILE), a = this.all();
@@ -9513,6 +9589,95 @@ async function mShot(blob) {
   c.getContext("2d").drawImage(bmp, (W - w) / 2, (H - h) / 2, w, h);
   let u = c.toDataURL("image/webp", .8); if (!u.startsWith("data:image/webp")) u = c.toDataURL("image/jpeg", .82);
   return u;
+}
+/* Mihai (02.11.2026): a pasted screenshot can be edited like in the Vehicle Manager's photo studio: move and resize the 16:9
+   frame (corners, drag, wheel, two fingers), zoom, brightness, contrast, saturation, vibrance, warmth. The original (at most
+   1600 px) and the settings are kept with the photo, so "Edit" later starts from where you left it. */
+const blobUrl = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
+const loadPic = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+async function mOrig(blob) {   // the screenshot kept for editing: at most 1600 px wide
+  const img = await loadPic(await blobUrl(blob)), k = Math.min(1, 1600 / img.naturalWidth);
+  const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+  const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(img, 0, 0, c.width, c.height);
+  const u = c.toDataURL("image/webp", .82); return u.startsWith("data:image/webp") ? u : c.toDataURL("image/jpeg", .85);
+}
+const MS0 = { zoom: 0, bright: 0, contrast: 0, sat: 0, vib: 0, warm: 0 };
+function mStudio(src, start) {
+  return new Promise(async done => {
+    const img = await loadPic(src), W = img.naturalWidth, H = img.naturalHeight, R = 16 / 9;
+    let p = { ...MS0, ...((start && start.p) || {}) }, crop = start && start.crop ? { ...start.crop } : null, view = 1;
+    const filt = () => `brightness(${1 + p.bright / 100}) contrast(${1 + p.contrast / 100}) saturate(${1 + p.sat / 100}) sepia(${Math.max(0, p.warm) / 250})` + (p.warm < 0 ? ` hue-rotate(${p.warm / 10}deg)` : "");
+    const full = () => { let w = W, h = H; if (W / H > R) w = H * R; else h = W / R; return [w, h]; };
+    const clamp = c => { c.w = Math.min(c.w, W); c.h = Math.min(c.h, H); c.x = Math.max(0, Math.min(W - c.w, c.x)); c.y = Math.max(0, Math.min(H - c.h, c.y)); return c; };
+    const frame = (cx, cy) => { const [fw, fh] = full(), k = 1 - p.zoom / 100 * .9; crop = clamp({ w: fw * k, h: fh * k, x: (cx ?? W / 2) - fw * k / 2, y: (cy ?? H / 2) - fh * k / 2 }); };
+    if (!crop) frame();
+    const box = document.createElement("div");
+    box.className = "m-pick-back m-studio-back";
+    const sl = (k, min, max) => `<label><span>${t("ms_" + k)}</span><input type="range" min="${min}" max="${max}" value="${p[k]}" data-ms="${k}"><output>${k === "zoom" ? Math.round(100 / (1 - p.zoom / 100 * .9)) + "%" : (p[k] > 0 ? "+" : "") + p[k]}</output></label>`;
+    box.innerHTML = `<div class="m-pick m-studio" role="dialog" aria-modal="true"><div class="m-pick-head"><b>✂ ${t("msTitle")}</b><button type="button" class="pr-x" data-x aria-label="✕">✕</button></div>
+      <div class="ms-stage"><div class="ms-wrap"><canvas></canvas><div class="ms-crop"><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i></div></div></div>
+      <div class="ms-sliders">${sl("zoom", 0, 100)}${sl("bright", -100, 100)}${sl("contrast", -100, 100)}${sl("sat", -100, 100)}${sl("vib", -100, 100)}${sl("warm", -100, 100)}</div>
+      <p class="hint">${t("msHint")}</p>
+      <div class="m-edit-foot"><button type="button" class="btn ghost small" data-ms-reset>↺ ${t("msReset")}</button><button type="button" class="btn small" data-x>${window.t("chCancel")}</button><button type="button" class="btn primary small" data-ms-ok>✓ ${t("msApply")}</button></div></div>`;
+    document.body.appendChild(box);
+    const cv = box.querySelector("canvas"), cr = box.querySelector(".ms-crop"), stage = box.querySelector(".ms-stage");
+    const vib = (x, w, h) => { if (!p.vib) return; const d = x.getImageData(0, 0, w, h), a = d.data, v = p.vib / 100;
+      for (let i = 0; i < a.length; i += 4) { const r = a[i], g = a[i + 1], b = a[i + 2], mx = Math.max(r, g, b), mn = Math.min(r, g, b), k = 1 + v * (1 - (mx - mn) / 255), l = .2126 * r + .7152 * g + .0722 * b;
+        a[i] = l + (r - l) * k; a[i + 1] = l + (g - l) * k; a[i + 2] = l + (b - l) * k; } x.putImageData(d, 0, 0); };
+    const place = () => Object.assign(cr.style, { left: crop.x * view + "px", top: crop.y * view + "px", width: crop.w * view + "px", height: crop.h * view + "px" });
+    let raf = 0;
+    const draw = () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0;
+      const maxW = stage.clientWidth || 600, maxH = Math.max(180, Math.min(innerHeight * .45, 480));
+      view = Math.min(maxW / W, maxH / H, 1);
+      const cw = Math.round(W * view), ch = Math.round(H * view), dpr = Math.min(2, devicePixelRatio || 1);
+      cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); cv.style.width = cw + "px"; cv.style.height = ch + "px";
+      const x = cv.getContext("2d"); x.filter = filt(); x.drawImage(img, 0, 0, cv.width, cv.height); x.filter = "none"; vib(x, cv.width, cv.height); place(); }); };
+    const setZoom = z => { p.zoom = Math.max(0, Math.min(100, z)); frame(crop.x + crop.w / 2, crop.y + crop.h / 2); const r = box.querySelector('[data-ms="zoom"]'); r.value = p.zoom; r.nextElementSibling.textContent = Math.round(100 / (1 - p.zoom / 100 * .9)) + "%"; place(); };
+    box.addEventListener("input", e => { const k = e.target.dataset.ms; if (!k) return;
+      if (k === "zoom") return setZoom(+e.target.value);
+      p[k] = +e.target.value; e.target.nextElementSibling.textContent = (p[k] > 0 ? "+" : "") + p[k]; draw(); });
+    // the frame: drag to move, a corner to resize (16:9 kept), a tap outside moves it there, wheel / two fingers zoom
+    let drag = null; const pts = new Map();
+    stage.addEventListener("pointerdown", e => {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); stage.setPointerCapture(e.pointerId);
+      if (pts.size === 2) { const [a, b] = [...pts.values()]; drag = { pinch: Math.hypot(a.x - b.x, a.y - b.y), z: p.zoom }; return; }
+      const h = e.target.dataset && e.target.dataset.h;
+      drag = { h, x: e.clientX, y: e.clientY, c: { ...crop }, move: !h && !!e.target.closest(".ms-crop") };
+      if (!h && !drag.move) { const r = cv.getBoundingClientRect(); crop.x = (e.clientX - r.left) / view - crop.w / 2; crop.y = (e.clientY - r.top) / view - crop.h / 2; clamp(crop); place(); drag = { x: e.clientX, y: e.clientY, c: { ...crop }, move: true }; }
+    });
+    stage.addEventListener("pointermove", e => {
+      if (!drag || !pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (drag.pinch) { if (pts.size < 2) return; const [a, b] = [...pts.values()]; return setZoom(drag.z + (Math.hypot(a.x - b.x, a.y - b.y) / drag.pinch - 1) * 60); }
+      const dx = (e.clientX - drag.x) / view, dy = (e.clientY - drag.y) / view, c0 = drag.c;
+      if (drag.move) { crop = clamp({ ...c0, x: c0.x + dx, y: c0.y + dy }); return place(); }
+      const left = drag.h.includes("w"), top = drag.h[0] === "n", ax = left ? c0.x + c0.w : c0.x, ay = top ? c0.y + c0.h : c0.y;
+      let w = Math.max(60, left ? c0.w - dx : c0.w + dx), h = Math.max(34, top ? c0.h - dy : c0.h + dy);
+      if (w / h > R) h = w / R; else w = h * R;
+      const k = Math.min(1, (left ? ax : W - ax) / w, (top ? ay : H - ay) / h); w *= k; h *= k;
+      crop = { x: left ? ax - w : ax, y: top ? ay - h : ay, w, h };
+      const [fw] = full(); p.zoom = Math.max(0, Math.min(100, (1 - w / fw) / .9 * 100));
+      const r = box.querySelector('[data-ms="zoom"]'); r.value = p.zoom; r.nextElementSibling.textContent = Math.round(100 / (1 - p.zoom / 100 * .9)) + "%"; place();
+    });
+    const up = e => { pts.delete(e.pointerId); if (!pts.size || (drag && drag.pinch && pts.size < 2)) drag = null; };
+    stage.addEventListener("pointerup", up); stage.addEventListener("pointercancel", up);
+    stage.addEventListener("wheel", e => { e.preventDefault(); setZoom(p.zoom + (e.deltaY < 0 ? 5 : -5)); }, { passive: false });
+    const onResize = () => draw(); addEventListener("resize", onResize);
+    const finish = v => { box.remove(); removeEventListener("resize", onResize); removeEventListener("keydown", onKey, true); done(v); };
+    const onKey = e => { if (e.key === "Escape") { e.stopImmediatePropagation(); finish(null); } };   // Escape closes only the studio
+    addEventListener("keydown", onKey, true);
+    box.querySelectorAll("[data-x]").forEach(b => b.onclick = () => finish(null));
+    box.onclick = e => { if (e.target === box) finish(null); };
+    box.querySelector("[data-ms-reset]").onclick = () => { p = { ...MS0 }; frame(); box.querySelectorAll("[data-ms]").forEach(r => { r.value = p[r.dataset.ms]; r.nextElementSibling.textContent = r.dataset.ms === "zoom" ? "100%" : "0"; }); draw(); };
+    box.querySelector("[data-ms-ok]").onclick = () => {
+      const c = document.createElement("canvas"); c.width = 960; c.height = 540;
+      const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.filter = filt();
+      x.drawImage(img, crop.x, crop.y, crop.w, crop.h, 0, 0, 960, 540); x.filter = "none"; vib(x, 960, 540);
+      let u = c.toDataURL("image/webp", .82); if (!u.startsWith("data:image/webp")) u = c.toDataURL("image/jpeg", .85);
+      finish({ img: u, p: { ...p }, crop: { ...crop } });
+    };
+    draw(); setTimeout(draw, 40);
+  });
 }
 function mCarsHtml(id) {
   mFontsLoad();
@@ -9679,7 +9844,10 @@ function mEditOpen(id, ki) {
   box.className = "m-pick-back m-edit-back";
   const redrawPage = () => { focusEl._last = null; const sc = focusEl.scrollTop; renderFocus(); focusEl.scrollTop = sc; };
   const close = () => { box.remove(); removeEventListener("keydown", onKey); mEditCur = null; };
-  const put = async blob => { try { MPhotos.set(key, await mShot(blob)); draw(); redrawPage(); toast(t("mShotDone")); } catch (e) { toast(t("mShotFail")); } };
+  // a new screenshot opens the photo studio at once (like in the Vehicle Manager); "Edit" later continues from the kept original
+  const edit = async (orig, start) => { const r = await mStudio(orig, start); if (!r) return false;
+    MPhotos.set(key, r.img, { orig, p: r.p, crop: r.crop }); draw(); redrawPage(); toast(t("mShotDone")); return true; };
+  const put = async blob => { try { const orig = await mOrig(blob); if (!(await edit(orig))) { MPhotos.set(key, await mShot(blob), { orig }); draw(); redrawPage(); toast(t("mShotDone")); } } catch (e) { toast(t("mShotFail")); } };
   const draw = () => {
     const slot = slotOf(); if (!slot) { close(); return; }
     const c = carById(slot.car), shot = MPhotos.get(key), img = shot ? shot.img : c && c.image, f = mFont(slot.font);
@@ -9691,6 +9859,7 @@ function mEditOpen(id, ki) {
       <div class="m-edit-row"><b>${t("mEditPhoto")}</b>
         <button type="button" class="btn small" data-e="paste">📋 ${t("mPaste")}</button>
         <label class="btn small m-file">🖼 ${t("mFile")}<input type="file" accept="image/*" data-e="file" hidden></label>
+        ${shot && shot.orig ? `<button type="button" class="btn small" data-e="studio">✂ ${t("msEdit")}</button>` : ""}
         ${shot ? `<button type="button" class="btn ghost small" data-e="vm">↺ ${t("mVmPhoto")}</button>` : ""}
         <small class="muted">${t("mEditPasteHint")}</small></div>
       <div class="m-edit-row"><b>${t("mFontT")}</b><div class="m-fonts">${M_FONTS.map(([fk, fn, ff]) => `<button type="button" class="m-font ${fk === f[0] ? "on" : ""}" data-font="${fk}" title="${fn}"><span style="font-family:${ff}">${escapeHtml(model || fn)}</span><small>${fn}</small></button>`).join("")}</div></div>
@@ -9704,6 +9873,7 @@ function mEditOpen(id, ki) {
     };
     box.querySelector('[data-e="file"]').onchange = e => { if (e.target.files[0]) put(e.target.files[0]); };
     const vm = box.querySelector('[data-e="vm"]'); if (vm) vm.onclick = () => { MPhotos.set(key, null); draw(); redrawPage(); };
+    const st = box.querySelector('[data-e="studio"]'); if (st) st.onclick = () => { const sh = MPhotos.get(key); if (sh && sh.orig) edit(sh.orig, { p: sh.p, crop: sh.crop }); };
     box.querySelectorAll("[data-font]").forEach(b => b.onclick = () => { slotOf().font = b.dataset.font; save(true); ghMarkDirty(); draw(); redrawPage(); });
     box.querySelector('[data-e="car"]').onclick = () => { close(); mPickOpen(id, k, +i); };
     box.querySelector('[data-e="remove"]').onclick = () => { const had = slotOf(); if (k === "podium") m.podium = null; else m.drive[+i] = null; close(); propsDone();
@@ -10544,6 +10714,16 @@ const TRACKER_URL = "Vehicle%20Export%20Collections/Vehicle%20Export%20Tracker.h
 addEventListener("storage", e => { if (e.key === ck("gtaWarehouseSummary") || e.key === ck("gtaWarehouse")) { renderAll(); liveWin(); liveQuick(); } });
 addEventListener("focus", () => { renderAll(); liveWin(); liveQuick(); });
 
+/* idea 129: the Nightclub popularity boosts as icons, like the blips in the game (all blue): rebook a DJ +10%,
+   throw out a troublemaker (the blue dot) +25%, take a VIP home / to hospital (the blue figure) +25% */
+const NC_BOOSTS = [["dj", 10], ["tm", 25], ["vip", 25]];
+const NC_BOOST_ICO = {
+  dj: `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="17" r="8.5" fill="#1d4f8f"/><circle cx="16" cy="17" r="5.8" fill="none" stroke="#9fd0ff" stroke-width="1" opacity=".7"/><circle cx="16" cy="17" r="2.6" fill="#4aa3ff"/><path d="M5.5 16a10.5 10.5 0 0 1 21 0" fill="none" stroke="#4aa3ff" stroke-width="2.6" stroke-linecap="round"/><rect x="3.2" y="15" width="5" height="9" rx="2" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1"/><rect x="23.8" y="15" width="5" height="9" rx="2" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1"/></svg>`,
+  tm: `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1.6"/></svg>`,
+  vip: `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="10" r="5.4" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1.2"/><path d="M5.5 28c0-6.2 4.7-10.4 10.5-10.4S26.5 21.8 26.5 28z" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1.2"/></svg>`
+};
+const ncBoostsHtml = () => `<span class="nc-boosts">${NC_BOOSTS.map(([k, v]) => `<button type="button" class="nc-blip" data-ncb="${k}" title="${escapeHtml(t("ncB_" + k))}" aria-label="${escapeHtml(t("ncB_" + k))}">${NC_BOOST_ICO[k]}<b>+${v}%</b></button>`).join("")}</span>`;
+const ncBoostApply = (n, k) => { const b = NC_BOOSTS.find(x => x[0] === k); if (b) n.pop = Math.min(100, n.pop + b[1]); };
 /* segmented 10-box picker used by the Nightclub (popularity, goods) */
 function boxes10(kind, frac, color) {
   return `<div class="box10" data-k="${kind}">${Array.from({ length: 10 }, (_, i) =>
@@ -10619,7 +10799,7 @@ function nightWinHtml() {
     <div class="sect"><h4>${t("ncPop")} <span data-live="ncpop" style="color:${popColor(n.pop)}">${Math.round(n.pop)}%</span></h4>
       ${segBarHtml("pop", "night")}
       <div class="row" style="margin-top:8px"><span class="grow hint" style="margin:0">${n.pop >= 95 ? t("ncPopMax") : t("ncPopLess", money(ncPay(n.pop)))}</span>
-      <button class="btn small" id="ncDj">${t("ncDj")}</button></div>
+      ${ncBoostsHtml()}</div>
     </div>
     <div class="sect"><h4>${t("ncGoods")} <span class="muted" data-live="ncpct">${Math.round(tt.frac * 100)}%</span></h4>
       ${segBarHtml("ncgoods", "night")}
@@ -10639,7 +10819,7 @@ function bindNightWin(rerender) {
   const n = S.biz.night, $ = sel => win.querySelector(sel);
   const done = () => { checkNight(false); save(true); ghMarkDirty(); rerender(); renderAll(); };
   if (S.ncAdvanced && !isPhone()) { bindNightAdvanced(win, rerender); bindNightSettings(win, rerender); return; }
-  $("#ncDj").onclick = () => { n.pop = Math.min(100, n.pop + 10); n.alert = null; done(); };
+  win.querySelectorAll("[data-ncb]").forEach(b => b.onclick = () => { ncBoostApply(n, b.dataset.ncb); n.alert = null; done(); });
   $("#ncSold").onclick = () => { NC_GOODS.forEach(g => n.crates[g.id] = 0); n.alert = null; done(); toast(t("ncSoldToast")); };
   $("#ncCollect").onclick = () => { const had = n.safe; n.safe = 0; n.alert = null; done();
     toast(t("bagCollected", money(had)), { label: t("undo"), run: () => { n.safe = had; done(); } }); };
@@ -12346,7 +12526,7 @@ function nightAdvancedHtml() {
       <h4>${t("ncPop")} <b style="color:${popColor(n.pop)}">${Math.round(n.pop)}%</b></h4>
       ${segBarHtml("pop", "night", "big")}
       <p class="hint">${n.pop >= 95 ? t("ncPopMax") : t("ncPopLess", money(ncPay(n.pop)))}</p>
-      <div class="btn-row"><button class="btn small" data-a="dj">${t("ncDj")}</button></div>
+      <div class="btn-row">${ncBoostsHtml()}</div>
       <h4 style="margin-top:16px">${t("ncSafe")}</h4>
       <div class="bag-line"><b class="bag-sum ${n.safe >= NC_SAFE_CAP - 1 ? "full" : ""}">${money(n.safe)} / ${money(NC_SAFE_CAP)}</b><button class="btn small" data-a="collect">${t("bagCollect")}</button></div>
       <label class="val-in"><span>${t("safeIn")}</span><span class="dollar">$</span><input type="number" min="0" max="${NC_SAFE_CAP}" step="1000" inputmode="numeric" data-safe value="${Math.round(n.safe)}"></label>
@@ -12382,6 +12562,7 @@ function bindNightAdvanced(root, rerender) {
   const n = S.biz.night;
   const done = () => { checkNight(false); save(true); ghMarkDirty(); rerender(); renderAll(); };
   bindSafeInput(root, done);
+  root.querySelectorAll("[data-ncb]").forEach(b => b.onclick = () => { ncBoostApply(n, b.dataset.ncb); n.alert = null; done(); });
   root.querySelectorAll("[data-a]").forEach(el => {
     const a = el.dataset.a;
     if (a === "lobby") { el.oninput = () => { n.lobby = +el.value; el.nextElementSibling.textContent = el.value; }; el.onchange = done; return; }

@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.38.0 (2026-11-02)
+* Property Manager:
+  * Add: a screenshot put on a car on show in a Mansion opens a photo studio, like in the Vehicle Manager: move and resize the 16:9 frame (corners, drag, a tap elsewhere, the wheel or two fingers), zoom, brightness, contrast, saturation, vibrance, warmth. The original and the settings are kept, so "✂ Edit the screenshot" in the car's window continues from where you left it.
+
+### v0.37.0 (2026-11-02)
+* Production Manager:
+  * Change: the Nightclub's popularity has three round buttons, like the blips in the game, all blue, each with how much the bar goes up: rebook a DJ (+10%), a troublemaker thrown out (the blue dot, +25%) and a VIP taken home or to hospital (the blue figure, +25%). Both 25% values checked by Mihai in the game. Hold a button for what it is.
+
 ### v0.36.2 (2026-11-02)
 * Home:
   * Change: the Twitch Drops card is small and sits right on top of "This week in GTA Online", moving with it when you open or fold it (on narrower screens, right above it in the page). One short line with the dates ("Twitch Drops · 30 Oct – 1 Nov"), the claim date under it. It shows only while there are drops to watch or a reward to claim; otherwise it is hidden.
