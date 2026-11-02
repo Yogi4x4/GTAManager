@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.39.0 (2026-11-02)
+* Production Manager:
+  * Fix: on the Nightclub page and in its window, the popularity % above the bar and the "Below 95%" line follow the bar while you drag it; letting go updates the rest of the page at once (it used to wait a few seconds).
+  * Change: Nightclub popularity in 2.5% steps (each box split in four).
+  * Add: the Nightclub's resident DJs (Solomun, Tale Of Us, Dixon, The Black Madonna), ticked when you have them; the Clubhouse's Gun locker.
+  * Add: Stash House (the purple icon from the map) next to Supplies of the MC businesses, the Bunker and the Acid Lab: the daily raid refilled that business to 100% (one a day, with Undo).
+  * Add: Nightclub goods from Yohan and from Business Battles (his portrait and a green crate): pick the type and how many crates, they go into the warehouse; Yohan counts down his 20 minutes and a notification says when he can be called again.
+  * Add: Acid Lab in the pages menu under Production Manager: the map with the Acid Lab's big window open, on its pin. The MC Business card of the left menu has a link to the MC Business page.
+
 ### v0.38.0 (2026-11-02)
 * Property Manager:
   * Add: a screenshot put on a car on show in a Mansion opens a photo studio, like in the Vehicle Manager: move and resize the 16:9 frame (corners, drag, a tap elsewhere, the wheel or two fingers), zoom, brightness, contrast, saturation, vibrance, warmth. The original and the settings are kept, so "✂ Edit the screenshot" in the car's window continues from where you left it.
