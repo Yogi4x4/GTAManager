@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.36.1 (2026-11-01)
+* Property Manager:
+  * Fix: on a phone, the name of a car on show was partly under its photo (the make and "Car podium" hidden). An old phone rule from the small cards capped the photo's box at 150 px while the picture kept its full height and spilled over the name. The showroom cards keep their whole 16:9 photo now, and the handwritten name has room for its tall letters.
+* Home:
+  * Fix: Twitch Drops said "period unknown" although Rockstar's page gives October 30 – November 1. That page is built by scripts, so its text is inside the page's data, which the check used to throw away; it now reads it. It also reads the full articles of two GTA news sites (rockstarintel.com, gtaboom.com) and Rockstar Support's wording ("until November 1 … to claim the drop on Twitch", "until November 11 … to log in and claim … in-game"). Needs the new .github/workflows/drops.yml.
+
 ### v0.36.0 (2026-11-01)
 * Property Manager:
   * Change: the Mansion page, all new (variant A of the mockups): a banner with the house's photo behind its emblem, name, price and the upgrades (yours lit); three small figures (cars on show, the boost that's on, upgrades); then the showroom, the podium car big with the two driveway places next to it (empty places are dashed boxes you tap to fill), and beside it the boost and, folded, what a Mansion has and the rules. On a phone everything stacks in one column.

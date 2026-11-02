@@ -755,7 +755,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.36";
+const APP_VERSION = "0.36.1";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1070,6 +1070,38 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.36.1",
+  "date": "2026-11-01",
+  "en": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Fix: on a phone, the name of a car on show was partly under its photo (the make and \"Car podium\" hidden). An old phone rule from the small cards capped the photo's box at 150 px while the picture kept its full height and spilled over the name. The showroom cards keep their whole 16:9 photo now, and the handwritten name has room for its tall letters."
+    ]
+   },
+   {
+    "area": "Home",
+    "items": [
+     "Fix: Twitch Drops said \"period unknown\" although Rockstar's page gives October 30 – November 1. That page is built by scripts, so its text is inside the page's data, which the check used to throw away; it now reads it. It also reads the full articles of two GTA news sites (rockstarintel.com, gtaboom.com) and Rockstar Support's wording (\"until November 1 … to claim the drop on Twitch\", \"until November 11 … to log in and claim … in-game\"). Needs the new .github/workflows/drops.yml."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Property Manager",
+    "items": [
+     "Reparat: pe telefon, numele unei mașini expuse era parțial sub poza ei (marca și „Car podium” ascunse). O regulă veche pentru telefon, de la cardurile mici, limita cutia pozei la 150 px, dar poza își păstra toată înălțimea și se revărsa peste nume. Cardurile din showroom își păstrează acum toată poza 16:9, iar numele scris de mână are loc pentru literele lui înalte."
+    ]
+   },
+   {
+    "area": "Acasă",
+    "items": [
+     "Reparat: Twitch Drops scria „perioadă necunoscută”, deși pagina Rockstar dă 30 octombrie – 1 noiembrie. Pagina e construită de scripturi, iar textul ei stă în datele paginii, pe care verificarea le arunca; acum le citește. Citește și articolele întregi de pe două site-uri de știri GTA (rockstarintel.com, gtaboom.com) și formulările de la Rockstar Support („until November 1 … to claim the drop on Twitch”, „until November 11 … to log in and claim … in-game”). Cere noul .github/workflows/drops.yml."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.36.0",
   "date": "2026-11-01",
@@ -6882,6 +6914,16 @@ Section({
 #sec-production .mh-show .m-car.lux:not(.podium) .m-model {font-size: 19px;}
 #sec-production .mh-show .m-car.lux:not(.podium) .m-make {font-size: 13px;}
 }
+#sec-production .m-car.lux {display: block; height: auto; align-self: start;}
+#sec-production .m-car.lux .m-car-pic {display: block; position: relative; aspect-ratio: 16 / 9; height: auto; max-height: none; overflow: hidden;}
+#sec-production .m-car.lux .m-car-pic > img {position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;}
+#sec-production .m-car.lux .m-car-pic > span:not(.m-shot-tag) {position: absolute; inset: 0; display: grid; place-items: center; font-size: 26px;}
+#sec-production .m-car.lux .m-cap {display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; padding: 10px 10px 12px; overflow: visible;}
+#sec-production .m-car.lux .m-cap small {line-height: 1.6;}
+#sec-production .m-car.lux .m-make {line-height: 1.5; padding-top: 2px;}
+#sec-production .m-car.lux .m-model {line-height: 1.35; padding: 2px 6px 4px;}
+#sec-production .mh-show .m-car-row.pod > .podium {align-self: stretch;}
+#sec-production .m-car.lux .m-car-pic {background: var(--panel);}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
