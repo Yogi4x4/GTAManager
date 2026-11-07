@@ -1,14 +1,14 @@
 {
- "active": false,
- "fetched": "2026-11-06T06:56Z",
+ "active": true,
+ "fetched": "2026-11-07T06:08Z",
  "page": "https://www.rockstargames.com/gta-online/twitch-drops",
  "title": "So I have never done Twitch Drops for GTA before, where do I check in game that I got the item?",
  "url": "https://www.reddit.com/r/gtaonline/comments/1xnb330/so_i_have_never_done_twitch_drops_for_gta_before/",
  "posted": "2026-11-04T01:17Z",
- "start": "2026-10-30T00:00Z",
- "until": "2026-11-01T23:59Z",
+ "start": null,
+ "until": null,
  "claim": null,
  "items": [],
  "source": "reddit",
- "checked": "2026-11-06T06:56Z"
+ "checked": "2026-11-07T06:08Z"
 }
