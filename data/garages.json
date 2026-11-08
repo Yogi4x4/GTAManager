@@ -243,6 +243,24 @@
   },
   {
     "name": "Vinewood Mansion",
-    "slots": 20
+    "slots": 20,
+    "levels": [
+      {
+        "name": "B1",
+        "slots": 8
+      },
+      {
+        "name": "B2",
+        "slots": 9
+      },
+      {
+        "name": "Driveway",
+        "slots": 2
+      },
+      {
+        "name": "Podium",
+        "slots": 1
+      }
+    ]
   }
 ]
