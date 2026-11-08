@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.42.0 (2026-11-08)
+* Home:
+  * Change: Twitch Drops, strict (Mihai's choice): only Rockstar's own Twitch Drops page and the official weekly post are believed, and only when they give explicit dates; today has to be inside them. Reddit questions and news articles are no longer read (a player's question titled "Twitch Drops" made it say drops were on). Needs the new .github/workflows/drops.yml. If the next real drop is still wrong, the feature goes.
+* Job Manager:
+  * Fix: the new card pictures were darker at the bottom: they shared a class name with the left menu's tiles, whose dark gradient covered them. They now show as they are.
+
 ### v0.41.0 (2026-11-08)
 * Job Manager:
   * Change: Mihai's new pictures on the cards of the 14 heists and contracts (the five classic heists, Doomsday, Diamond Casino, Cayo Perico, Kortz Center, Dr. Dre, Auto Shop Contracts, Salvage Yard Robberies, Cluckin' Bell Farm Raid, Bail Office Bounties); the cards fill with them. The pages keep the emblems.

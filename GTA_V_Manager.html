@@ -779,7 +779,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.41";
+const APP_VERSION = "0.42";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1094,6 +1094,38 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.42.0",
+  "date": "2026-11-08",
+  "en": [
+   {
+    "area": "Home",
+    "items": [
+     "Change: Twitch Drops, strict (Mihai's choice): only Rockstar's own Twitch Drops page and the official weekly post are believed, and only when they give explicit dates; today has to be inside them. Reddit questions and news articles are no longer read (a player's question titled \"Twitch Drops\" made it say drops were on). Needs the new .github/workflows/drops.yml. If the next real drop is still wrong, the feature goes."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Fix: the new card pictures were darker at the bottom: they shared a class name with the left menu's tiles, whose dark gradient covered them. They now show as they are."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Acasă",
+    "items": [
+     "Schimbat: Twitch Drops, strict (alegerea lui Mihai): sunt crezute doar pagina Rockstar de Twitch Drops și postarea săptămânală oficială, și doar când dau date clare; ziua de azi trebuie să fie între ele. Întrebările de pe Reddit și articolele de știri nu mai sunt citite (întrebarea unui jucător cu „Twitch Drops” în titlu a făcut-o să spună că sunt drop-uri). Cere noul .github/workflows/drops.yml. Dacă la următorul drop real tot greșește, funcția se elimină."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Reparat: pozele noi de pe carduri erau mai întunecate jos: aveau același nume de clasă ca cardurile din meniul din stânga, al căror gradient întunecat le acoperea. Acum se văd ca originalul."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.41.0",
   "date": "2026-11-08",
@@ -7155,11 +7187,11 @@ Section({
 @media (hover: none) {
 #sec-production .m-car.lux .m-hov {display: none;}
 }
-#sec-production .jm-grid > .job-card.art {padding: 0;}
-#sec-production .jm-grid > .job-card.art img {object-fit: cover; border-radius: inherit;}
-#sec-production .jm-grid > .job-card.art .soon-tag, #sec-production .jm-grid > .job-card.art .op-ppl {z-index: 2;}
-#sec-production .jm-grid > .job-card.art .soon-tag {top: 6px; right: 6px;}
-#sec-production .jm-grid > .job-card.art {height: auto; aspect-ratio: 3 / 2;}
+#sec-production .jm-grid > .job-card.jm-art {padding: 0;}
+#sec-production .jm-grid > .job-card.jm-art img {object-fit: cover; border-radius: inherit; filter: none;}
+#sec-production .jm-grid > .job-card.jm-art .soon-tag, #sec-production .jm-grid > .job-card.jm-art .op-ppl {z-index: 2;}
+#sec-production .jm-grid > .job-card.jm-art .soon-tag {top: 6px; right: 6px;}
+#sec-production .jm-grid > .job-card.jm-art {height: auto; aspect-ratio: 3 / 2;}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -9109,10 +9141,10 @@ const FRONTS = [["wash", "Hands On Car Wash", 1000000], ["heli", "Higgins Helito
 const frontOwned = k => k === "heli" ? !!S.biz.hangar.heli : !!S.fronts[k].owned;
 function jobCardHtml(k) {
   if (k === "seccon") { const a = ag(); return `<a class="job-card open" href="#security" title="Security Contracts"><span class="soon-tag ${a.owned ? "on" : ""}">${a.owned ? t("scDone", a.contracts) : t("scNeedAg")}</span><img src="${prImg(JOB_IMG.seccon)}" alt="Security Contracts"></a>`; }
-  if (k === "dre") { const [n, all] = dreCount(); const art = (window.JOB_CARD || {}).dre; return `<a class="job-card open ${art ? "art" : ""}" href="#dre" title="Dr. Dre Contract"><span class="soon-tag on">${n} / ${all}</span><img src="${prImg(art || JOB_IMG.dre)}" alt="Dr. Dre Contract"></a>`; }
+  if (k === "dre") { const [n, all] = dreCount(); const art = (window.JOB_CARD || {}).dre; return `<a class="job-card open ${art ? "jm-art" : ""}" href="#dre" title="Dr. Dre Contract"><span class="soon-tag on">${n} / ${all}</span><img src="${prImg(art || JOB_IMG.dre)}" alt="Dr. Dre Contract"></a>`; }
   if (k === "agency") return `<a class="job-card open" href="#agency" title="Agency"><span class="soon-tag on">${ag().owned ? money(ag().safe) : t("agOpenTag")}</span><img src="${prImg(JOB_IMG.agency)}" alt="Agency"></a>`;
   if (k === "fronts") return `<a class="job-card open" href="#fronts" title="${t("frontsOpen")}"><span class="soon-tag on">${t("frontsOwned", FRONTS.filter(([f]) => frontOwned(f)).length)}</span><img src="${prImg(JOB_IMG.fronts)}" alt="Money Fronts"></a>`;
-  if (k === "kortz") return `<a class="job-card open ${(window.JOB_CARD || {}).kortz ? "art" : ""}" href="#op-kortz" title="${kortzReady() ? t("kortzOk") : t("kortzNeed")}"><span class="soon-tag ${kortzReady() ? "on" : "warn"}">${kortzReady() ? "🎨 " + t("kortzOkTag") : "⚠ " + t("kortzNeedTag")}</span>${opPlayersHtml(OPS.kortz)}<img src="${prImg((window.JOB_CARD || {}).kortz || JOB_IMG[k])}" alt="${JOB_NAMES[k]}" loading="lazy"></a>`;
+  if (k === "kortz") return `<a class="job-card open ${(window.JOB_CARD || {}).kortz ? "jm-art" : ""}" href="#op-kortz" title="${kortzReady() ? t("kortzOk") : t("kortzNeed")}"><span class="soon-tag ${kortzReady() ? "on" : "warn"}">${kortzReady() ? "🎨 " + t("kortzOkTag") : "⚠ " + t("kortzNeedTag")}</span>${opPlayersHtml(OPS.kortz)}<img src="${prImg((window.JOB_CARD || {}).kortz || JOB_IMG[k])}" alt="${JOB_NAMES[k]}" loading="lazy"></a>`;
   if (OPS[k]) return opCardHtml(k);
   return `<div class="job-card soon" aria-disabled="true"><span class="soon-tag">${t("soon2")}</span><img src="${prImg(JOB_IMG[k])}" alt="${JOB_NAMES[k]}" loading="lazy"></div>`;
 }
@@ -9169,7 +9201,7 @@ function opCardHtml(k) {
   const tg = (tag ? `<span class="soon-tag on">${escapeHtml(tag)}</span>` : "") + (o.cat === "heist" ? opPlayersHtml(o) : "");
   const pp = parts === 1 ? opProg(k, o.parts[0]) : [0, 0], bar = pp[0] ? `<i class="jm-prog" style="--p:${pp[0] / pp[1] * 100}%"></i>` : "";   // not "jm-pb": that is the map pin's class (idea 124)
   const art = (window.JOB_CARD || {})[k];   // Mihai's card picture, when there is one
-  if (art) return `<a class="job-card open art" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<img src="${prImg(art)}" alt="${escapeHtml(o.name)}" loading="lazy">${bar}</a>`;
+  if (art) return `<a class="job-card open jm-art" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<img src="${prImg(art)}" alt="${escapeHtml(o.name)}" loading="lazy">${bar}</a>`;
   if (img) return `<a class="job-card open" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<img src="${prImg(img)}" alt="${escapeHtml(o.name)}" loading="lazy">${bar}</a>`;
   // no emblem yet: the name on the card (idea 113)
   return `<a class="job-card open op-txt ${o.group === "classic" ? "classic" : ""}" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<b>${escapeHtml(o.name)}</b><small>${escapeHtml(t("opNeeds"))}: ${escapeHtml(o.needs)}</small>${bar}</a>`;
