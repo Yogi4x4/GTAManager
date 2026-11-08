@@ -1,7 +1,8 @@
-# GTA V Manager: Twitch Drops for GTA Online (idea 91).
-# A few times a day this looks for the newest "Twitch Drops" announcement on r/gtaonline (where Rockstar's drops are always posted
-# the day they start) and saves it as data/drops.json. The page only reads that file: a notification in the bell (once per drop)
-# and a small card on Home while the drops are on. Run it by hand any time: Actions → Twitch Drops → Run workflow.
+# GTA V Manager: Twitch Drops for GTA Online (idea 91; strict since 0.42, Mihai's variant 3).
+# Only two sources are believed: Rockstar's own Twitch Drops page and the official weekly post (data/weekly.json). A drop is
+# "on" only when one of them gives explicit dates ("between October 30 – November 1") and today is inside them. Reddit
+# questions and news articles are no longer read (they made it say "on" when nothing was). If this is still wrong at the next
+# real drop, the whole feature is removed. Run it by hand any time: Actions → Twitch Drops → Run workflow.
 name: Twitch Drops
 on:
   schedule:
@@ -21,66 +22,14 @@ jobs:
       - name: Look for Twitch Drops
         run: |
           python3 - <<'PY'
-          import json, re, datetime, urllib.request, urllib.parse, html, os
-          import xml.etree.ElementTree as ET
+          import json, re, datetime, urllib.request, html, os
           UA = "GTAManager-drops/1.0 (GitHub Action; personal fan page)"
           def get(url):
               req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "*/*"})
               with urllib.request.urlopen(req, timeout=30) as r:
                   return r.read().decode("utf-8", "replace")
           now = datetime.datetime.now(datetime.timezone.utc)
-          Q = urllib.parse.quote('title:"twitch drops"')
-          posts = []
-          # 1. Reddit search (JSON), 2. the same as RSS if JSON is refused
-          try:
-              d = json.loads(get(f"https://www.reddit.com/r/gtaonline/search.json?q={Q}&restrict_sr=1&sort=new&t=month&limit=15"))
-              for c in d["data"]["children"]:
-                  p = c["data"]
-                  posts.append({"title": p["title"], "url": "https://www.reddit.com" + p["permalink"], "posted": datetime.datetime.fromtimestamp(p["created_utc"], datetime.timezone.utc), "text": p.get("selftext", "")})
-          except Exception as e:
-              print("json failed:", e)
-              try:
-                  root = ET.fromstring(get(f"https://www.reddit.com/r/gtaonline/search.rss?q={Q}&restrict_sr=1&sort=new&t=month"))
-                  ns = {"a": "http://www.w3.org/2005/Atom"}
-                  for en in root.findall("a:entry", ns):
-                      t = en.findtext("a:title", "", ns); u = en.find("a:link", ns).get("href"); up = en.findtext("a:updated", "", ns)
-                      body = re.sub(r"<[^>]+>", "\n", html.unescape(en.findtext("a:content", "", ns) or ""))
-                      posts.append({"title": t, "url": u, "posted": datetime.datetime.fromisoformat(up.replace("Z", "+00:00")), "text": body})
-              except Exception as e2:
-                  print("rss failed:", e2)
-          posts = [p for p in posts if re.search(r"twitch\s*drop", p["title"], re.I)]
-          # 2b. news sites (Google News RSS): Rockstar announces some drops only on its Newswire / X, with no Reddit post titled "Twitch Drops"
-          #     (missed this way: the Grotti Turismo Omaggio drop, Oct 30 – Nov 1, 2026). Only articles from the last 10 days count.
-          if not posts:
-              try:
-                  root = ET.fromstring(get("https://news.google.com/rss/search?q=" + urllib.parse.quote('"GTA Online" "Twitch Drops" when:10d') + "&hl=en-US&gl=US&ceid=US:en"))
-                  for it in root.iter("item"):
-                      t = html.unescape(it.findtext("title", "") or ""); u = it.findtext("link", "") or ""
-                      pd = it.findtext("pubDate", "") or ""
-                      try: posted = datetime.datetime.strptime(pd[:25].strip(), "%a, %d %b %Y %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
-                      except ValueError: continue
-                      body = re.sub(r"<[^>]+>", " ", html.unescape(it.findtext("description", "") or ""))
-                      if re.search(r"twitch\s*drop", t, re.I) and re.search(r"gta", t, re.I) and now - posted < datetime.timedelta(days=10):
-                          posts.append({"title": re.sub(r"\s+-\s+[^-]+$", "", t), "url": u, "posted": posted, "text": body, "news": True})
-                  posts.sort(key=lambda p: p["posted"], reverse=True)
-              except Exception as e3:
-                  print("news failed:", e3)
-          posts.sort(key=lambda p: p["posted"], reverse=True)
-          out = {"active": False, "fetched": now.strftime("%Y-%m-%dT%H:%MZ"), "page": "https://www.rockstargames.com/gta-online/twitch-drops"}
           MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
-          def until_of(s, posted):
-              # "until November 12", "through Nov 12th", "ends 12 November", "Oct 30 - Nov 5"
-              m = re.search(r"(?:(?:until|through|thru|till|ends?|ending|to)\s+|[-–]\s*)(?:\w+day,?\s+)?([A-Za-z]{3,9})\.?\s+(\d{1,2})", s, re.I) or re.search(r"(?:until|through|ends?)\s+(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,9})", s, re.I)
-              if not m: return None
-              a, b = m.groups()
-              mon, day = (a, b) if a[:1].isalpha() else (b, a)
-              mi = MONTHS.get(mon[:3].lower())
-              if not mi: return None
-              y = posted.year + (1 if mi < posted.month - 6 else 0)
-              try: return datetime.datetime(y, mi, int(day), 23, 59, tzinfo=datetime.timezone.utc)
-              except ValueError: return None
-          # idea 127: the dates are only ever read, never made up. "between October 30 – November 1" = watch on Twitch;
-          # "claim ... through November 11" = pick it up in the game. Rockstar's own page is tried first for both.
           MON = r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?"
           def mkdate(mon, day, ref, end):
               mi = MONTHS.get(mon[:3].lower())
@@ -91,71 +40,48 @@ jobs:
           def range_of(s, ref):
               m = re.search(MON + r"\s+(\d{1,2})(?:st|nd|rd|th)?\s*(?:[-–—]|to|through|until)\s*(?:" + MON + r"\s+)?(\d{1,2})", s, re.I)
               if not m: return None, None
-              a = mkdate(m.group(1), m.group(2), ref, False)
-              b = mkdate(m.group(3) or m.group(1), m.group(4), ref, True)
+              a = mkdate(m.group(1), m.group(2), ref, False); b = mkdate(m.group(3) or m.group(1), m.group(4), ref, True)
               return (a, b) if a and b and b >= a else (None, None)
           def claim_of(s, ref):
-              # "available to claim though November 11" / "until November 11, 2026, to log in and claim ... in-game"
-              m = re.search(r"claim\w*[^.]{0,60}?(?:though|through|until|by|before)\s+(?:\w+day,?\s+)?" + MON + r"\s+(\d{1,2})", s, re.I) \
-                  or re.search(r"until\s+" + MON + r"\s+(\d{1,2})(?:st|nd|rd|th)?,?\s*(?:\d{4},?)?\s+to\s+(?:log\s*in\s+and\s+)?claim[^.]{0,80}?in[- ]game", s, re.I)
+              m = re.search(r"claim\w*[^.]{0,60}?(?:though|through|until|by|before)\s+(?:\w+day,?\s+)?" + MON + r"\s+(\d{1,2})", s, re.I)
               return mkdate(m.group(1), m.group(2), ref, True) if m else None
-          def twitch_end_of(s, ref):
-              # "until November 1, 2026, to claim the drop on Twitch"
-              m = re.search(r"until\s+" + MON + r"\s+(\d{1,2})(?:st|nd|rd|th)?,?\s*(?:\d{4},?)?\s+to\s+claim[^.]{0,40}?on\s+Twitch", s, re.I)
-              return mkdate(m.group(1), m.group(2), ref, True) if m else None
-          # Rockstar's pages are built by scripts: the text is inside the page's JSON, so the scripts are kept and \u2013-style escapes undone
-          def strip(h):
+          def strip(h):   # Rockstar's page is built by scripts: the text is inside their JSON, so keep it and undo \u2013-style escapes
               h = re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), h).replace("\\n", " ").replace('\\"', '"')
               return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?is)<style[^>]*>.*?</style>", " ", h))))
-          rs_text = ""
-          try: rs_text = strip(get(out["page"]))
-          except Exception as e4: print("rockstar page failed:", e4)
-          # GTA news sites whose RSS has the whole article (dates included): only Twitch Drops articles of the last 10 days
-          for feed in ("https://rockstarintel.com/feed/", "https://www.gtaboom.com/feed"):
-              try:
-                  root = ET.fromstring(get(feed))
-                  for it in root.iter("item"):
-                      t = html.unescape(it.findtext("title", "") or "")
-                      pd = it.findtext("pubDate", "") or ""
-                      try: fp = datetime.datetime.strptime(pd[:25].strip(), "%a, %d %b %Y %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
-                      except ValueError: continue
-                      body = " ".join((x.text or "") for x in it if x.tag.endswith("encoded") or x.tag == "description")
-                      if now - fp < datetime.timedelta(days=10) and re.search(r"twitch\s*drop|twitch[^.]{0,40}(?:supercar|livery|reward)", t + " " + body, re.I):
-                          rs_text += " " + t + ". " + strip(body)
-              except Exception as e5: print("feed failed:", feed, e5)
-          if posts:
-              p = posts[0]
-              txt = p["title"] + "\n" + p["text"]
-              start, until = range_of(rs_text, now) if re.search(r"twitch", rs_text, re.I) else (None, None)
-              if not until: start, until = range_of(txt, p["posted"])
-              if not until:
-                  u = twitch_end_of(rs_text, now) or twitch_end_of(txt, p["posted"])
-                  if u: start, until = None, u
-              if not until:
-                  u = until_of(txt, p["posted"])
-                  if u: start, until = None, u
-              claim = claim_of(rs_text, now) or claim_of(txt, p["posted"])
-              items = [re.sub(r"[*_#>`]+", "", l).strip(" -•") for l in p["text"].splitlines() if re.match(r"\s*[-*•]\s+\S", l)][:8]
-              recent = now - p["posted"] < datetime.timedelta(days=3 if p.get("news") else 7)
-              out.update({"title": p["title"], "url": p["url"], "posted": p["posted"].strftime("%Y-%m-%dT%H:%MZ"),
-                          "start": start.strftime("%Y-%m-%dT%H:%MZ") if start else None, "until": until.strftime("%Y-%m-%dT%H:%MZ") if until else None,
-                          "claim": claim.strftime("%Y-%m-%dT%H:%MZ") if claim else None, "items": items, "source": "news" if p.get("news") else "reddit",
-                          # with no end date: "on" only while the post is fresh, and the page says the period is unknown
-                          "active": (now <= until) if until else recent})
-          # 3. no Reddit post found (Reddit often refuses GitHub's servers): the weekly post in data/weekly.json mentions Twitch Drops when they are on
-          if not posts:
+          out = {"active": False, "fetched": now.strftime("%Y-%m-%dT%H:%MZ"), "page": "https://www.rockstargames.com/gta-online/twitch-drops"}
+          found = None
+          # 1. Rockstar's page: only the sentences that talk about Twitch and give dates
+          try:
+              txt = strip(get(out["page"]))
+              for m in re.finditer(r"[^.]{0,220}twitch[^.]{0,260}\.?", txt, re.I):
+                  seg = m.group(0)
+                  st, en = range_of(seg, now)
+                  if en:
+                      ctx = txt[max(0, m.start() - 300): m.end() + 300]
+                      t = re.search(r"Claim (?:the )?([^.]{5,120}?)(?: Watch|\.|$)", ctx)
+                      found = {"source": "rockstar", "title": ("Claim the " + t.group(1).strip()) if t else "Twitch Drops", "url": out["page"], "start": st, "until": en, "claim": claim_of(ctx, now)}
+                      break
+          except Exception as e:
+              print("rockstar page failed:", e)
+          # 2. the official weekly post: a line about Twitch Drops that gives its own dates
+          if not found:
               try:
                   w = json.load(open("data/weekly.json"))
-                  lines = [i for s in w.get("sections", []) for i in [s.get("title", "")] + s.get("items", []) if re.search(r"twitch\s*drop", i, re.I)]
-                  wp = datetime.datetime.fromisoformat((w.get("posted") or "").replace("Z", "+00:00")) if w.get("posted") else None
-                  if lines and wp:
-                      st, until = range_of(" ".join(lines), wp)
-                      until = until or until_of(" ".join(lines), wp) or until_of(w.get("title", ""), wp)   # the weekly post's own end (its title says "to November 5th")
-                      out.update({"title": lines[0][:140], "url": w.get("url", ""), "posted": wp.strftime("%Y-%m-%dT%H:%MZ"), "start": st.strftime("%Y-%m-%dT%H:%MZ") if st else None,
-                                  "until": until.strftime("%Y-%m-%dT%H:%MZ") if until else None, "claim": None,
-                                  "items": lines[1:8], "source": "weekly", "active": (wp <= now <= until) if until else now - wp < datetime.timedelta(days=3)})
-              except Exception as e3:
-                  print("weekly fallback failed:", e3)
+                  wp = datetime.datetime.fromisoformat((w.get("posted") or "").replace("Z", "+00:00")) if w.get("posted") else now
+                  for s_ in w.get("sections", []):
+                      for line in [s_.get("title", "")] + s_.get("items", []):
+                          if re.search(r"twitch\s*drop", line, re.I):
+                              st, en = range_of(line, wp)
+                              if en:
+                                  found = {"source": "weekly", "title": line[:140], "url": w.get("url", ""), "start": st, "until": en, "claim": claim_of(line, wp)}
+                                  break
+                      if found: break
+              except Exception as e:
+                  print("weekly failed:", e)
+          if found:
+              f = lambda d: d.strftime("%Y-%m-%dT%H:%MZ") if d else None
+              out.update({"title": found["title"], "url": found["url"], "source": found["source"], "start": f(found["start"]), "until": f(found["until"]), "claim": f(found["claim"]),
+                          "active": bool(found["start"] and found["start"] <= now <= found["until"]) or bool(not found["start"] and now <= found["until"])})
           out["checked"] = out["fetched"]
           os.makedirs("data", exist_ok=True)
           old = None
@@ -163,11 +89,10 @@ jobs:
           except Exception: pass
           skip = ("fetched", "checked")
           same = old and {k: v for k, v in old.items() if k not in skip} == {k: v for k, v in out.items() if k not in skip}
-          # also once a day when nothing changed, so the page can tell the check still runs
           stale = not old or (now - datetime.datetime.fromisoformat((old.get("checked") or old.get("fetched") or "2000-01-01T00:00Z").replace("Z", "+00:00"))) > datetime.timedelta(hours=20)
           if not same or stale:
               json.dump(out, open("data/drops.json", "w"), ensure_ascii=False, indent=1)
-          print(json.dumps(out, ensure_ascii=False)[:600])
+          print(json.dumps(out))
           PY
       - name: Save to the repository
         run: |
