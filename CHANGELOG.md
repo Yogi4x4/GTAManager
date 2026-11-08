@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.41.0 (2026-11-08)
+* Job Manager:
+  * Change: Mihai's new pictures on the cards of the 14 heists and contracts (the five classic heists, Doomsday, Diamond Casino, Cayo Perico, Kortz Center, Dr. Dre, Auto Shop Contracts, Salvage Yard Robberies, Cluckin' Bell Farm Raid, Bail Office Bounties); the cards fill with them. The pages keep the emblems.
+* Property Manager:
+  * Add: a Mansion's garage in the Vehicle Manager (named like it, with the levels B1, B2, Driveway, Podium) fills its cars on show by itself: what you put on the Podium and the Driveway shows with its VM photo; your screenshot and font still go on top. The two driveway places can change places: drag one onto the other, or "⇄ Swap" in the car's window; the order is kept.
+  * Add: on the mouse, a car on show tells what it is: make and model, class, Imani Tech, HSW, Benny's, modified, garage and level, and "tap to edit", in the showroom's colours.
+  * Change: the three figures (cars on show, boost, upgrades) are small, at the top of the right column; the upgrades have gold frames like the cars; the Armory is a real rifle, no longer a toy; the "Cars on show" title and the "Driveway 1 / 2" labels are gone.
+
 ### v0.40.0 (2026-11-03)
 * Production Manager:
   * Change: every business window has three tabs (variant B): Production, open by default (state, supplies with Stash House, stock, sale, resupplied / sold, boosts, Mutt), Upgrades (what the business has) and Settings (owned, pin, location, map layer, value from the game, alert, advanced numbers, timers). The Clubhouse too: bar and bike shop in Production, bed, bike shop and gun locker in Upgrades, timers in Settings. A business you don't own shows only its settings.
