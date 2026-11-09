@@ -1103,7 +1103,7 @@ const CHANGELOG = [
    {
     "area": "Job Manager",
     "items": [
-     "Change: the Job Manager page is now a hub of four big cards with Mihai's new pictures: Heists, Contracts, Jobs and Arena Wars (model 4: Mihai's font \"Serious\", a small spaced line with a colored bar, the name big and solid at the bottom; a thin white frame; the number of cards inside in the corner). A tap opens the category's own page.",
+     "Change: the Job Manager page is now a hub of four big cards with Mihai's new pictures: Heists, Contracts, Jobs and Arena Wars (model 4: Mihai's font \"Serious\", a small spaced line with a colored bar, the name solid, about a quarter of the card's height, low in the bottom-left corner and never cut; a thin white frame; the number of cards inside in the corner). A tap opens the category's own page.",
      "Change: each category has its own page and address (#heists, #contracts, #jm-jobs, #arena), with a strip on top to go back to Job Manager or to another category; the phone's back button goes back to the hub. The All / Heists / Contracts / Jobs tabs and the old category emblems are gone.",
      "Change: a heist or contract page goes back to its category; Agency and Money Fronts go back to Jobs; Dr. Dre to Contracts.",
      "Add: Arena Wars: the Arena Workshop (owned or not; $995,000, gives Arena Points and the Arena career) and the nine modes, each with what it is: Carnage, Flag War, Games Masters, Here Come the Monsters, Hot Bomb, Tag Team, Wreck It, Buzzer Beater, Bomb Ball.",
@@ -1117,7 +1117,7 @@ const CHANGELOG = [
    {
     "area": "Job Manager",
     "items": [
-     "Schimbat: pagina Job Manager e acum un hub cu patru carduri mari, cu pozele noi ale lui Mihai: Heists, Contracts, Jobs și Arena Wars (modelul 4: fontul lui Mihai, „Serious”, un rând mic rar cu o bară colorată, numele mare și plin jos; o ramă albă subțire; în colț, câte carduri sunt înăuntru). La apăsare se deschide pagina categoriei.",
+     "Schimbat: pagina Job Manager e acum un hub cu patru carduri mari, cu pozele noi ale lui Mihai: Heists, Contracts, Jobs și Arena Wars (modelul 4: fontul lui Mihai, „Serious”, un rând mic rar cu o bară colorată, numele plin, cam un sfert din înălțimea cardului, jos în colțul din stânga și niciodată tăiat; o ramă albă subțire; în colț, câte carduri sunt înăuntru). La apăsare se deschide pagina categoriei.",
      "Schimbat: fiecare categorie are pagina și adresa ei (#heists, #contracts, #jm-jobs, #arena), cu o bandă sus ca să te întorci la Job Manager sau să treci în altă categorie; butonul înapoi al telefonului duce la hub. Tab-urile Toate / Heists / Contracts / Jobs și emblemele vechi ale categoriilor au dispărut.",
      "Schimbat: pagina unui heist sau contract te întoarce la categoria lui; Agency și Money Fronts la Jobs; Dr. Dre la Contracts.",
      "Adăugat: Arena Wars: Arena Workshop (îl ai sau nu; 995.000 $, dă Arena Points și cariera din Arenă) și cele nouă moduri, fiecare cu ce e: Carnage, Flag War, Games Masters, Here Come the Monsters, Hot Bomb, Tag Team, Wreck It, Buzzer Beater, Bomb Ball.",
@@ -7309,11 +7309,11 @@ Section({
   transition: transform .18s ease, box-shadow .18s ease;}
 #sec-production .jm-hub-card img {position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;}
 #sec-production .jm-hub-card::before {content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(0deg, rgba(5,6,8,.62) 0, rgba(5,6,8,.25) 32%, rgba(5,6,8,0) 55%);}
-#sec-production .jm-hub-t {position: absolute; z-index: 2; left: 4.5cqw; right: 4.5cqw; bottom: 4.5cqw; font-family: "Serious", "Bebas Neue", Impact, sans-serif; text-transform: uppercase; white-space: nowrap; pointer-events: none;}
-#sec-production .jm-hub-t i {display: block; width: max-content; font-style: normal; font-size: 4.4cqw; line-height: 1; letter-spacing: .32em; margin-bottom: 1.8cqw; padding-left: 1.8cqw;
-  border-left: 1.3cqw solid var(--c); text-shadow: 0 0 1cqw rgba(0,0,0,.95);}
-#sec-production .jm-hub-t b {display: block; width: max-content; font-weight: 400; font-size: 20cqw; line-height: .8; letter-spacing: .01em; text-shadow: 0 0 1.2cqw rgba(0,0,0,.55), 0 .6cqw 2.4cqw rgba(0,0,0,.6);}
-#sec-production .jm-hub-n {position: absolute; z-index: 2; top: 3cqw; right: 3cqw; font: 400 4.4cqw/1 "Serious", sans-serif; letter-spacing: .12em; padding: 1.2cqw 2.4cqw;
+#sec-production .jm-hub-t {position: absolute; z-index: 2; left: 4cqw; bottom: 2.2cqw; font-family: "Serious", "Bebas Neue", Impact, sans-serif; text-transform: uppercase; white-space: nowrap; pointer-events: none;}
+#sec-production .jm-hub-t i {display: block; width: max-content; font-style: normal; font-size: 3.8cqw; line-height: 1; letter-spacing: .3em; margin-bottom: 1.6cqw; padding-left: 1.6cqw;
+  border-left: 1.1cqw solid var(--c); text-shadow: 0 0 1cqw rgba(0,0,0,.95);}
+#sec-production .jm-hub-t b {display: block; width: max-content; font-weight: 400; font-size: 13cqw; line-height: .82; letter-spacing: .01em; text-shadow: 0 0 1.2cqw rgba(0,0,0,.55), 0 .6cqw 2.4cqw rgba(0,0,0,.6);}
+#sec-production .jm-hub-n {position: absolute; z-index: 2; top: 3cqw; right: 3cqw; font: 400 3.8cqw/1 "Serious", sans-serif; letter-spacing: .12em; padding: 1.2cqw 2.4cqw;
   border-radius: 2cqw; background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.5);}
 #sec-production .jm-hub-card:hover, #sec-production .jm-hub-card:focus-visible {transform: scale(1.06); z-index: 5; box-shadow: 0 0 0 1px #000, 0 0 0 3px var(--c), 0 18px 40px rgba(0,0,0,.6);}
 @media (hover: none) {
@@ -9376,14 +9376,14 @@ function jobsHtml() {
     ${jmNowHtml()}
     <div class="jm-hub">${JM_CATS.map(c => `<div class="jm-hub-cell">${card(c)}<p class="muted">${escapeHtml(OPS_CAT[c.k][lang === "ro" ? 1 : 0])}</p></div>`).join("")}</div>`;
 }
-// the hub titles fill the card's width (not taller than half of it); measured, because the four names have very different lengths
+// the hub titles (Mihai's size 2, 09.11.2026): about a quarter of the card's height, at most 62% of its width; measured, because the names differ a lot in length
 function jmHubFit(root) {
   root.querySelectorAll(".jm-hub-card").forEach(a => {
     const b = a.querySelector(".jm-hub-t b"), W = a.clientWidth, H = a.clientHeight;
     if (!W || !b) return;
     b.style.fontSize = "100px";
     const w = b.scrollWidth || 1;
-    b.style.fontSize = Math.min(100 * W * .86 / w, H * .5) + "px";
+    b.style.fontSize = Math.min(100 * W * .62 / w, H * .25 / .82) + "px";
   });
 }
 const jmFitAll = () => { if (VIEW === "jobs") jmHubFit(focusEl); };
