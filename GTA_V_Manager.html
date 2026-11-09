@@ -660,6 +660,21 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 .nc-step {display: inline-flex; align-items: center; gap: 4px;} .nc-step button {width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg3); color: var(--text); cursor: pointer; padding: 0;}
 .nc-step i {font-style: normal; min-width: 18px; text-align: center; font-variant-numeric: tabular-nums;}
 .nc-pop .btn {height: 26px; padding: 0 9px; border-radius: 7px; border: 0; background: var(--accent); color: var(--accent-text); font-weight: 700; cursor: pointer;}
+/* idea 154: the card size on the Job Manager category pages (Settings → Job Manager, per device); 0 = the default (3 in a row) */
+html[data-jmsize="1"] #sec-production .jm-grid.jm-big {grid-template-columns: repeat(4, minmax(0, 1fr));}
+html[data-jmsize="2"] #sec-production .jm-grid.jm-big {grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px;}
+html[data-jmsize="3"] #sec-production .jm-grid.jm-big {grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px;}
+html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big .op-ppl {display: none;}
+html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > .job-card.op-txt b {font-size: 16px;}
+html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > .job-card.op-txt small {font-size: 12px;}
+@media (max-width: 1000px) {
+  html[data-jmsize] #sec-production .jm-grid.jm-big {grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;}
+  html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big {grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;}
+  html[data-jmsize="1"] #sec-production .jm-grid.jm-big .op-ppl {display: inline-flex;}
+  html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > .job-card.op-txt b {font-size: 12px;}
+  html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > .job-card.op-txt small {display: none;}
+}
+
 </style>
 </head>
 <body>
@@ -781,7 +796,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.44.1";
+const APP_VERSION = "0.45";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1096,6 +1111,26 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.45.0",
+  "date": "2026-11-09",
+  "en": [
+   {
+    "area": "Settings",
+    "items": [
+     "Add: a Job Manager tab with the card size for the category pages (Heists, Contracts, Jobs, Arena Wars): Big (3 in a row, as before), Medium (4), Small (5), Very small (6); on phones 2 or 3 in a row. Kept on each device. On Small and Very small the number of players is hidden so the cards don't get crowded."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Setări",
+    "items": [
+     "Adăugat: o filă Job Manager cu mărimea cardurilor pe paginile categoriilor (Heists, Contracts, Jobs, Arena Wars): Mari (3 pe rând, ca înainte), Medii (4), Mici (5), Foarte mici (6); pe telefon 2 sau 3 pe rând. Se păstrează pe fiecare dispozitiv. La Mici și Foarte mici numărul de jucători e ascuns, ca să nu se înghesuie cardurile."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.44.1",
   "date": "2026-11-09",
@@ -4123,6 +4158,8 @@ i18n({
     setVmN: "Your vehicles and garages: backups and where the data comes from.", setPmN: "Businesses, map and timers: backups, the side menu, starting over.",
     setPrN: "The page with every property you can own.", setPrArr: "Arrange the page", setPrArrN: "Freely (drag, width, height) or from one of the templates.", setPrDef: "First arrangement", setPrDefN: "Every card back in its place and size.",
     setGoBtn: "Open",
+    setJmN: "The page of each category: Heists, Contracts, Jobs, Arena Wars.", setJmSize: "Card size", setJmSizeN: "How big the cards are on the category pages. Kept on this device.",
+    setJmS0: "Big · 3 in a row (phone 2)", setJmS1: "Medium · 4 in a row (phone 2)", setJmS2: "Small · 5 in a row (phone 3)", setJmS3: "Very small · 6 in a row (phone 3)",
     noteExport: "Downloads a file with all your Production Manager data.", noteImport: "Loads such a file back (it replaces what is here).",
     noteMenu: "Which categories and businesses show in the list on the left, and in what order.", noteReset: "Deletes all Production Manager data on this character."
   },
@@ -4151,6 +4188,8 @@ i18n({
     setVmN: "Vehiculele și garajele tale: copii de siguranță și de unde vin datele.", setPmN: "Afaceri, hartă și timere: copii de siguranță, meniul din stânga, luat de la capăt.",
     setPrN: "Pagina cu toate proprietățile pe care le poți deține.", setPrArr: "Aranjează pagina", setPrArrN: "Liber (tragi, lățime, înălțime) sau dintr-unul din șabloane.", setPrDef: "Aranjarea inițială", setPrDefN: "Fiecare card înapoi la locul și mărimea lui.",
     setGoBtn: "Deschide",
+    setJmN: "Pagina fiecărei categorii: Heists, Contracts, Jobs, Arena Wars.", setJmSize: "Mărimea cardurilor", setJmSizeN: "Cât de mari sunt cardurile pe paginile categoriilor. Se păstrează pe acest dispozitiv.",
+    setJmS0: "Mari · 3 pe rând (telefon 2)", setJmS1: "Medii · 4 pe rând (telefon 2)", setJmS2: "Mici · 5 pe rând (telefon 3)", setJmS3: "Foarte mici · 6 pe rând (telefon 3)",
     noteExport: "Descarcă un fișier cu toate datele din Production Manager.", noteImport: "Încarcă înapoi un astfel de fișier (înlocuiește ce e aici).",
     noteMenu: "Ce categorii și afaceri apar în lista din stânga și în ce ordine.", noteReset: "Șterge toate datele din Production Manager la acest caracter."
   }
@@ -4167,12 +4206,20 @@ const CardOp = {
   set(v) { if (v === null) LS.del(this.KEY); else LS.set(this.KEY, String(v)); this.apply(v); }
 };
 CardOp.apply();
-addEventListener("storage", e => { if (e.key === CardOp.KEY) CardOp.apply(); });
+/* ---------- idea 154: how big the cards are on the Job Manager category pages (per device). 0 = big (3 in a row, phone 2) … 3 = very small (6, phone 3) ---------- */
+const JmSize = {
+  KEY: "gtaJmSize",
+  get() { const v = parseInt(LS.raw(this.KEY, "0"), 10); return v >= 0 && v <= 3 ? v : 0; },
+  apply(v = this.get()) { const h = document.documentElement; if (v) h.dataset.jmsize = String(v); else delete h.dataset.jmsize; },
+  set(v) { if (v) LS.set(this.KEY, String(v)); else LS.del(this.KEY); this.apply(v); }
+};
+JmSize.apply();
+addEventListener("storage", e => { if (e.key === CardOp.KEY) CardOp.apply(); if (e.key === JmSize.KEY) JmSize.apply(); });
 
 const Settings = {
   tab: "general", dlg: null,
   TABS: [["general", "⚙", "setGeneral"], ["look", "🎨", "setLook"], ["notes", "🔔", "setNotes"], ["chars", "👤", "setChars"], ["acct", "🔑", "setAcct"],
-    ["sep"], ["p_home", "🏠", "pg_home"], ["p_vehicles", "🚗", "Vehicle Manager"], ["p_production", "🏭", "Production Manager"], ["p_props", "🏛", "Property Manager"]],
+    ["sep"], ["p_home", "🏠", "pg_home"], ["p_vehicles", "🚗", "Vehicle Manager"], ["p_production", "🏭", "Production Manager"], ["p_jobs", "💼", "Job Manager"], ["p_props", "🏛", "Property Manager"]],
   open(tab) {
     Pop.close();
     if (!this.dlg) {
@@ -4192,7 +4239,7 @@ const Settings = {
   sw: (k, on, label) => `<button type="button" class="set-sw" role="switch" aria-checked="${!!on}" aria-label="${esc(label)}" data-s="${k}"></button>`,
   btn: (k, label, cls = "") => `<button type="button" class="btn ${cls}" data-s="${k}">${label}</button>`,
   group: (title, note, rows, cls = "") => `<div class="set-group ${cls}">${title ? `<h4>${title}</h4>` : ""}${note ? `<p class="gnote">${note}</p>` : ""}${rows}</div>`,
-  label(id) { const tb = this.TABS.find(x => x[0] === id); return tb[2].includes(" ") || tb[2].startsWith("Vehicle") || tb[2].startsWith("Production") || tb[2].startsWith("Property") ? tb[2] : t(tb[2]); },
+  label(id) { const tb = this.TABS.find(x => x[0] === id); return tb[2].includes(" ") || tb[2].startsWith("Vehicle") || tb[2].startsWith("Production") || tb[2].startsWith("Property") || tb[2].startsWith("Job") ? tb[2] : t(tb[2]); },
   // a section's own ⋮ items (head / label + act / html / sub) as rows
   items(list, page) {
     let out = "", rows = "", head = "";
@@ -4264,6 +4311,8 @@ const Settings = {
     if (tb === "p_home") return `<p class="lead">${t("setLeadPages")}</p>` + this.group(t("setHomeG"), t("setHomeN"), R(t("setHomeOrd"), t("setHomeOrdN"), this.btn("homeord", t("setReset"))));
     if (tb === "p_vehicles") { const s = this.sec("vehicles"); return `<p class="lead">${t("setLeadPages")}</p>` + this.group("Vehicle Manager", t("setVmN"), "") + this.items((s && s.menu && s.menu()) || [], "vehicles"); }
     if (tb === "p_production") { const s = this.sec("production"); return `<p class="lead">${t("setLeadPages")}</p>` + this.group("Production Manager", t("setPmN"), "") + this.items(((s && s.menu && s.menu()) || []).filter(x => !x.head), "production"); }
+    if (tb === "p_jobs") { const v = JmSize.get(); return `<p class="lead">${t("setLeadPages")}</p>` + this.group("Job Manager", t("setJmN"),
+      R(t("setJmSize"), t("setJmSizeN"), `<select data-s="jmsize">${[0, 1, 2, 3].map(i => `<option value="${i}" ${i === v ? "selected" : ""}>${t("setJmS" + i)}</option>`).join("")}</select>`)); }
     if (tb === "p_props") return `<p class="lead">${t("setLeadPages")}</p>` + this.group("Property Manager", t("setPrN"),
       R(t("setPrArr"), t("setPrArrN"), this.btn("prarr", t("setGoBtn"), "primary")) + R(t("setPrDef"), t("setPrDefN"), this.btn("prdef", t("setReset"))));
     return "";
@@ -4307,6 +4356,7 @@ const Settings = {
       case "bgall": Bg.cfg.all = !Bg.cfg.all; Bg.save(); Bg.place(); re(); break;
       case "bgevery": Bg.cfg.every = +el.value; Bg.save(); Bg.show(); re(); break;
       case "opreset": CardOp.set(null); re(); break;
+      case "jmsize": JmSize.set(+el.value); re(); break;
       case "sound": Notes.sound = !Notes.sound; LS.set("gtaSound", Notes.sound ? "1" : "0"); if (Notes.sound) Notes.chime("info"); re(); break;
       case "test": { const was = Notes.sound; Notes.sound = true; Notes.chime("warn"); Notes.sound = was; break; }
       case "desk": Notes.toggleDesktop().then(re); break;

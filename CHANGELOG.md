@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.45.0 (2026-11-09)
+* Settings:
+  * Add: a Job Manager tab with the card size for the category pages (Heists, Contracts, Jobs, Arena Wars): Big (3 in a row, as before), Medium (4), Small (5), Very small (6); on phones 2 or 3 in a row. Kept on each device. On Small and Very small the number of players is hidden so the cards don't get crowded.
+
 ### v0.44.1 (2026-11-09)
 * Job Manager:
   * Change: on the category pages (Heists, Contracts, Jobs, Arena Wars) the cards are big: three in a row on a PC, two on tablets and phones; under the mouse they grow a little (6%) so they don't cover each other.
