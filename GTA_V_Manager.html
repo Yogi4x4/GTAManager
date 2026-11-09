@@ -780,7 +780,7 @@ html[data-cardop] :is(#sec-home a.card:hover, #sec-vehicles .card:hover, #sec-pr
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.43";
+const APP_VERSION = "0.43.1";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1095,6 +1095,28 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.43.1",
+  "date": "2026-11-09",
+  "en": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Fix: the heist cards were much darker than Mihai's pictures (a dark layer over the left side and the bottom, there to make the title readable). Now only a small soft shade sits in the bottom-left corner, under the title (variant B); the rest of the picture shows as it is.",
+     "Change: Job Manager cards grow a bit more under the mouse (15% instead of 8%)."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Reparat: cardurile de heist erau mult mai întunecate decât pozele lui Mihai (un strat închis peste partea stângă și peste partea de jos, pus ca să se citească titlul). Acum rămâne doar o umbră mică și moale în colțul din stânga-jos, sub titlu (varianta B); restul pozei se vede așa cum e.",
+     "Schimbat: cardurile din Job Manager cresc ceva mai mult sub mouse (15% în loc de 8%)."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.43.0",
   "date": "2026-11-09",
@@ -7231,13 +7253,14 @@ Section({
 #sec-production .jm-grid > .job-card.jm-art {height: auto; aspect-ratio: 3 / 2;}
 #sec-production .jm-grid > .job-card.jm-txt {container-type: inline-size;}
 #sec-production .jm-grid > .job-card.jm-txt::before {content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(90deg, rgba(5,6,8,.78) 0, rgba(5,6,8,.4) 38%, rgba(5,6,8,0) 62%), linear-gradient(0deg, rgba(5,6,8,.62) 0, rgba(5,6,8,0) 48%);}
+  
+  background: radial-gradient(ellipse 62% 58% at 0% 100%, rgba(5,6,8,.62) 0, rgba(5,6,8,.3) 50%, rgba(5,6,8,0) 100%);}
 #sec-production .jm-ttl {position: absolute; left: 6cqw; bottom: 6cqw; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: 2.2cqw; pointer-events: none; text-align: left;}
 #sec-production .jm-ttl i {font: 600 3.3cqw/1 'Barlow Condensed', Barlow, sans-serif; font-style: normal; letter-spacing: .42em; padding: .5cqw 1cqw .5cqw 1.5cqw; color: #fff; background: #e5322d; text-transform: uppercase;}
-#sec-production .jm-ttl b {font: 400 12.4cqw/.86 'Bebas Neue', 'Anton', Impact, sans-serif; color: #fff; letter-spacing: .02em; text-transform: uppercase; text-shadow: 0 .6cqw 2.4cqw rgba(0,0,0,.6);}
+#sec-production .jm-ttl b {font: 400 12.4cqw/.86 'Bebas Neue', 'Anton', Impact, sans-serif; color: #fff; letter-spacing: .02em; text-transform: uppercase; text-shadow: 0 0 .8cqw rgba(0,0,0,.8), 0 .5cqw 2cqw rgba(0,0,0,.7);}
 #sec-production .jm-grid > .job-card.jm-txt .op-ppl {left: auto; right: 6px; bottom: 6px;}
 #sec-production .jm-grid > .job-card {transition: transform .18s ease, box-shadow .18s ease, border-color .15s; will-change: transform;}
-#sec-production .jm-grid > .job-card:hover, #sec-production .jm-grid > .job-card:focus-visible {transform: scale(1.08); z-index: 5; box-shadow: 0 16px 40px rgba(0,0,0,.55);}
+#sec-production .jm-grid > .job-card:hover, #sec-production .jm-grid > .job-card:focus-visible {transform: scale(1.15); z-index: 5; box-shadow: 0 16px 40px rgba(0,0,0,.55);}
 @media (hover: none) {
 #sec-production .jm-grid > .job-card:hover {transform: none; box-shadow: none;}
 }

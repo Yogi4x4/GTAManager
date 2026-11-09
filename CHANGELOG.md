@@ -2,6 +2,11 @@
 
 * * *
 
+### v0.43.1 (2026-11-09)
+* Job Manager:
+  * Fix: the heist cards were much darker than Mihai's pictures (a dark layer over the left side and the bottom, there to make the title readable). Now only a small soft shade sits in the bottom-left corner, under the title (variant B); the rest of the picture shows as it is.
+  * Change: Job Manager cards grow a bit more under the mouse (15% instead of 8%).
+
 ### v0.43.0 (2026-11-09)
 * Job Manager:
   * Change: the nine heist cards have Mihai's new pictures without text, and the app writes the title on them (variant A): a red "Heist" box and the name in two lines, Bebas Neue, over a darker left side. The title grows and shrinks with the card.
