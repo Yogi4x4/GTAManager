@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.44.0 (2026-11-09)
+* Job Manager:
+  * Change: the Job Manager page is now a hub of four big cards with Mihai's new pictures: Heists, Contracts, Jobs and Arena Wars (model 4: Mihai's font "Serious", a small spaced line with a colored bar, the name big and solid at the bottom; a thin white frame; the number of cards inside in the corner). A tap opens the category's own page.
+  * Change: each category has its own page and address (#heists, #contracts, #jm-jobs, #arena), with a strip on top to go back to Job Manager or to another category; the phone's back button goes back to the hub. The All / Heists / Contracts / Jobs tabs and the old category emblems are gone.
+  * Change: a heist or contract page goes back to its category; Agency and Money Fronts go back to Jobs; Dr. Dre to Contracts.
+  * Add: Arena Wars: the Arena Workshop (owned or not; $995,000, gives Arena Points and the Arena career) and the nine modes, each with what it is: Carnage, Flag War, Games Masters, Here Come the Monsters, Hot Bomb, Tag Team, Wreck It, Buzzer Beater, Bomb Ball.
+  * Add: when you own the Arena Workshop, it has its pin on the Job Manager map and on the Property Manager map (Maze Bank Arena; drag it if it's not exactly right, "put the pin back" on the Arena Wars page).
+  * Change: the pages menu lists the four categories under Job Manager; the Job Manager tour shows the new hub.
+  * Fix: opening the app straight on a Job Manager page (a link, a reload) showed the "In game" switch, which has no meaning there.
+
 ### v0.43.1 (2026-11-09)
 * Job Manager:
   * Fix: the heist cards were much darker than Mihai's pictures (a dark layer over the left side and the bottom, there to make the title readable). Now only a small soft shade sits in the bottom-left corner, under the title (variant B); the rest of the picture shows as it is.
