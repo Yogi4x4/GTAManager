@@ -2,6 +2,11 @@
 
 * * *
 
+### v0.44.1 (2026-11-09)
+* Job Manager:
+  * Change: on the category pages (Heists, Contracts, Jobs, Arena Wars) the cards are big: three in a row on a PC, two on tablets and phones; under the mouse they grow a little (6%) so they don't cover each other.
+  * Change: the nine heist pictures are sharper (900×600 instead of 600×400), so they stay crisp on the bigger cards.
+
 ### v0.44.0 (2026-11-09)
 * Job Manager:
   * Change: the Job Manager page is now a hub of four big cards with Mihai's new pictures: Heists, Contracts, Jobs and Arena Wars (model 4: Mihai's font "Serious", a small spaced line with a colored bar, the name solid, about a quarter of the card's height, low in the bottom-left corner and never cut; a thin white frame; the number of cards inside in the corner). A tap opens the category's own page.
