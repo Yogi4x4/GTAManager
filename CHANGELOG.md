@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.43.0 (2026-11-09)
+* Job Manager:
+  * Change: the nine heist cards have Mihai's new pictures without text, and the app writes the title on them (variant A): a red "Heist" box and the name in two lines, Bebas Neue, over a darker left side. The title grows and shrinks with the card.
+  * Change: Job Manager cards grow a little under the mouse, like the pictures in the Vehicle Manager.
+  * Add: KnoWay Out (A Safehouse in the Hills), under Contracts: Avi Schwartzman's five missions in order (Negative Press, Inside Job, Tunnel Vision, Trash Talking, A Clean Break) and Home Sweet Home, with a Mansion; no property needed, solo is fine; the finale's pay (more on the first one after Thursday's reset). Its card has its name for now, until it gets a picture.
+* Production Manager:
+  * Change: the MC Business menu on the left shows only the short names (Clubhouse, Weed, Cash, Cocaine, Doc. Forgery, Meth); the whole name is on the MC Business page and when you rest the mouse on it.
+
 ### v0.42.0 (2026-11-08)
 * Home:
   * Change: Twitch Drops, strict (Mihai's choice): only Rockstar's own Twitch Drops page and the official weekly post are believed, and only when they give explicit dates; today has to be inside them. Reddit questions and news articles are no longer read (a player's question titled "Twitch Drops" made it say drops were on). Needs the new .github/workflows/drops.yml. If the next real drop is still wrong, the feature goes.
