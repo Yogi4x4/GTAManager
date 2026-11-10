@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.46.0 (2026-11-09)
+* Vehicle Manager:
+  * Add: 208 vehicles now say they can take the Missile Lock-On Jammer (Imani Tech, Agency Vehicle Workshop; aircraft in the Hangar workshop): the 50-car lists of Agents of Sabotage, Money Fronts, A Safehouse in the Hills and The Kortz Center Heist, plus its new cars. For example the Übermacht Sentinel Classic. On those cars the Remote Control Unit can't be chosen (only the 20 Imani Tech cars take it).
+  * Add: the nine new cars of The Kortz Center Heist in the suggestions of the car window (Cartuccia GT, LRC GT, Läufer, Merula, E-Stride, Warden, Horus, Ignus Pursuit, Caracara Armored).
+  * Change: letters with marks count as the plain letter when you search or type a first letter: "U" finds Übermacht, "franken" finds Fränken Stange; a brand typed without marks takes the right spelling. Also in the Export Tracker, the Vehicle Warehouse search and every list you choose from.
+* Job Manager:
+  * Fix: on phones the Arena Wars cards (and other text cards) went over each other; they now grow as tall as their text needs.
+  * Fix: on phones the strip on top of a category page now really shows the current category (it sometimes stayed at the start).
+
 ### v0.45.0 (2026-11-09)
 * Settings:
   * Add: a Job Manager tab with the card size for the category pages (Heists, Contracts, Jobs, Arena Wars): Big (3 in a row, as before), Medium (4), Small (5), Very small (6); on phones 2 or 3 in a row. Kept on each device. On Small and Very small the number of players is hidden so the cards don't get crowded.
