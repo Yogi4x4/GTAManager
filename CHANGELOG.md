@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.47.1 (2026-11-11)
+* Job Manager:
+  * Add: on the Kortz Center board you tick each entry point you photographed in the Scope Out (click its picture or its box); not scoped = gray, the red frame = the entry of the Infiltration Gear you picked; the TODO line shows how many entries are scoped, and a method whose entry is not scoped says so in its note. Also on phones (in step 1).
+  * Add: drawn pictures for the methods that had none (Tactical Equipment, Alpha Mail, Hazmat, Security, Military, Armored Caracara, Annihilator Stealth), until there are pictures from the game.
+  * Change: the whole board fits the screen (on a 1080p monitor without scrolling): it scales to the space under the header, and the header of the page is shorter.
+
 ### v0.47.0 (2026-11-11)
 * Job Manager:
   * Change: The Kortz Center Heist has a planning board like the one in the game (idea 158). On a PC: a white board with the entry points, the target, TODO / optional lists, the required prep work with ‹ › (or Enter) to change the method, the optional prep work, the extras and START. On phones: the same as steps (Scope Out, required, optional, finale).

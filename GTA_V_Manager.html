@@ -801,7 +801,7 @@ html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.47";
+const APP_VERSION = "0.47.1";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // idea 156: letters with marks (Ü, é, ö, ñ, ș…) count as the plain letter when searching or typing a first letter; names keep their marks
@@ -1118,6 +1118,30 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.47.1",
+  "date": "2026-11-11",
+  "en": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Add: on the Kortz Center board you tick each entry point you photographed in the Scope Out (click its picture or its box); not scoped = gray, the red frame = the entry of the Infiltration Gear you picked; the TODO line shows how many entries are scoped, and a method whose entry is not scoped says so in its note. Also on phones (in step 1).",
+     "Add: drawn pictures for the methods that had none (Tactical Equipment, Alpha Mail, Hazmat, Security, Military, Armored Caracara, Annihilator Stealth), until there are pictures from the game.",
+     "Change: the whole board fits the screen (on a 1080p monitor without scrolling): it scales to the space under the header, and the header of the page is shorter."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Adăugat: pe panoul Kortz Center bifezi fiecare intrare pe care ai fotografiat-o la Scope Out (clic pe poză sau pe căsuță); negăsită = gri, chenarul roșu = intrarea metodei de Infiltration Gear alese; rândul din TODO arată câte intrări sunt găsite, iar o metodă cu intrarea negăsită spune asta pe bilețel. La fel pe telefon (la pasul 1).",
+     "Adăugat: desene pentru metodele care nu aveau poză (Tactical Equipment, Alpha Mail, Hazmat, Security, Military, Armored Caracara, Annihilator Stealth), până vin poze din joc.",
+     "Schimbat: tot panoul încape pe ecran (pe un monitor 1080p fără derulare): se micșorează sau se mărește după spațiul de sub antet, iar antetul paginii e mai scurt."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.47.0",
   "date": "2026-11-11",
@@ -7538,7 +7562,7 @@ Section({
 #sec-production .bd-a {display: none;}
 #sec-production .bd-c {display: block;}
 }
-#sec-production .bd-a {position: relative; background: #f4f3ef radial-gradient(circle at 30% 20%, #fff 0, #f1f0eb 60%); color: var(--ink); border: 10px solid #c9c9c9; border-radius: 8px;
+#sec-production .bd-a {position: relative; width: 1450px; margin: 0 auto; box-sizing: border-box; background: #f4f3ef radial-gradient(circle at 30% 20%, #fff 0, #f1f0eb 60%); color: var(--ink); border: 10px solid #c9c9c9; border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0,0,0,.35); padding: 18px 22px 20px; font-family: "Kalam", "Segoe Print", cursive;}
 #sec-production .bd-h {display: inline-block; font-weight: 700; font-size: 18px; text-transform: uppercase; border-bottom: 2px solid var(--ink); padding: 0 6px; margin-bottom: 8px; line-height: 1.25;}
 #sec-production .bd-h.c {display: table; margin-left: auto; margin-right: auto;}
@@ -7553,8 +7577,6 @@ Section({
 #sec-production .bd-pin.y {background: #f0b400;}
 #sec-production .bd-pin.b {background: #2a5bd7;}
 #sec-production .bd-cap {display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; text-transform: uppercase; font-size: 14px; text-align: center; padding: 4px 0 0; line-height: 1.15;}
-#sec-production .bd-ent .bd-pic img {filter: grayscale(1) opacity(.55);}
-#sec-production .bd-ent.ok .bd-pic img, #sec-production .bd-ent.sel .bd-pic img {filter: none;}
 #sec-production .bd-ent.sel .bd-photo {outline: 3px solid var(--red); outline-offset: 2px;}
 #sec-production .bd-ent-g {font-size: 12.5px; text-align: center; color: #555;}
 #sec-production .bd-scope {display: block; margin: 10px auto 0; font: 700 15px "Kalam", cursive; color: var(--ink); background: none; border: 2px dashed var(--ink); border-radius: 10px; padding: 3px 12px; cursor: pointer;}
@@ -7643,6 +7665,27 @@ Section({
 #sec-production .bd-step.fin .bd-start.ready {background: var(--sodium); color: var(--sodium-ink); border-color: var(--sodium);}
 #sec-production .bd-step.fin .bd-start small {font: 500 12px system-ui;}
 #sec-production .bd-step.fin .bd-fin {color: var(--text);}
+@media (max-width: 760px) {
+#sec-production .bd-a {width: auto;}
+}
+#sec-production .bd-head {margin-bottom: 8px;}
+#sec-production .bd-head .ag-logo {width: 64px; height: auto;}
+#sec-production .bd-head h2 {margin: 0;}
+#sec-production .bd-head p {margin: 2px 0 0;}
+#sec-production .bd-ent .bd-hit:hover .bd-photo {transform: none;}
+#sec-production .bd-ent.ok .bd-pic img {filter: none;}
+#sec-production .bd-ent:not(.ok) .bd-pic img {filter: grayscale(1) opacity(.55);}
+#sec-production .bd-warn {color: #9a3412; font-weight: 700;}
+#sec-production .bd-entli {display: flex; align-items: center; gap: 10px; padding: 9px 2px; cursor: pointer;}
+#sec-production .bd-entli small {margin-left: auto; color: var(--muted);}
+#sec-production .bd-a .bd-pic {aspect-ratio: auto; height: 112px;}
+#sec-production .bd-a .bd-req .bd-pic {height: 128px;}
+#sec-production .bd-a .bd-optrow .bd-pic {height: 92px;}
+#sec-production .bd-a .bd-photo.sm .bd-pic {height: 58px;}
+#sec-production .bd-a .bd-frame img {aspect-ratio: auto; height: 228px;}
+#sec-production .bd-a .bd-frame {width: 200px;}
+#sec-production .bd-a .bd-top {grid-template-columns: minmax(0, 1fr) 300px minmax(0, 1.2fr);}
+#sec-production .bd-a .bd-band {margin: 10px 0 8px;}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -8666,15 +8709,15 @@ const BOARDS = {
           [["Raf sends you to a group of hackers in Vespucci: break in and clear them out.", "Get into their Terrorbyte, kill the last hacker and take the key card cloner.", "At the Kortz Center, plant the cloner on the keypad of the Staff Entrance (watch the camera).", "Leave the area: the copy of the Staff Key Card is yours."],
            ["Raf te trimite la un grup de hackeri în Vespucci: intri și îi elimini.", "Intri în Terrorbyte-ul lor, îl elimini pe ultimul hacker și iei clonerul de carduri.", "La Kortz Center pui clonerul pe tastatura de la Staff Entrance (atenție la cameră).", "Pleci din zonă: primești copia cardului."]],
           ["Works for stealth and still lets you go loud if a camera sees you.", "Merge pe stealth și te lasă să continui și „pe zgomot” dacă te vede o cameră."]],
-        ["tac", "Tactical Equipment", "", ["Opens the Skylight: you drop onto the exhibition floor above the vault. Also gives night vision (useful with EMP Charges).", "Deschide Skylight: cobori pe etajul expoziției, deasupra seifului. Dă și vedere de noapte (utilă cu EMP Charges)."],
+        ["tac", "Tactical Equipment", "i_tac", ["Opens the Skylight: you drop onto the exhibition floor above the vault. Also gives night vision (useful with EMP Charges).", "Deschide Skylight: cobori pe etajul expoziției, deasupra seifului. Dă și vedere de noapte (utilă cu EMP Charges)."],
           [["Go to the bail office marked on the map (surrendering at the door is the simplest way in).", "Clear the enemies inside.", "Find the blue duffel bag with the tactical equipment.", "Take it out and deliver it to your Mansion."],
            ["Mergi la biroul de cauțiuni de pe hartă (cel mai simplu intri predându-te la ușă).", "Elimini inamicii dinăuntru.", "Găsești geanta albastră cu echipamentul tactic.", "O scoți și o duci la Mansion."]],
           ["Rooftop entry, used in fast solo runs.", "Intrare pe acoperiș, folosită în rulările solo rapide."]],
-        ["mail", "Alpha Mail Disguise", "", ["Opens the Loading Bay: you drive in with the Alpha Mail van, ID and outfit, without the guards getting suspicious. Closest to the vault.", "Deschide Loading Bay: intri cu duba, legitimația și uniforma Alpha Mail, fără să bănuiască paznicii. Cel mai aproape de seif."],
+        ["mail", "Alpha Mail Disguise", "i_mail", ["Opens the Loading Bay: you drive in with the Alpha Mail van, ID and outfit, without the guards getting suspicious. Closest to the vault.", "Deschide Loading Bay: intri cu duba, legitimația și uniforma Alpha Mail, fără să bănuiască paznicii. Cel mai aproape de seif."],
           [["Get into the Alpha Mail warehouse quietly (one guard blocks the way: suppressed weapon).", "Take the Alpha Mail outfit from the lockers on the right.", "Put the weapons away, walk past the guards and take the Alpha Mail ID from the main office.", "Take the Alpha Mail van out of the warehouse and deliver it."],
            ["Intri în depozitul Alpha Mail pe tăcute (un paznic îți taie calea: armă cu amortizor).", "Iei uniforma Alpha Mail din vestiarele din dreapta.", "Pui armele deoparte, treci pe lângă paznici și iei legitimația din biroul principal.", "Scoți duba Alpha Mail din depozit și o livrezi."]],
           ["Most guides call it the best entry, also solo.", "Cele mai multe ghiduri o numesc cea mai bună intrare, și solo."]],
-        ["haz", "Hazmat Suit", "", ["Opens the Sewer into the basement; reduces the guards' detection range once inside.", "Deschide Sewer, spre subsol; după intrare, paznicii te observă de mai aproape."],
+        ["haz", "Hazmat Suit", "i_haz", ["Opens the Sewer into the basement; reduces the guards' detection range once inside.", "Deschide Sewer, spre subsol; după intrare, paznicii te observă de mai aproape."],
           [["Go to the meth house marked on the map.", "Take out the meth workers.", "Take a hazmat suit off one of them.", "Deliver the suit to your Mansion."],
            ["Mergi la casa cu laboratorul de meth de pe hartă.", "Elimini muncitorii.", "Iei costumul hazmat de pe unul dintre ei.", "Duci costumul la Mansion."]],
           ["Lands near the basement vault too.", "Te duce tot lângă seiful din subsol."]]] },
@@ -8683,10 +8726,10 @@ const BOARDS = {
           [["Raf sends you to a salvage yard in Mirror Park: clear the enemies.", "Break into the repair shop, clear the rest.", "Open the weapon locker room with the password RAPID and take the weapons.", "Wipe the CCTV footage, lose the mob that chases you and deliver to the Mansion."],
            ["Raf te trimite la un salvage yard din Mirror Park: elimini inamicii.", "Intri în atelier și îi elimini pe ceilalți.", "Deschizi camera cu arme cu parola RAPID și iei armele.", "Ștergi înregistrările CCTV, scapi de mafioții care te urmăresc și livrezi la Mansion."]],
           ["Enough for a clean stealth run (used in a Hard Elite run).", "Ajunge pentru o rulare stealth curată (folosit într-o rulare Hard Elite)."]],
-        ["security", "Security Loadout", "", ["Suppressed Bullpup Rifle, Heavy Shotgun, Suppressed Machine Pistol, Stun Gun, Combat Pistol, Grenade, Switchblade.", "Bullpup Rifle cu amortizor, Heavy Shotgun, Machine Pistol cu amortizor, Stun Gun, Combat Pistol, grenadă, briceag."],
+        ["security", "Security Loadout", "i_security", ["Suppressed Bullpup Rifle, Heavy Shotgun, Suppressed Machine Pistol, Stun Gun, Combat Pistol, Grenade, Switchblade.", "Bullpup Rifle cu amortizor, Heavy Shotgun, Machine Pistol cu amortizor, Stun Gun, Combat Pistol, grenadă, briceag."],
           [["Raid the SecuroServ warehouse marked on the map.", "Take the weapons and deliver them to the Mansion."], ["Ataci depozitul SecuroServ de pe hartă.", "Iei armele și le duci la Mansion."]],
           ["Stunned guards wake up again: plan your way out.", "Paznicii amețiți cu Stun Gun se trezesc: ai grijă pe unde ieși."]],
-        ["military", "Military Loadout", "", ["The heaviest weapons: best if the finale goes loud.", "Cele mai grele arme: cele mai bune dacă finala devine „pe zgomot”."],
+        ["military", "Military Loadout", "i_military", ["The heaviest weapons: best if the finale goes loud.", "Cele mai grele arme: cele mai bune dacă finala devine „pe zgomot”."],
           [["The mission sends you into Fort Zancudo.", "Take the weapons and deliver them to the Mansion."], ["Misiunea te trimite în Fort Zancudo.", "Iei armele și le duci la Mansion."]],
           ["Often recommended as the safest backup plan.", "Recomandat des ca cel mai sigur plan de rezervă."]]] },
       { id: "veh", name: "Getaway Vehicle", m: [
@@ -8694,10 +8737,10 @@ const BOARDS = {
           [["Go to the Cocaine Lockup in Downtown and take out the smugglers (the alarm goes off).", "At the Mission Row Police Station, blow the back door with the explosive you get.", "Take the LSPD Garage Keycard from the Captain's office.", "Open the garage, take a Manchez, lose the cops and deliver it to the Mansion."],
            ["Mergi la Cocaine Lockup din Downtown și elimini contrabandiștii (pornește alarma).", "La secția de poliție Mission Row arunci în aer ușa din spate cu explozibilul primit.", "Iei cardul garajului LSPD din biroul căpitanului.", "Deschizi garajul, iei un Manchez, scapi de poliție și îl duci la Mansion."]],
           ["The quickest prep; good solo.", "Cel mai rapid prep; bun solo."]],
-        ["caracara", "Armored Caracara", "", ["Armored truck with a .50 Cal machine gun; you escape through the car park.", "Camion blindat cu mitralieră .50 Cal; fugi prin parcare."],
+        ["caracara", "Armored Caracara", "i_caracara", ["Armored truck with a .50 Cal machine gun; you escape through the car park.", "Camion blindat cu mitralieră .50 Cal; fugi prin parcare."],
           [["The Armored Caracara runs on a track: take out the .50 cal gunner on the back first, then the driver.", "Take the Caracara and deliver it to the Mansion."], ["Armored Caracara merge pe un traseu: întâi îl elimini pe mitraliorul .50 din spate, apoi pe șofer.", "Iei Caracara și o duci la Mansion."]],
           ["Best if you expect a long fight with the police.", "Bun dacă te aștepți la o luptă lungă cu poliția."]],
-        ["annihilator", "Annihilator Stealth", "", ["Stealth helicopter, flown by Pernell Moss, from the roof of the Bell Building: no chase on the street.", "Elicopter stealth, pilotat de Pernell Moss, de pe acoperișul clădirii Bell: fără urmărire pe stradă."],
+        ["annihilator", "Annihilator Stealth", "i_annihilator", ["Stealth helicopter, flown by Pernell Moss, from the roof of the Bell Building: no chase on the street.", "Elicopter stealth, pilotat de Pernell Moss, de pe acoperișul clădirii Bell: fără urmărire pe stradă."],
           [["Steal the Annihilator Stealth (the longest getaway prep).", "Deliver it; in the finale it waits for you on the roof."], ["Furi Annihilator Stealth (cel mai lung prep de fugă).", "Îl livrezi; în finală te așteaptă pe acoperiș."]],
           ["The solo favourite; with Advanced Avionics it is even safer.", "Preferatul pentru solo; cu Advanced Avionics e și mai sigur."]]] }],
     equip: [
@@ -8720,6 +8763,17 @@ const BOARDS = {
     first: "La Dernière Débauche",
     values: { "la derniere debauche": [1925000, 481250], "mi o melee": [1268000, 317000] }
   }
+};
+
+// idea 158 (11.11.2026): drawn pictures for the methods that have no photo from the game yet (replaced by real pictures when Mihai sends screenshots)
+const BD_SVG = {
+  i_tac: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2080%22%3E%3Crect%20width%3D%22120%22%20height%3D%2280%22%20fill%3D%22%23e9e4d6%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231d3577%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M22%2040c0-8%206-12%2014-12h48c8%200%2014%204%2014%2012v20c0%204-3%206-6%206H28c-3%200-6-2-6-6z%22%20fill%3D%22%233d5c9e%22%2F%3E%3Cpath%20d%3D%22M44%2028c0-6%204-9%2016-9s16%203%2016%209%22%2F%3E%3Cpath%20d%3D%22M22%2046h76%22%2F%3E%3Ccircle%20cx%3D%2247%22%20cy%3D%2257%22%20r%3D%222%22%20fill%3D%22%231d3577%22%2F%3E%3Ccircle%20cx%3D%2273%22%20cy%3D%2257%22%20r%3D%222%22%20fill%3D%22%231d3577%22%2F%3E%3Cpath%20d%3D%22M40%2010h40M46%2010v6M74%2010v6%22%20stroke%3D%22%232f7d32%22%2F%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2217%22%20r%3D%225%22%20fill%3D%22%239bd27a%22%20stroke%3D%22%232f7d32%22%2F%3E%3Ccircle%20cx%3D%2268%22%20cy%3D%2217%22%20r%3D%225%22%20fill%3D%22%239bd27a%22%20stroke%3D%22%232f7d32%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
+  i_mail: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2080%22%3E%3Crect%20width%3D%22120%22%20height%3D%2280%22%20fill%3D%22%23e9e4d6%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231d3577%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2058V30c0-3%202-5%205-5h56l12%200%200%200h0v33z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M71%2025h14l14%2015v18H71z%22%20fill%3D%22%23ffd34d%22%2F%3E%3Cpath%20d%3D%22M78%2030h12l8%209H78z%22%20fill%3D%22%23bcd6ff%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2260%22%20r%3D%227%22%20fill%3D%22%231d3577%22%2F%3E%3Ccircle%20cx%3D%2286%22%20cy%3D%2260%22%20r%3D%227%22%20fill%3D%22%231d3577%22%2F%3E%3Cpath%20d%3D%22M22%2034h36v18H22z%22%20fill%3D%22%23ffd34d%22%2F%3E%3Cpath%20d%3D%22M22%2034l18%2011%2018-11%22%2F%3E%3Cpath%20d%3D%22M10%2054h89%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
+  i_haz: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2080%22%3E%3Crect%20width%3D%22120%22%20height%3D%2280%22%20fill%3D%22%23e9e4d6%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231d3577%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M44%2026c0-10%207-16%2016-16s16%206%2016%2016v6H44z%22%20fill%3D%22%23ffd34d%22%2F%3E%3Cpath%20d%3D%22M48%2018h24v12H48z%22%20fill%3D%22%23bcd6ff%22%2F%3E%3Cpath%20d%3D%22M40%2032h40l6%2030H34z%22%20fill%3D%22%23ffd34d%22%2F%3E%3Cpath%20d%3D%22M34%2062l-4%2010M86%2062l4%2010M60%2032v30%22%2F%3E%3Cpath%20d%3D%22M40%2036l-12%2018M80%2036l12%2018%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2247%22%20r%3D%226%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M60%2043v4l3%202M60%2047l-3%202%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
+  i_security: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2080%22%3E%3Crect%20width%3D%22120%22%20height%3D%2280%22%20fill%3D%22%23e9e4d6%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231d3577%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M14%2044h46l6-8h8v14H60l-4%2010H40l-2-8H14z%22%20fill%3D%22%233d5c9e%22%2F%3E%3Cpath%20d%3D%22M74%2038h30v8H74z%22%20fill%3D%22%23ffd34d%22%2F%3E%3Cpath%20d%3D%22M100%2036l6-4M100%2048l6%204M104%2042h8%22%20stroke%3D%22%23ffd34d%22%2F%3E%3Cpath%20d%3D%22M30%2018h20l6%208-16%2010-16-10z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M40%2022v6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
+  i_military: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2080%22%3E%3Crect%20width%3D%22120%22%20height%3D%2280%22%20fill%3D%22%23e9e4d6%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231d3577%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%2034h70l8-4h12v8H86l-6%204H48l-6%2012h-8l2-12H8z%22%20fill%3D%22%234a5a3a%22%2F%3E%3Cpath%20d%3D%22M28%2042l-4%2010M60%2042v8%22%2F%3E%3Cpath%20d%3D%22M30%2056h60v14H30z%22%20fill%3D%22%237a8a5a%22%2F%3E%3Cpath%20d%3D%22M30%2063h60M44%2056v14M76%2056v14%22%2F%3E%3Cpath%20d%3D%22M50%2060h20%22%20stroke%3D%22%23ffd34d%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
+  i_caracara: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2080%22%3E%3Crect%20width%3D%22120%22%20height%3D%2280%22%20fill%3D%22%23e9e4d6%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231d3577%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%2052V40l10-2%2010-12h34l8%2012h38v14z%22%20fill%3D%22%235a6470%22%2F%3E%3Cpath%20d%3D%22M32%2030h12v10H26zM48%2030h12l6%2010H48z%22%20fill%3D%22%23bcd6ff%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2256%22%20r%3D%229%22%20fill%3D%22%231d3577%22%2F%3E%3Ccircle%20cx%3D%2292%22%20cy%3D%2256%22%20r%3D%229%22%20fill%3D%22%231d3577%22%2F%3E%3Cpath%20d%3D%22M76%2038V24h10M86%2024h20%22%20stroke-width%3D%223.4%22%2F%3E%3Cpath%20d%3D%22M12%2046h96%22%20stroke-dasharray%3D%223%204%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
+  i_annihilator: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2080%22%3E%3Crect%20width%3D%22120%22%20height%3D%2280%22%20fill%3D%22%23e9e4d6%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231d3577%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%2018h96M60%2018v8%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M26%2044c0-10%2012-18%2030-18h18c12%200%2022%208%2022%2018%200%206-6%2010-14%2010H40c-8%200-14-4-14-10z%22%20fill%3D%22%232b3340%22%2F%3E%3Cpath%20d%3D%22M76%2032h10c4%200%208%204%208%2010H76z%22%20fill%3D%22%23bcd6ff%22%2F%3E%3Cpath%20d%3D%22M26%2042L6%2036v8l20%204%22%20fill%3D%22%232b3340%22%2F%3E%3Cpath%20d%3D%22M38%2062h46M46%2054v8M76%2054v8%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
 };
 
 function ProductionManager(sec) {
@@ -9825,8 +9879,8 @@ function opStepsHtml(id, part, live) {
    PC: a white board (entry points, target, TODO / optional, required prep work with ‹ › to change the method, optional prep, extras, START);
    phones: the same as steps from top to bottom. Clicking a picture opens a note with the mission (name, steps, tip).
    S.boards[id] = { sc, pick: { cat: method }, done: { method: 1 }, opt: {}, ex: {}, first, bonus (week of the used bonus), target, kept: [], runs } */
-const bdSt = id => { const b = S.boards || (S.boards = {}); return b[id] || (b[id] = { sc: 0, pick: {}, done: {}, opt: {}, ex: {}, first: 0, bonus: "", target: "", kept: [], runs: 0 }); };
-const bdGet = id => (S.boards && S.boards[id]) || { sc: 0, pick: {}, done: {}, opt: {}, ex: {}, first: 0, bonus: "", target: "", kept: [], runs: 0 };
+const bdSt = id => { const b = S.boards || (S.boards = {}); return b[id] || (b[id] = { sc: 0, ent: {}, pick: {}, done: {}, opt: {}, ex: {}, first: 0, bonus: "", target: "", kept: [], runs: 0 }); };
+const bdGet = id => { const b = (S.boards && S.boards[id]) || { sc: 0, pick: {}, done: {}, opt: {}, ex: {}, first: 0, bonus: "", target: "", kept: [], runs: 0 }; if (!b.ent) b.ent = {}; return b; };
 const bdUI = { note: null, fin: false };
 const BDL = (pair) => pair ? pair[lang === "ro" ? 1 : 0] : "";
 // GTA Online's week starts on Thursday 10:00 UTC (the weekly bonuses reset then)
@@ -9838,7 +9892,7 @@ function gtaWeekKey(now = new Date()) {
   return d.toISOString().slice(0, 10);
 }
 const bdPickOf = (B, st, c) => c.m.find(m => m[0] === st.pick[c.id]) || c.m[0];
-const bdImg = (B, key) => key && window.BD_IMG && window.BD_IMG[key] ? window.BD_IMG[key] : "";
+const bdImg = (B, key) => !key ? "" : (window.BD_IMG && window.BD_IMG[key]) || (typeof BD_SVG !== "undefined" && BD_SVG[key]) || "";
 function bdProg(id) {   // [done, needed] of the mandatory work (scope + one per category + equipment)
   const B = BOARDS[id], st = bdGet(id);
   const need = 1 + B.cats.length + B.equip.length;
@@ -9873,10 +9927,12 @@ function bdNoteHtml(id, kind, key, phone) {
   const steps = item[4] ? BDL(item[4]) : [];
   const tip = item[5] && BDL(item[5]);
   const entry = kind === "m" ? B.entries.find(e => e[3] === item[0]) : null;
+  const noEnt = entry && !st.ent[entry[0]];
   return `<div class="bd-note${phone ? " ph" : ""}" role="dialog" aria-label="${escapeHtml(item[1])}">
     ${phone ? "" : `<button type="button" class="bd-x" data-bd-close aria-label="${t("close")}">×</button>`}
     <h4>${escapeHtml(item[1])}</h4><small>${escapeHtml(sub)}${entry ? " · " + (lang === "ro" ? "intri pe " : "entry: ") + escapeHtml(entry[1]) : ""}</small>
     ${item[3] ? `<p class="bd-gives">${escapeHtml(BDL(item[3]))}</p>` : ""}
+    ${noEnt ? `<p class="bd-warn">⚠ ${lang === "ro" ? "Intrarea " + escapeHtml(entry[1]) + " nu e bifată ca găsită la Scope Out: în joc metoda apare după ce o fotografiezi." : "The " + escapeHtml(entry[1]) + " is not ticked as scoped: in the game this method appears once you photograph it."}</p>` : ""}
     ${steps.length ? `<ol>${steps.map(s => `<li>${escapeHtml(s)}</li>`).join("")}</ol>` : ""}
     ${tip ? `<p><b>${lang === "ro" ? "Sfat" : "Tip"}:</b> ${escapeHtml(tip)}</p>` : ""}
     <label class="bd-done"><input type="checkbox" data-bd-chk="${chk}" ${done ? "checked" : ""}> ${lang === "ro" ? "Făcut" : "Done"}</label></div>`;
@@ -9912,9 +9968,14 @@ function boardHtml(id) {
   const photo = (img, name, c, extra = "") => `<div class="bd-photo ${extra}">${pin(c)}<div class="bd-pic">${img ? `<img src="${img}" alt="" loading="lazy">` : `<span class="bd-noimg">${escapeHtml(name)}</span>`}</div></div>`;
   const gearDone = B.cats[0].m.filter(m => st.done[m[0]]).map(m => m[0]), pickedGear = bdPickOf(B, st, B.cats[0])[0];
   // ---- PC: the white board ----
-  const entries = B.entries.map(([eid, name, img, gear]) => `<div class="bd-ent ${gear === pickedGear ? "sel" : ""} ${gearDone.includes(gear) ? "ok" : ""}">${photo(bdImg(B, img), name, "r")}<div class="bd-cap">${escapeHtml(name)}</div>
+  // idea 158 (Mihai, 11.11.2026): each entry point is ticked when you photographed it in the Scope Out (gray = not scoped yet);
+  // the red frame shows the entry of the Infiltration Gear you picked
+  const entries = B.entries.map(([eid, name, img, gear]) => `<div class="bd-ent ${st.ent[eid] ? "ok" : ""} ${gear === pickedGear ? "sel" : ""}">
+      <button type="button" class="bd-hit" data-bd-ent="${eid}" title="${st.ent[eid] ? L("Scoped (click to undo)", "Găsită la Scope Out (clic ca să anulezi)") : L("Click when you photographed it in the Scope Out", "Apasă când ai fotografiat-o la Scope Out")}">${photo(bdImg(B, img), name, "r")}</button>
+      <label class="bd-cap">${box(st.ent[eid], "n:" + eid)} ${escapeHtml(name)}</label>
       <div class="bd-ent-g">${escapeHtml(B.cats[0].m.find(m => m[0] === gear)[1])}${gearDone.includes(gear) ? " ✓" : ""}</div></div>`).join("");
-  const todo = [[B.scope.name, st.sc, "s:"], ...B.cats.map(c => { const m = bdPickOf(B, st, c); return [c.name + ": " + m[1], st.done[m[0]], "m:" + m[0]]; }), ...B.equip.map(e => [e[1], st.done[e[0]], "m:" + e[0]])]
+  const nEnt = B.entries.filter(e => st.ent[e[0]]).length;
+  const todo = [[B.scope.name + ` (${nEnt}/${B.entries.length} ${L("entries", "intrări")})`, st.sc, "s:"], ...B.cats.map(c => { const m = bdPickOf(B, st, c); return [c.name + ": " + m[1], st.done[m[0]], "m:" + m[0]]; }), ...B.equip.map(e => [e[1], st.done[e[0]], "m:" + e[0]])]
     .map(([n, on, a]) => `<label>${escapeHtml(n)} ${box(on, a)}</label>`).join("");
   const optList = B.opt.map(o => `<label>${escapeHtml(o[1])} ${box(st.opt[o[0]], "o:" + o[0])}</label>`).join("");
   const extras = B.extras.map(x => `<div class="bd-ex"><button type="button" class="bd-hit" data-bd-note="x:${x[0]}">${photo(bdImg(B, x[2]), x[1], "r", "sm")}</button><label class="bd-cap">${box(st.ex[x[0]], "x:" + x[0])} ${escapeHtml(x[1])}</label></div>`).join("");
@@ -9948,13 +10009,27 @@ function boardHtml(id) {
   const nOpt = B.opt.filter(o => st.opt[o[0]]).length;
   const phone = `<div class="bd-c">
     <div class="bd-hero"><img src="${bdImg(B, "target")}" alt="">${bdTargetHtml(id, true)}</div>
-    <details class="bd-step" ${st.sc ? "" : "open"}><summary><span class="bd-n ${st.sc ? "ok" : ""}">${st.sc ? "✓" : "1"}</span>1 · ${escapeHtml(B.scope.name)}</summary>${det("s", "")}</details>
+    <details class="bd-step" ${st.sc ? "" : "open"}><summary><span class="bd-n ${st.sc ? "ok" : ""}">${st.sc ? "✓" : "1"}</span>1 · ${escapeHtml(B.scope.name)}<small>${nEnt} / ${B.entries.length} ${L("entries", "intrări")}</small></summary>${det("s", "")}<div class="bd-in"><h5>Entry points scoped</h5>${B.entries.map(([eid, name, img, gear]) => `<label class="bd-li bd-entli">${box(st.ent[eid], "n:" + eid)} ${escapeHtml(name)} <small>${escapeHtml(B.cats[0].m.find(m => m[0] === gear)[1])}</small></label>`).join("")}</div></details>
     <details class="bd-step" ${st.sc && a < b ? "open" : ""}><summary><span class="bd-n">2</span>2 · ${L("Required prep work", "Prep-uri obligatorii")}<small>${Math.max(0, a - (st.sc ? 1 : 0))} / ${b - 1}</small></summary><div class="bd-in">${pcats}<h5>Equipment · ${L("both", "amândouă")}</h5>${peq}</div></details>
     <details class="bd-step"><summary><span class="bd-n">3</span>3 · ${L("Optional prep work", "Prep-uri opționale")}<small>${nOpt} / ${B.opt.length}</small></summary><div class="bd-in">${popt}<h5>Extras</h5>${pex}</div></details>
     <div class="bd-step fin"><div class="bd-sum"><span class="bd-n">4</span>4 · ${L("Finale", "Finala")}</div><div class="bd-in">${bdStartHtml(id)}</div></div></div>`;
   return `<div class="bd" data-bd="${id}">${pc}${phone}</div>`;
 }
+// idea 158 (Mihai, 11.11.2026): the whole board fits the screen (1080p and others): it is drawn 1450 px wide and zoomed to the space left under the header
+const BD_W = 1450;
+function bdFit() {
+  const a = focusEl.querySelector(".bd-a");
+  if (!a || !a.offsetParent) return;
+  a.style.zoom = 1;
+  const W = a.parentElement.clientWidth, h = a.offsetHeight;
+  const top = a.getBoundingClientRect().top + (window.scrollY || 0) + (focusEl.scrollTop || 0);
+  const availH = window.innerHeight - top - 12;
+  const z = Math.max(.62, Math.min(W / BD_W, availH / h, 1.45));   // below 0.62 the text gets too small: then the page scrolls a little
+  a.style.zoom = z.toFixed(3);
+}
+addEventListener("resize", () => requestAnimationFrame(bdFit));
 function bindBoard(root, id) {
+  requestAnimationFrame(bdFit); if (document.fonts) document.fonts.load('700 16px "Kalam"').then(() => requestAnimationFrame(bdFit));
   if (bdUI.note && bdUI.note.id !== id) bdUI.note = null;
   const B = BOARDS[id];
   const redraw = (saveIt) => { if (saveIt) { save(true); ghMarkDirty(); syncStatus(); } const sc = focusEl.scrollTop; focusEl._last = null; renderFocus(); focusEl.scrollTop = sc; };
@@ -9963,10 +10038,11 @@ function bindBoard(root, id) {
   root.querySelectorAll("[data-bd-enter]").forEach(b => b.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); cyc(b.dataset.bdEnter, 1); requestAnimationFrame(() => { const n = focusEl.querySelector(`[data-bd-enter="${b.dataset.bdEnter}"]`); n && n.focus(); }); } });
   root.querySelectorAll("[data-bd-pick]").forEach(b => b.onclick = () => { const [c, m] = b.dataset.bdPick.split(":"); bdSt(id).pick[c] = m; redraw(true); });
   root.querySelectorAll("[data-bd-note]").forEach(b => b.onclick = () => { const [kind, key] = b.dataset.bdNote.split(":"); bdUI.note = bdUI.note && bdUI.note.kind === kind && bdUI.note.key === key ? null : { id, kind, key }; redraw(false); });
+  root.querySelectorAll("[data-bd-ent]").forEach(b => b.onclick = () => { const st = bdSt(id), k = b.dataset.bdEnt; st.ent[k] = st.ent[k] ? 0 : 1; redraw(true); });
   root.querySelectorAll("[data-bd-close]").forEach(b => b.onclick = () => { bdUI.note = null; redraw(false); });
   root.querySelectorAll("[data-bd-chk]").forEach(c => { c.onclick = e => e.stopPropagation(); c.onchange = () => {
     const st = bdSt(id), [kind, key] = c.dataset.bdChk.split(":");
-    if (kind === "s") st.sc = c.checked ? 1 : 0; else if (kind === "m") st.done[key] = c.checked ? 1 : 0; else if (kind === "o") st.opt[key] = c.checked ? 1 : 0; else if (kind === "x") st.ex[key] = c.checked ? 1 : 0;
+    if (kind === "n") st.ent[key] = c.checked ? 1 : 0; else if (kind === "s") st.sc = c.checked ? 1 : 0; else if (kind === "m") st.done[key] = c.checked ? 1 : 0; else if (kind === "o") st.opt[key] = c.checked ? 1 : 0; else if (kind === "x") st.ex[key] = c.checked ? 1 : 0;
     redraw(true); }; });
   const sel = root.querySelector("[data-bd-target]"); if (sel) sel.onchange = () => { bdSt(id).target = sel.value; redraw(true); };
   root.querySelectorAll("[data-bd-start]").forEach(b => b.onclick = () => { const [a, n] = bdProg(id); if (a < n) { toast(lang === "ro" ? "Întâi prep-urile obligatorii." : "Do the mandatory prep work first."); return; } bdUI.fin = true; redraw(false); });
@@ -9986,7 +10062,7 @@ function opHtml(id) {
       <p class="muted">${t(o.cat === "heist" ? "opHeist" : "opContract")} · ${o.needs === "—" ? t("opNoNeed") : t("opNeeds") + ": <b>" + escapeHtml(o.needs) + "</b>"} · ${t("opPlayers")}: ${escapeHtml(o.players)}</p></div>${jmBack(jmCatOfOp(o))}</div>
     ${o.about ? `<p class="op-about">${escapeHtml(o.about[lang === "ro" ? 1 : 0])}</p>` : ""}
     ${o.note ? `<p class="hint op-note">${t(o.note)}</p>` : ""}`;
-  if (o.board && BOARDS[o.board]) return head + (o.board === "kortz" && !kortzReady() ? `<p class="hint">⚠ ${t("kortzNeed")} <a href="#mansions">Mansions →</a></p>` : "") + boardHtml(o.board) + `<p class="muted op-src">${lang === "ro" ? "Surse: GTA Wiki, gtaboss.gg, beebom.com, gtaboom.com, gamerant.com; ținta săptămânii: postarea săptămânală r/gtaonline." : "Sources: GTA Wiki, gtaboss.gg, beebom.com, gtaboom.com, gamerant.com; this week's target: the r/gtaonline weekly post."}</p>`;
+  if (o.board && BOARDS[o.board]) return `<div class="focus-head bd-head">${img ? `<img class="ag-logo" src="${img}" alt="">` : ""}<div><h2 title="${o.about ? escapeHtml(o.about[lang === "ro" ? 1 : 0]) : ""}">${escapeHtml(o.name)}</h2><p class="muted">${t("opHeist")} · ${t("opNeeds")}: <b>${escapeHtml(o.needs)}</b> · ${t("opPlayers")}: ${escapeHtml(o.players)}</p></div>${jmBack(jmCatOfOp(o))}</div>` + (o.board === "kortz" && !kortzReady() ? `<p class="hint">⚠ ${t("kortzNeed")} <a href="#mansions">Mansions →</a></p>` : "") + boardHtml(o.board) + `<p class="muted op-src">${lang === "ro" ? "Surse: GTA Wiki, gtaboss.gg, beebom.com, gtaboom.com, gamerant.com; ținta săptămânii: postarea săptămânală r/gtaonline." : "Sources: GTA Wiki, gtaboss.gg, beebom.com, gtaboom.com, gamerant.com; this week's target: the r/gtaonline weekly post."}</p>`;
   let week = "";
   if (o.weekly === "salvage") {
     const sv = (w && w.salvage) || {};
