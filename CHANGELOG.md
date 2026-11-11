@@ -2,6 +2,13 @@
 
 * * *
 
+### v0.47.0 (2026-11-11)
+* Job Manager:
+  * Change: The Kortz Center Heist has a planning board like the one in the game (idea 158). On a PC: a white board with the entry points, the target, TODO / optional lists, the required prep work with ‹ › (or Enter) to change the method, the optional prep work, the extras and START. On phones: the same as steps (Scope Out, required, optional, finale).
+  * Add: every prep now has its real mission: what it gives (which entry it opens, which weapons), the steps and a tip, in a note that opens when you click its picture; all 17 preps, the Scope Out and the extras.
+  * Add: the target of the week. The first run is always La Dernière Débauche (it must be sold); after that you pick this week's painting (from the weekly post, also an event that locks it in) and see its value, whether this week's bonus (first sale ×4) is still free (it comes back on Thursday) and the paintings you kept in the Mansion (4 places).
+  * Change: after START (the finale) you say whether the painting was sold or kept; the prep work starts over, like in the game (with undo).
+
 ### v0.46.0 (2026-11-09)
 * Vehicle Manager:
   * Add: 208 vehicles now say they can take the Missile Lock-On Jammer (Imani Tech, Agency Vehicle Workshop; aircraft in the Hangar workshop): the 50-car lists of Agents of Sabotage, Money Fronts, A Safehouse in the Hills and The Kortz Center Heist, plus its new cars. For example the Übermacht Sentinel Classic. On those cars the Remote Control Unit can't be chosen (only the 20 Imani Tech cars take it).
