@@ -801,7 +801,7 @@ html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.47.1";
+const APP_VERSION = "0.47.2";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // idea 156: letters with marks (Ü, é, ö, ñ, ș…) count as the plain letter when searching or typing a first letter; names keep their marks
@@ -1118,6 +1118,26 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.47.2",
+  "date": "2026-11-12",
+  "en": [
+   {
+    "area": "Home",
+    "items": [
+     "Fix: the weekly card shows the 2X / 3X / 4X bonuses on top again, grouped by multiplier, also when the week comes from gtaboss.gg (which lists them as lines inside one section); the site's menus and page title are no longer shown as sections."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Acasă",
+    "items": [
+     "Reparat: cardul săptămânii arată din nou bonusurile 2X / 3X / 4X sus, grupate pe multiplicator, și când săptămâna vine de pe gtaboss.gg (care le pune ca rânduri într-o singură secțiune); meniurile site-ului și titlul paginii nu mai apar ca secțiuni."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.47.1",
   "date": "2026-11-11",
@@ -4659,13 +4679,36 @@ Section({
     const wk = $("#weekly");
     let wkData = null, wkAll = false;
     const wkMin = () => LS.raw("gtaWeeklyMin") === "1";
+    /* Mihai (12.11.2026): whatever the source writes, the 2X / 3X / 4X bonuses go to the top. gtaboss.gg lists them as lines
+       ("4X Freemode Challenges GTA$ & RP") inside one "Bonus GTA$ & RP" section, r/gtaonline as headings; here every such line
+       joins a section of its multiplier and reward ("4X GTA$ & RP": Freemode Challenges). The site's menus and the page title are dropped. */
+    function wkTidy(secs) {
+      const junk = /^(online|more|menu|this week at a glance|gta online weekly update\b.*|jump to|full guides|weekly vehicle history|gta online weekly update faq)$/i;
+      const groups = new Map(), rest = [];
+      const multOf = it => {
+        const m = String(it).match(/^(\d+)\s*X\s+(.+)$/i);
+        if (!m || !/GTA\$|\bRP\b/.test(m[2]) || /^(GTA\$|RP)\b/i.test(m[2]) && m[2].length < 18) return null;
+        let txt = m[2], reward = /GTA\$\s*(&|and)\s*RP/i.test(txt) ? "GTA$ & RP" : /GTA\$/.test(txt) ? "GTA$" : "RP";
+        txt = txt.replace(/\s*(GTA\$\s*(&|and)\s*RP|GTA\$|RP)\s*$/i, "").replace(/^(GTA\$\s*(&|and)\s*RP|GTA\$|RP)\s+(on|in|for)\s+/i, "").trim();
+        return { key: m[1] + "X " + reward, txt: txt || it };
+      };
+      secs.forEach(sec => {
+        if (junk.test((sec.title || "").trim())) return;
+        if (/^\d+\s*X\b/i.test(sec.title || "")) { const k = sec.title; groups.set(k, [...(groups.get(k) || []), ...sec.items]); return; }
+        const keep = [];
+        (sec.items || []).forEach(it => { const g = multOf(it); if (g) groups.set(g.key, [...(groups.get(g.key) || []), g.txt]); else keep.push(it); });
+        if (keep.length) rest.push({ title: sec.title, items: keep });
+      });
+      return [...[...groups].map(([title, items]) => ({ title, items })), ...rest];
+    }
     function wkRender() {
       if (!wkData) return;
       // the 2X / 3X sections first and always whole (lowest multiplier first); the rest opens with "Show all"
       const d = wkData;
       const isMult = s => /^\d+\s*X\b/i.test(s.title || "");
-      const mult = (d.sections || []).filter(isMult).sort((a, b) => parseInt(a.title) - parseInt(b.title));
-      const secs = [...mult, ...(d.sections || []).filter(s => !isMult(s))];
+      const all = wkTidy(d.sections || []);
+      const mult = all.filter(isMult).sort((a, b) => parseInt(a.title) - parseInt(b.title));
+      const secs = [...mult, ...all.filter(s => !isMult(s))];
       const LIMIT = mult.length ? mult.reduce((n, s) => n + s.items.length, 0) : 8;
       let shown = 0, hiddenN = 0;
       const body = secs.map(s => {

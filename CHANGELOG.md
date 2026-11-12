@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.47.2 (2026-11-12)
+* Home:
+  * Fix: the weekly card shows the 2X / 3X / 4X bonuses on top again, grouped by multiplier, also when the week comes from gtaboss.gg (which lists them as lines inside one section); the site's menus and page title are no longer shown as sections.
+
 ### v0.47.1 (2026-11-11)
 * Job Manager:
   * Add: on the Kortz Center board you tick each entry point you photographed in the Scope Out (click its picture or its box); not scoped = gray, the red frame = the entry of the Infiltration Gear you picked; the TODO line shows how many entries are scoped, and a method whose entry is not scoped says so in its note. Also on phones (in step 1).
