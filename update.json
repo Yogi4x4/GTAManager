@@ -1,5 +1,5 @@
 {
- "version": "0.47.2",
+ "version": "0.48",
  "files": [
   {
    "path": "CHANGELOG.md"
@@ -60,6 +60,135 @@
   },
   {
    "path": "maps/map_satellite_s.webp"
+  },
+  {
+   "path": "jm/card_autoshop_contracts.webp"
+  },
+  {
+   "path": "jm/card_bail_office.webp"
+  },
+  {
+   "path": "jm/card_casino_story.webp"
+  },
+  {
+   "path": "jm/card_client_jobs.webp"
+  },
+  {
+   "path": "jm/card_cluckin_bell_raid.webp"
+  },
+  {
+   "path": "jm/card_dre_contract.webp"
+  },
+  {
+   "path": "jm/card_faber_work.webp"
+  },
+  {
+   "path": "jm/card_fib_files.webp"
+  },
+  {
+   "path": "jm/card_firefighter.webp"
+  },
+  {
+   "path": "jm/card_first_dose.webp"
+  },
+  {
+   "path": "jm/card_forklift.webp"
+  },
+  {
+   "path": "jm/card_geralds_last_play.webp"
+  },
+  {
+   "path": "jm/card_knoway_out.webp"
+  },
+  {
+   "path": "jm/card_last_dose.webp"
+  },
+  {
+   "path": "jm/card_lowriders.webp"
+  },
+  {
+   "path": "jm/card_mobile_operations.webp"
+  },
+  {
+   "path": "jm/card_oscar_guzman.webp"
+  },
+  {
+   "path": "jm/card_paper_route.webp"
+  },
+  {
+   "path": "jm/card_paper_trail.webp"
+  },
+  {
+   "path": "jm/card_payphone_hits.webp"
+  },
+  {
+   "path": "jm/card_pizza.webp"
+  },
+  {
+   "path": "jm/card_project_overthrow.webp"
+  },
+  {
+   "path": "jm/card_quickiepharm.webp"
+  },
+  {
+   "path": "jm/card_repo_work.webp"
+  },
+  {
+   "path": "jm/card_safeguard.webp"
+  },
+  {
+   "path": "jm/card_salvage_robberies.webp"
+  },
+  {
+   "path": "jm/card_security_contracts.webp"
+  },
+  {
+   "path": "jm/card_short_trips.webp"
+  },
+  {
+   "path": "jm/card_special_vehicle_work.webp"
+  },
+  {
+   "path": "jm/card_superyacht_life.webp"
+  },
+  {
+   "path": "jm/card_taxi.webp"
+  },
+  {
+   "path": "jm/hub_agency.webp"
+  },
+  {
+   "path": "jm/hub_oddjobs.webp"
+  },
+  {
+   "path": "jm/hub_property.webp"
+  },
+  {
+   "path": "jm/hub_story.webp"
+  },
+  {
+   "path": "jm/hub_storyops.webp"
+  },
+  {
+   "path": "jm/kortz_alpha_mail.webp"
+  },
+  {
+   "path": "jm/kortz_annihilator_stealth.webp"
+  },
+  {
+   "path": "jm/kortz_armored_caracara.webp"
+  },
+  {
+   "path": "jm/kortz_hazmat_suit.webp"
+  },
+  {
+   "path": "jm/kortz_military_loadout.webp"
+  },
+  {
+   "path": "jm/kortz_security_loadout.webp"
+  },
+  {
+   "path": "jm/kortz_tactical_equipment.webp"
   },
   {
    "path": "GTA_V_Manager.html"

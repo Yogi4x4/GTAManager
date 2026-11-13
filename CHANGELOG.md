@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.48.0 (2026-11-13)
+* Job Manager:
+  * Change: the Job Manager has eight categories instead of four (idea 159, after a check of all GTA Online missions): Heists, Contracts, Story Operations, Story Missions, Property Operations, Agency Work, Odd Jobs and Arena Wars, each with its own page and picture on the hub.
+  * Add: Oscar Guzman Flies Again (6 missions), the FIB Files (4), eleven story strands with every mission to tick (Lowriders, Gerald's Last Play, Premium Deluxe Repo Work, Casino Story Missions, A Superyacht Life, Short Trips, Operation Paper Trail, First Dose, Last Dose, Project Overthrow, Mr. Faber Work), the property operations (Mobile Operations, Special Vehicle Work, Client Jobs, LSA Operations, Clubhouse Contracts), Payphone Hits (8) and the seven Odd Jobs.
+  * Change: new pictures for almost every card (ChatGPT, from Mihai), with the title written by the app; the Kortz Center planning board has real pictures for all its methods.
+  * Change: Dr. Dre, the Cluckin' Bell Farm Raid and KnoWay Out moved to Story Operations; the Agency and Security Contracts to Agency Work; Money Fronts to Property Operations. Old links to the Jobs page open Agency Work.
+  * Fix: when this week's update comes from gtaboss.gg, the Job Manager now also reads the Salvage Yard cars and the FIB Priority File (a chip at the top), and shows the Kortz paintings without the repeated "Kortz Center Heist".
+
 ### v0.47.2 (2026-11-12)
 * Home:
   * Fix: the weekly card shows the 2X / 3X / 4X bonuses on top again, grouped by multiplier, also when the week comes from gtaboss.gg (which lists them as lines inside one section); the site's menus and page title are no longer shown as sections.
