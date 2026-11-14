@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.49.0 (2026-11-13)
+* Job Manager:
+  * Change: the eight hub titles are all the same size; long names go on two lines (variant B).
+  * Add: the Bail Office is now a working screen (idea 160): the board of three standard targets (caught alive or dead, with the pay; after the third one a 48-minute timer for the new board), the Most Wanted of the day (the six targets with their extra task, which ones you caught, a 24-hour timer), the agents (0–2, a 48-minute timer each, the holding-cell time), the safe (what is in it, Collected) and the daily Madrazo Hit. Every timer rings the bell when it ends.
+  * Add: the seven Odd Jobs are working screens too: log a run (how many, how much, how long), totals, money per run and per hour, the last runs with undo, the cooldowns (Pizza This...: each restaurant waits 48 minutes after five deliveries), all the unlocks and awards with their progress (trade prices, outfits, liveries), how they pay and good-to-know facts.
+  * Add: the running timers show up at the top of the Job Manager and on the cards.
+  * Add: every mission in the story strands and property operations has its details: where it starts, what you do, what it needs (players, property, unlocks) and what it gives (17 series, over 100 missions, from gtabase.com, gta.wiki, gtaboom.com, gtaboss.gg).
+  * Fix (checked): Special Vehicle Work's sixth mission is Coast Guard Duty; Lowriders, Short Trips, Special Vehicle Work and Mobile Operations cannot be played solo; Client Jobs are six; the Clubhouse has 13 contracts; Payphone Hits now wait 10 minutes and pay $15,000 + $30,000 bonus.
+  * Add: working screens for Payphone Hits (bonus or not, the 10-minute wait with a bell, the 8 trophies), Client Jobs (Done starts the 30-minute timer for that job and the 5-minute one for the others), the Salvage Yard (tows, a 48-minute reminder to keep the reputation up, the safe) and Oscar Guzman (the one-hour wait after The Titan Job starts by itself).
+  * Add: details for the five original heists (every setup: what, where, players, what it unlocks) and the Cluckin' Bell Farm Raid (start, gangs, approaches, pay, the one-hour wait that now starts by itself).
+  * Add: Auto Shop customer cars (low / mid / high, by you or the staff, the Special Delivery award), FIB Files (this week's Priority File done or not, the Garment Factory safe), Fooligan Jobs as a new card in Property Operations (job done → the 48-minute wait with a bell, 0/10 to the Acid Lab Equipment Upgrade), and unlock counters for Mobile Operations (Bunker resupplies stolen) and Special Vehicle Work (Vehicle Cargo cars stolen) that show which missions are open and which is next.
+
 ### v0.48.0 (2026-11-13)
 * Job Manager:
   * Change: the Job Manager has eight categories instead of four (idea 159, after a check of all GTA Online missions): Heists, Contracts, Story Operations, Story Missions, Property Operations, Agency Work, Odd Jobs and Arena Wars, each with its own page and picture on the hub.

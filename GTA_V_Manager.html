@@ -801,7 +801,7 @@ html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.48";
+const APP_VERSION = "0.49";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // idea 156: letters with marks (Ü, é, ö, ñ, ș…) count as the plain letter when searching or typing a first letter; names keep their marks
@@ -1118,6 +1118,42 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.49.0",
+  "date": "2026-11-13",
+  "en": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Change: the eight hub titles are all the same size; long names go on two lines (variant B).",
+     "Add: the Bail Office is now a working screen (idea 160): the board of three standard targets (caught alive or dead, with the pay; after the third one a 48-minute timer for the new board), the Most Wanted of the day (the six targets with their extra task, which ones you caught, a 24-hour timer), the agents (0–2, a 48-minute timer each, the holding-cell time), the safe (what is in it, Collected) and the daily Madrazo Hit. Every timer rings the bell when it ends.",
+     "Add: the seven Odd Jobs are working screens too: log a run (how many, how much, how long), totals, money per run and per hour, the last runs with undo, the cooldowns (Pizza This...: each restaurant waits 48 minutes after five deliveries), all the unlocks and awards with their progress (trade prices, outfits, liveries), how they pay and good-to-know facts.",
+     "Add: the running timers show up at the top of the Job Manager and on the cards.",
+     "Add: every mission in the story strands and property operations has its details: where it starts, what you do, what it needs (players, property, unlocks) and what it gives (17 series, over 100 missions, from gtabase.com, gta.wiki, gtaboom.com, gtaboss.gg).",
+     "Fix (checked): Special Vehicle Work's sixth mission is Coast Guard Duty; Lowriders, Short Trips, Special Vehicle Work and Mobile Operations cannot be played solo; Client Jobs are six; the Clubhouse has 13 contracts; Payphone Hits now wait 10 minutes and pay $15,000 + $30,000 bonus.",
+     "Add: working screens for Payphone Hits (bonus or not, the 10-minute wait with a bell, the 8 trophies), Client Jobs (Done starts the 30-minute timer for that job and the 5-minute one for the others), the Salvage Yard (tows, a 48-minute reminder to keep the reputation up, the safe) and Oscar Guzman (the one-hour wait after The Titan Job starts by itself).",
+     "Add: details for the five original heists (every setup: what, where, players, what it unlocks) and the Cluckin' Bell Farm Raid (start, gangs, approaches, pay, the one-hour wait that now starts by itself).",
+     "Add: Auto Shop customer cars (low / mid / high, by you or the staff, the Special Delivery award), FIB Files (this week's Priority File done or not, the Garment Factory safe), Fooligan Jobs as a new card in Property Operations (job done → the 48-minute wait with a bell, 0/10 to the Acid Lab Equipment Upgrade), and unlock counters for Mobile Operations (Bunker resupplies stolen) and Special Vehicle Work (Vehicle Cargo cars stolen) that show which missions are open and which is next."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Schimbat: cele opt titluri din hub au aceeași mărime; numele lungi trec pe două rânduri (varianta B).",
+     "Adăugat: Bail Office e acum un ecran de lucru (ideea 160): panoul cu trei ținte standard (prins viu sau mort, cu suma; după a treia, un cronometru de 48 de minute pentru panoul nou), Most Wanted-ul zilei (cele șase ținte cu sarcina extra, pe care le-ai prins, cronometru de 24 de ore), agenții (0–2, câte un cronometru de 48 de minute, timpul de procesare în celulă), seiful (cât e în el, Colectat) și Madrazo Hit-ul zilnic. Fiecare cronometru sună clopoțelul când se termină.",
+     "Adăugat: cele șapte Odd Jobs sunt și ele ecrane de lucru: adaugi o rundă (câte, câți bani, cât timp), totaluri, bani pe rundă și pe oră, ultimele runde cu anulare, pauzele (Pizza This...: fiecare pizzerie așteaptă 48 de minute după cinci livrări), toate deblocările și premiile cu progres (prețuri reduse, ținute, livery), cum plătesc și ce e bine de știut.",
+     "Adăugat: cronometrele pornite apar sus în Job Manager și pe carduri.",
+     "Adăugat: fiecare misiune din seriile cu poveste și din operațiunile din proprietăți are detalii: de unde pornește, ce faci, ce cere (jucători, proprietate, deblocări) și ce primești (17 serii, peste 100 de misiuni, din gtabase.com, gta.wiki, gtaboom.com, gtaboss.gg).",
+     "Reparat (verificat): a șasea misiune Special Vehicle Work e Coast Guard Duty; Lowriders, Short Trips, Special Vehicle Work și Mobile Operations nu merg solo; Client Jobs sunt șase; Clubhouse are 13 contracte; Payphone Hits au acum pauză de 10 minute și plătesc 15.000 $ + 30.000 $ bonus.",
+     "Adăugat: ecrane de lucru pentru Payphone Hits (cu bonus sau fără, pauza de 10 minute cu clopoțel, cele 8 trofee), Client Jobs („Făcut” pornește cronometrul de 30 de minute pentru misiunea aceea și pe cel de 5 minute pentru celelalte), Salvage Yard (remorcări, memento la 48 de minute ca reputația să rămână sus, seiful) și Oscar Guzman (pauza de o oră după The Titan Job pornește singură).",
+     "Adăugat: detalii la cele cinci heist-uri originale (fiecare setup: ce, unde, câți jucători, ce deblochează) și la Cluckin' Bell Farm Raid (start, bande, abordări, plată, pauza de o oră, care acum pornește singură).",
+     "Adăugat: mașinile clienților din Auto Shop (ieftină / medie / scumpă, de tine sau de personal, premiul Special Delivery), FIB Files (Priority File făcut sau nu săptămâna asta, seiful din Garment Factory), Fooligan Jobs ca un card nou în Property Operations (misiune făcută → pauza de 48 de minute cu clopoțel, 0/10 până la Equipment Upgrade pentru Acid Lab) și contoare de deblocare pentru Mobile Operations (aprovizionări furate pentru Bunker) și Special Vehicle Work (mașini furate pentru Vehicle Cargo), care arată ce misiuni sunt deschise și care urmează."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.48.0",
   "date": "2026-11-13",
@@ -7762,6 +7798,47 @@ Section({
 #sec-production .bd-a .bd-frame {width: 200px;}
 #sec-production .bd-a .bd-top {grid-template-columns: minmax(0, 1fr) 300px minmax(0, 1.2fr);}
 #sec-production .bd-a .bd-band {margin: 10px 0 8px;}
+#sec-production .trk-main {display: grid; gap: 12px;}
+#sec-production .trk-stats {display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px;}
+#sec-production .trk-stats > div {background: color-mix(in srgb, var(--panel) 60%, #000 10%); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; text-align: center;}
+#sec-production .trk-stats b {display: block; font-size: 20px;}
+#sec-production .trk-stats small {color: var(--muted); font-size: 12px;}
+#sec-production .trk-add {display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;}
+#sec-production .trk-f {display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted);}
+#sec-production .trk-f input, #sec-production .trk-f select {width: 140px; padding: 7px 9px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font: inherit; font-size: 14px;}
+#sec-production .trk-step {display: inline-flex; align-items: center; gap: 8px;}
+#sec-production .trk-step b {min-width: 24px; text-align: center; color: var(--text);}
+#sec-production .trk-cnts {display: flex; flex-wrap: wrap; gap: 14px;}
+#sec-production .trk-pay {margin: 0; font-size: 13px;}
+#sec-production .trk-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; margin-top: 12px;}
+#sec-production .trk-grid > section h4 {margin: 0 0 6px;}
+#sec-production .trk-btns {display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0;}
+#sec-production .trk-row {display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); flex-wrap: wrap;}
+#sec-production .trk-timer {display: inline-flex; align-items: center; gap: 8px;}
+#sec-production .trk-clock {font: 600 14px/1 ui-monospace, Consolas, monospace; min-width: 84px; text-align: right;}
+#sec-production .trk-timer.run .trk-clock {color: var(--sodium);}
+#sec-production .trk-timer.ready .trk-clock {color: #3fbf6a;}
+#sec-production .trk-ms ul, #sec-production .trk-facts ul, #sec-production .trk-mw {list-style: none; margin: 0; padding: 0; display: grid; gap: 6px;}
+#sec-production .trk-ms li {display: grid; grid-template-columns: 1fr 120px 56px; align-items: center; gap: 10px; font-size: 13.5px;}
+#sec-production .trk-ms li label {grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; cursor: pointer;}
+#sec-production .trk-ms li.ok {color: #7fd99b;}
+#sec-production .trk-bar {height: 7px; background: var(--line); border-radius: 9px; overflow: hidden;}
+#sec-production .trk-bar i {display: block; height: 100%; background: var(--sodium);}
+#sec-production .trk-ms small {color: var(--muted); text-align: right;}
+#sec-production .trk-facts li {font-size: 13.5px; padding-left: 14px; position: relative;}
+#sec-production .trk-facts li::before {content: "•"; position: absolute; left: 0; color: var(--sodium);}
+#sec-production .trk-log li {color: var(--muted);}
+#sec-production .trk-mw li {border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: grid; gap: 4px;}
+#sec-production .trk-mw li.ok {border-color: color-mix(in srgb, #3fbf6a 50%, var(--line));}
+#sec-production .trk-mw small {color: var(--muted);}
+#sec-production .trk-x {font-size: 12.5px; color: var(--muted); display: flex; gap: 6px; align-items: center;}
+#sec-production .trk-tag {font-size: 12px; color: #7fd99b;}
+#sec-production .trk-own {display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;}
+@media (max-width: 600px) {
+#sec-production .trk-ms li {grid-template-columns: 1fr 70px 46px;}
+#sec-production .trk-f input, #sec-production .trk-f select {width: 120px;}
+#sec-production .trk-grid {grid-template-columns: 1fr;}
+}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -8722,7 +8799,7 @@ const OPS = {
         ["Planning Work: LSDS Disguises", "pw", 0, "Power company disguises.", "Deghizări de la compania de electricitate."], ["Planning Work: Storage Key Card", "pw", 0, "Opens the storage.", "Deschide depozitul."], ["Planning Work: Disrupt Personnel", "pw", 1, "Fewer guards in the finale.", "Mai puțini paznici în finală."], ["The Podium Robbery (finale)", "fi", 0, "Take the podium car out of the casino.", "Scoți mașina de pe podium din cazino."]] },
       { id: "mctony", name: "The McTony Robbery", steps: [["Scope Out: Submarine", "sc", 0, "The car is aboard a submarine.", "Mașina e la bordul unui submarin."], ["Task: Cutting Torch", "ta", 0, "To cut your way in.", "Ca să-ți tai drumul înăuntru."], ["Task: Security Outfits", "ta", 0, "Dress as security.", "Te îmbraci ca paza."], ["Task: Masks", "ta", 1, "A small bonus.", "Un mic bonus."],
         ["Planning Work: Tony's Submersible", "pw", 0, "Your way to the submarine.", "Cu el ajungi la submarin."], ["Planning Work: Sonar Equipment", "pw", 0, "Find the submarine.", "Găsești submarinul."], ["Planning Work: Disrupt Weapons", "pw", 1, "Weaker guards in the finale.", "Paznici mai slabi în finală."], ["The McTony Robbery (finale)", "fi", 0, "Get the car out of the submarine.", "Scoți mașina din submarin."]] }] },
-  cluckin: { cat: "storyop", name: "The Cluckin' Bell Farm Raid", needs: "—", players: "1–4", img: "cluckin",
+  cluckin: { cat: "storyop", cdFin: 60, name: "The Cluckin' Bell Farm Raid", needs: "—", players: "1–4", img: "cluckin",
     about: ["A raid in six missions on the Cluckin' Bell farm in Paleto Bay.", "Un raid în șase misiuni la ferma Cluckin' Bell din Paleto Bay."],
     parts: [{ id: "m", steps: [["Slush Fund", "se", 0, "The first lead.", "Prima pistă."], ["Breaking and Entering", "se", 0, "Break in for information.", "Intri prin efracție după informații."], ["Concealed Weapons", "se", 0, "Get the weapons in unseen.", "Duci armele fără să fii văzut."], ["Hit and Run", "se", 0, "A quick strike.", "O lovitură rapidă."], ["Disorganized Crime", "se", 0, "Deal with the competition.", "Te ocupi de concurență."], ["Scene of the Crime (finale)", "fi", 0, "The raid on the farm.", "Raidul la fermă."]] }] },
   // idea 150 (09.11.2026): A Safehouse in the Hills (Dec. 2025). Sources: gtabase.com, gtaboss.gg, pushsquare.com, sportskeeda.com
@@ -8742,7 +8819,7 @@ const OPS = {
     about: ["Four multi-stage operations for the FIB, run from the Darnell Bros Garment Factory (Agents of Sabotage). Each File has its preps and a finale; one File is the Priority File every week.",
       "Patru operațiuni în mai multe etape pentru FIB, pornite din Darnell Bros Garment Factory (Agents of Sabotage). Fiecare dosar are prep-urile lui și o finală; în fiecare săptămână unul e Priority File."],
     parts: [{ id: "m", steps: [["The Black Box File", "fi", 0], ["The Brute Force File", "fi", 0], ["The Fine Art File", "fi", 0], ["The Project Breakaway File", "fi", 0]] }] },
-  oscar: { cat: "storyop", name: "Oscar Guzman Flies Again", needs: "McKenzie Field Hangar", players: "1–4",
+  oscar: { cat: "storyop", name: "Oscar Guzman Flies Again", needs: "McKenzie Field Hangar", players: "1–4", cdFin: 60,
     about: ["Oscar Guzman's war on Eberhard Munitions, from the McKenzie Field Hangar in Grapeseed (laptop in the office). Hard mode opens after one run on Normal; after the finale there is a one-hour wait before you can replay it.",
       "Războiul lui Oscar Guzman cu Eberhard Munitions, pornit din McKenzie Field Hangar din Grapeseed (laptopul din birou). Modul Hard se deschide după o tură pe Normal; după finală aștepți o oră până o poți relua."],
     parts: [{ id: "m", steps: [["Up and Running", "se", 0, "Fly a cargo run for Oscar; the Titan 250 D destroys it.", "Duci o încărcătură pentru Oscar; Titan 250 D o distruge."],
@@ -8809,6 +8886,9 @@ const OPS = {
   payphone: { cat: "agency", name: "Payphone Hits", needs: "Agency (after 3 Security Contracts)", players: "1–2",
     about: ["Hits from Franklin at public payphones. Each one pays more if you kill the target the way Franklin asks, and gives a trophy in your Agency office. The Dealers and The Hitmen need at least two players.", "Asasinate de la Franklin, la telefoane publice. Fiecare plătește mai mult dacă elimini ținta cum cere Franklin și îți dă un trofeu în biroul Agency. The Dealers și The Hitmen cer cel puțin doi jucători."],
     parts: [{ id: "m", steps: [["The Tech Entrepreneur", "se", 0], ["The Judge", "se", 0, "At the Los Santos Golf Club.", "La Los Santos Golf Club."], ["The Cofounder", "se", 0], ["The CEO", "se", 0], ["The Trolls", "se", 0], ["The Popstar", "se", 0], ["The Dealers", "se", 0, "Two players or more.", "Doi jucători sau mai mulți."], ["The Hitmen", "se", 0, "Two players or more.", "Doi jucători sau mai mulți."]] }] },
+  fooligan: { cat: "property", name: "Fooligan Jobs", needs: "Acid Lab (after Welcome to the Troupe)", players: "1–4",
+    about: ["Dax's Freemode jobs: call him and pick „Request Work”; he gives one of five at random. One every 48 minutes. Ten of them unlock the Acid Lab Equipment Upgrade.", "Misiunile lui Dax în Freemode: îl suni și alegi „Request Work”; îți dă una din cinci, la întâmplare. Una la 48 de minute. Zece deblochează Equipment Upgrade-ul pentru Acid Lab."],
+    parts: [{ id: "m", steps: [["Crop Dustin'", "se", 0], ["Heavy Metal", "se", 0], ["Liquid Assets", "se", 0], ["Working Remotely", "se", 0], ["Write-Off", "se", 0]] }] },
   taxi: { cat: "odd", name: "Taxi Work", needs: "—", players: "1",
     about: ["Drive passengers for Downtown Cab Co.; the more fares in a row, the bigger the tips.", "Duci pasageri pentru Downtown Cab Co.; cu cât faci mai multe curse la rând, cu atât bacșișul e mai mare."], parts: [] },
   pizza: { cat: "odd", name: "Pizza This...", needs: "—", players: "1",
@@ -8955,6 +9035,743 @@ const BD_SVG = {
   i_caracara: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2080%22%3E%3Crect%20width%3D%22120%22%20height%3D%2280%22%20fill%3D%22%23e9e4d6%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231d3577%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%2052V40l10-2%2010-12h34l8%2012h38v14z%22%20fill%3D%22%235a6470%22%2F%3E%3Cpath%20d%3D%22M32%2030h12v10H26zM48%2030h12l6%2010H48z%22%20fill%3D%22%23bcd6ff%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2256%22%20r%3D%229%22%20fill%3D%22%231d3577%22%2F%3E%3Ccircle%20cx%3D%2292%22%20cy%3D%2256%22%20r%3D%229%22%20fill%3D%22%231d3577%22%2F%3E%3Cpath%20d%3D%22M76%2038V24h10M86%2024h20%22%20stroke-width%3D%223.4%22%2F%3E%3Cpath%20d%3D%22M12%2046h96%22%20stroke-dasharray%3D%223%204%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
   i_annihilator: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2080%22%3E%3Crect%20width%3D%22120%22%20height%3D%2280%22%20fill%3D%22%23e9e4d6%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%231d3577%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%2018h96M60%2018v8%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M26%2044c0-10%2012-18%2030-18h18c12%200%2022%208%2022%2018%200%206-6%2010-14%2010H40c-8%200-14-4-14-10z%22%20fill%3D%22%232b3340%22%2F%3E%3Cpath%20d%3D%22M76%2032h10c4%200%208%204%208%2010H76z%22%20fill%3D%22%23bcd6ff%22%2F%3E%3Cpath%20d%3D%22M26%2042L6%2036v8l20%204%22%20fill%3D%22%232b3340%22%2F%3E%3Cpath%20d%3D%22M38%2062h46M46%2054v8M76%2054v8%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",
 };
+
+/* idea 160 (Mihai, 13.11.2026): the Job Manager pages become working screens: timers with a bell, counters, money, unlocks.
+   Sources (checked 13.11.2026): gtabase.com (Bail Office Bounties, Pizza This..., QuickiePharm, Safeguard), gta.wiki,
+   gtaboss.gg and gtaboom.com (Bail Office guides), timesaver.gg, gurugamer.com / deltiasgaming.com / nerdschalk.com (the January 2026 Odd Jobs).
+   Odd job: unit (what one run is made of), per (units in a full run), pay [EN, RO] (how it pays), est (an average full run, $),
+   loc (places with their own cooldown: [id, name], min), ms (unlocks: [id, [EN, RO], need, counter] counter: "units" | "runs" | "manual" | key of cnt),
+   facts [[EN, RO]], cnt (extra counters: [id, [EN, RO]]) */
+const ODD = {
+  taxi: { unit: ["fare", "cursă"], per: 1, est: 0,
+    pay: ["Every fare pays by distance, plus a tip; the fares were raised by 150% in July 2024.", "Fiecare cursă plătește după distanță, plus bacșiș; cursele au crescut cu 150% în iulie 2024."],
+    facts: [["Call Downtown Cab Co. or take a taxi from the depot; fares come one after the other.", "Suni la Downtown Cab Co. sau iei un taxi de la depou; cursele vin una după alta."]], ms: [] },
+  pizza: { unit: ["delivery", "livrare"], per: 5, est: 22500,
+    pay: ["$2,000 + 500 RP per pizza, a $250–500 tip while it is still hot, and $10,000 \"Hot and Fresh\" if all five are delivered in the 10 minutes.", "2.000 $ + 500 RP pe pizza, bacșiș 250–500 $ cât e încă fierbinte și 10.000 $ „Hot and Fresh” dacă livrezi toate cinci în cele 10 minute."],
+    loc: { min: 48, list: [["p1", "Pizza This... 1"], ["p2", "Pizza This... 2"], ["p3", "Pizza This... 3"]] },
+    facts: [["Three Pizza This... restaurants; five deliveries each, then that restaurant waits one in-game day (48 minutes).", "Trei pizzerii Pizza This...; câte cinci livrări fiecare, apoi pizzeria aceea așteaptă o zi din joc (48 de minute)."],
+      ["You ride a Pegassi Pizza Boy (your own, if you have one, with its upgrades).", "Mergi cu un Pegassi Pizza Boy (al tău, dacă ai unul, cu tot cu modificări)."]],
+    ms: [["trade", ["Pizza Boy trade price ($146,250 instead of $195,000): one run of 5, all hot", "Preț redus Pizza Boy (146.250 $ în loc de 195.000 $): o rundă de 5, toate fierbinți"], 1, "manual"],
+      ["a5", ["Award: 5 deliveries", "Premiu: 5 livrări"], 5, "units"], ["a10", ["Award: 10 deliveries", "Premiu: 10 livrări"], 10, "units"], ["a20", ["Award: 20 deliveries", "Premiu: 20 livrări"], 20, "units"],
+      ["outfit", ["Pizza This... Outfit + platinum award: 50 deliveries", "Ținuta Pizza This... + premiul de platină: 50 de livrări"], 50, "units"]] },
+  quickiepharm: { unit: ["delivery", "livrare"], per: 6, est: 32500,
+    pay: ["$2,500 (under 1 km), $5,000 (1–4 km) or $7,500 (over 4 km) per delivery; the supplies bar drops when you crash.", "2.500 $ (sub 1 km), 5.000 $ (1–4 km) sau 7.500 $ (peste 4 km) pe livrare; bara de marfă scade când te lovești."],
+    facts: [["QuickiePharm, Carcer Way, Burton. You drive the QuickiePharm Übermacht Sentinel GTS; six deliveries a run, then you can start again at once.", "QuickiePharm, Carcer Way, Burton. Conduci Übermacht Sentinel GTS-ul QuickiePharm; șase livrări pe rundă, apoi poți relua imediat."],
+      ["Not while you are in an Organization or an MC.", "Nu merge cât ești într-o organizație sau într-un MC."]],
+    ms: [["trade", ["Sentinel GTS trade price ($1,629,000 instead of $2,172,000): first full run", "Preț redus Sentinel GTS (1.629.000 $ în loc de 2.172.000 $): prima rundă completă"], 1, "runs"],
+      ["livery", ["QuickiePharm livery for the Sentinel GTS: 5 full runs", "Livery QuickiePharm pentru Sentinel GTS: 5 runde complete"], 5, "runs"],
+      ["a10", ["Award: 10 full runs", "Premiu: 10 runde complete"], 10, "runs"], ["a15", ["Award: 15 full runs", "Premiu: 15 runde complete"], 15, "runs"], ["a20", ["Award: 20 full runs", "Premiu: 20 runde complete"], 20, "runs"],
+      ["fast", ["First Responder award: a full run in under 10 minutes", "Premiul First Responder: o rundă completă în sub 10 minute"], 1, "manual"]] },
+  safeguard: { unit: ["delivery", "livrare"], per: 1, est: 20000,
+    pay: ["About $20,000 a delivery, less when the goods get damaged; attackers try to stop the truck.", "Cam 20.000 $ pe livrare, mai puțin dacă marfa se strică; atacatorii încearcă să oprească duba."],
+    cnt: [["g6", ["Gruppe Sechs deliveries", "Livrări Gruppe Sechs"]], ["bob", ["Bobcat Security deliveries", "Livrări Bobcat Security"]]],
+    facts: [["Two companies, two depots (Bobcat Security in Terminal, by Buccaneer Way); you drive a Brute Stockade.", "Două firme, două depouri (Bobcat Security în Terminal, lângă Buccaneer Way); conduci un Brute Stockade."],
+      ["The deliveries also unlock trade prices at Warstock Cache & Carry.", "Livrările deblochează și prețuri reduse la Warstock Cache & Carry."]],
+    ms: [["g6", ["\"The Defender\" outfit: 5 deliveries for Gruppe Sechs", "Ținuta „The Defender”: 5 livrări pentru Gruppe Sechs"], 5, "g6"],
+      ["bob", ["\"Bobcat Security Driver\" outfit: 5 deliveries for Bobcat Security", "Ținuta „Bobcat Security Driver”: 5 livrări pentru Bobcat Security"], 5, "bob"],
+      ["trade", ["Brute Stockade trade price at Warstock", "Preț redus Brute Stockade la Warstock"], 1, "manual"]] },
+  firefighter: { unit: ["dispatch", "intervenție"], per: 5, est: 37500,
+    pay: ["About $7,500 + 250 RP per dispatch, less the longer it takes; a full job is five dispatches.", "Cam 7.500 $ + 250 RP pe intervenție, mai puțin cu cât durează mai mult; o tură completă are cinci intervenții."],
+    facts: [["Fire station in El Burro Heights; or start from your own Fire Truck anywhere.", "Stația de pompieri din El Burro Heights; sau pornești din Fire Truck-ul tău, oriunde."],
+      ["The job fails if the truck is destroyed or you get a wanted level.", "Tura eșuează dacă se distruge autospeciala sau primești stele de urmărire."]],
+    ms: [["trade", ["Fire Truck trade price: all five dispatches in one job", "Preț redus Fire Truck: toate cele cinci intervenții într-o tură"], 1, "runs"],
+      ["outfit", ["\"The Unwavering\" outfit: 25 dispatches", "Ținuta „The Unwavering”: 25 de intervenții"], 25, "units"]] },
+  forklift: { unit: ["van", "dubă"], per: 5, est: 30000,
+    pay: ["$4,000 + 500 RP per van, +$2,000 for a matching set of three; night shift (20:00–07:00 in the game) +$800 per van and +$400 per set.", "4.000 $ + 500 RP pe dubă, +2.000 $ pentru un set potrivit de trei; tura de noapte (20:00–07:00 în joc) +800 $ pe dubă și +400 $ pe set."],
+    facts: [["Alpha Mail warehouse: put three items on the belt, then send the van; five vans a shift, no time limit.", "Depozitul Alpha Mail: pui trei obiecte pe bandă, apoi trimiți duba; cinci dube pe tură, fără limită de timp."]],
+    ms: [["outfit", ["\"Forklift Certified\" outfit: first full shift (5 vans)", "Ținuta „Forklift Certified”: prima tură completă (5 dube)"], 1, "runs"],
+      ["a20", ["Platinum award: 20 shifts", "Premiul de platină: 20 de ture"], 20, "runs"]] },
+  paperroute: { unit: ["paper", "ziar"], per: 10, est: 25000,
+    pay: ["Paid by speed: ten papers in five minutes, each good throw adds 30 seconds; a brand bonus on the Dinka Thrust.", "Plătit după viteză: zece ziare în cinci minute, fiecare aruncare bună adaugă 30 de secunde; bonus de marcă pe Dinka Thrust."],
+    facts: [["Los Santos Meteor; the paper has to land on the porch to count. You get a rental Dinka Thrust.", "Los Santos Meteor; ziarul trebuie să ajungă pe verandă ca să conteze. Primești un Dinka Thrust închiriat."]],
+    ms: [["trade", ["Dinka Thrust trade price ($56,250): first full route (10 papers)", "Preț redus Dinka Thrust (56.250 $): primul traseu complet (10 ziare)"], 1, "runs"]] }
+};
+// the Bail Office (Bottom Dollar Bounties)
+const BAIL = {
+  std: [["bank", "Bank Robbery", "Kkangpae", ["Ricky Ji", "Tommy Lim", "LJ Ha"]], ["bus", "Prison Bus", "Ballas", ["Cook Kenzie", "Marquel Green", "Colby Wright"]],
+    ["cctv", "CCTV", "Street Punks", ["Lil Prince", "Xavier Fremond", "Jalen Kennedy"]], ["club", "Clubhouse", "The Lost MC", ["Serenity Pierce", "Angel Kenney", "Rylee Rose"]],
+    ["mansion", "Mansion Intimidation", "Rich Women", ["Sabrina Gray", "India Wood", "Brigitte Foster"]], ["arcade", "Arcade", "Duggans", ["Beau Duggan", "Bill Duggan", "Hunter Duggan"]]],
+  mw: [["whitney", "Grace Whitney", ["CEO who faked her death: morgue, then her gallery.", "CEO care și-a înscenat moartea: morga, apoi galeria ei."], ["Steal her paintings", "Furi tablourile ei"]],
+    ["lieberman", "Chaz Lieberman", ["Gambler hiding from loansharks: cell tower in La Mesa, warehouse, two transporters.", "Jucător care fuge de cămătari: antena din La Mesa, depozitul, două transportoare."], ["Poker chips in the hidden safe behind the Corkers poster", "Jetoanele din seiful ascuns după posterul Corkers"]],
+    ["oneil", "Leroy O'Neil", ["The O'Neil brothers' farm: out of the basement, find Leroy.", "Ferma fraților O'Neil: ieși din subsol, îl găsești pe Leroy."], ["Meth bag in the small utility room", "Punga cu meth din cămăruța tehnică"]],
+    ["thompson", "Brock Thompson", ["Steroid dealer: destroy the jammers, stop his Mule Custom.", "Dealer de steroizi: distrugi bruiajele, îi oprești Mule Custom-ul."], ["Bull Shark Testosterone in the Mule Custom", "Bull Shark Testosterone din Mule Custom"]],
+    ["song", "Cleo Song", ["Vinewood actress: Richards Majestic studios, stage 16.", "Actriță din Vinewood: studiourile Richards Majestic, platoul 16."], ["Movie memorabilia from the trailer behind the green screens", "Obiectele de film din rulota din spatele ecranelor verzi"]],
+    ["garcia", "Omar Garcia", ["Street racer: Lifeinvader servers, then the LS Car Meet test track (his Vorschlaghammer).", "Pilot de stradă: serverele Lifeinvader, apoi pista LS Car Meet (Vorschlaghammer-ul lui)."], ["The ECU in an open trunk", "ECU-ul dintr-un portbagaj deschis"]]],
+  stdPay: 36000, mwPay: 125000, deadPart: 0.25, agentMin: 48, boardMin: 48, mwHours: 24,
+  cell: [24, 12, 6]   // minutes the holding cell takes, by number of agents
+};
+
+/* Mihai (13.11.2026): "the missions have no details at all: what, how, where, when". For every mission: where it starts, what you do,
+   what it needs (players, property, unlocks) and what it gives. Sources (searched 13.11.2026): gtabase.com mission pages, gta.wiki,
+   gtaboom.com and gtaboss.gg guides, sportskeeda / gamesradar walkthroughs. Applied over OPS at load (applyMissionDetails). */
+const MDET = {
+"superyacht": [
+[
+"Start on the yacht's top deck (the B icon) or call Captain Darcy. Go to the Vespucci Canals, kill the joyriders who stole the yacht's tender, get the paperwork back and sink their boats.",
+"Pornești de pe puntea de sus a iahtului (iconița B) sau îl suni pe căpitanul Darcy. Mergi la Vespucci Canals, elimini derbedeii care au furat barca iahtului, recuperezi actele și le scufunzi bărcile."
+],
+[
+"Dive to the wreck, salvage the cargo and bring it to the yacht; hijackers take the yacht: kill them and rescue the captain and the bartender.",
+"Te scufunzi la epavă, recuperezi marfa și o aduci la iaht; piratii ocupă iahtul: îi elimini și îi salvezi pe căpitan și pe barman."
+],
+[
+"Steal a Tula seaplane at LSIA, put out the fires at the Country Club with it, then deliver it to the yacht.",
+"Furi un hidroavion Tula de pe LSIA, stingi cu el incendiile de la Country Club, apoi îl duci la iaht."
+],
+[
+"Revenge on the Kkangpae: Fridgit Cold Storage, destroy the air-conditioning units on the roof, then steal a Benson truck and deliver it to the buyer.",
+"Răzbunare pe Kkangpae: Fridgit Cold Storage, distrugi aparatele de aer condiționat de pe acoperiș, apoi furi un camion Benson și îl duci la cumpărător."
+],
+[
+"A cruise goes wrong: attackers board the yacht; defend it and take them all out.",
+"O croazieră iese prost: atacatorii urcă pe iaht; îl aperi și îi elimini pe toți."
+],
+[
+"Take the Kraken submersible, dive deep to avoid the enemy yacht's defences and storm it. After the six: moving the yacht costs $10,000 instead of $25,000 and Darcy leaves a reward in your wardrobe.",
+"Iei submarinul Kraken, cobori adânc ca să eviți apărarea iahtului inamic și îl ataci. După toate șase: mutarea iahtului costă 10.000 $ în loc de 25.000 $, iar Darcy îți lasă un premiu în garderobă."
+]
+],
+"clubhouse": [
+[
+"By the Pound",
+"Solo OK. Complete a product deal and deliver it to the buyer (the Azteca version adds a wanted level to lose). Up to $25,500 with both bags.",
+"Merge solo. Faci o tranzacție cu marfă și o duci cumpărătorului (varianta Azteca adaugă stele de pierdut). Până la 25.500 $ cu ambele genți."
+],
+[
+"Cracked",
+"Solo OK. Attack a gang hideout (Lost MC clubhouse, Pacific Allied Shipyard or Stab City), crack the safe and deliver the cash bags.",
+"Merge solo. Ataci o ascunzătoare (clubul Lost MC, Pacific Allied Shipyard sau Stab City), spargi seiful și duci sacii cu bani."
+],
+[
+"Fragile Goods",
+"2+ players. Destroy all the rival MC's vans before the timer ends. $12,500–34,000.",
+"2+ jucători. Distrugi toate dubele clubului rival înainte să expire timpul. 12.500–34.000 $."
+],
+[
+"Guns for Hire",
+"2+ players. Escort two cars with allies to their destination and defend them from enemy bikers. About $34,000.",
+"2+ jucători. Escortezi două mașini cu aliați până la destinație și le aperi de motocicliștii inamici. Cam 34.000 $."
+],
+[
+"Gunrunning",
+"Solo OK. Break up a weapons deal, steal the weapon cases, load them and deliver them. About $19,000.",
+"Merge solo. Strici o tranzacție cu arme, furi lăzile, le încarci și le duci la predare. Cam 19.000 $."
+],
+[
+"Jailbreak",
+"Hijack a prison bus and get the prisoners to the escape helicopters. About $22,500.",
+"Deturnezi un autobuz de deținuți și duci prizonierii la elicopterele de fugă. Cam 22.500 $."
+],
+[
+"Nine Tenths of the Law",
+"2+ players. Steal two or four motorcycles from a secure location and deliver them. About $31,000.",
+"2+ jucători. Furi două sau patru motociclete dintr-un loc păzit și le duci la predare. Cam 31.000 $."
+],
+[
+"Outrider",
+"2+ players. Motorcycle taxi: pick up two clients and get them to their destination alive. About $15,000.",
+"2+ jucători. Taxi pe motocicletă: iei doi clienți și îi duci la destinație vii. Cam 15.000 $."
+],
+[
+"P.O.W.",
+"Rescue a client (Mission Row police station, O'Neil Ranch or a spot in Los Santos) and take them to the safehouse. About $23,000.",
+"Salvezi un client (secția din Mission Row, ferma O'Neil sau un loc din Los Santos) și îl duci la casa sigură. Cam 23.000 $."
+],
+[
+"Torched",
+"Timed: travel around and burn ten crates of munitions. About $32,000.",
+"Contra timp: mergi prin oraș și arzi zece lăzi cu muniție. Cam 32.000 $."
+],
+[
+"Weapon of Choice",
+"2+ players. Kill the targets with the specific weapon left near each one; the wrong weapon lowers the pay. $18,000–21,000.",
+"2+ jucători. Elimini țintele cu arma anume lăsată lângă fiecare; altă armă scade plata. 18.000–21.000 $."
+],
+[
+"Hit the Roof",
+"Added in The Criminal Enterprises (2022); pays more than the old contracts.",
+"Adăugat în The Criminal Enterprises (2022); plătește mai mult decât contractele vechi."
+],
+[
+"Life and Deathbikes",
+"Added in The Criminal Enterprises (2022); pays more than the old contracts.",
+"Adăugat în The Criminal Enterprises (2022); plătește mai mult decât contractele vechi."
+]
+],
+"overthrow": [
+[
+"From the Operations Terminal in the Avenger, after Charlie Reed's call. Raid the Davis Quartz quarry, destroy Merryweather's supply trailers and deliver the Draugur from the container to the LSA lockup.",
+"Din Operations Terminal-ul din Avenger, după apelul lui Charlie Reed. Ataci cariera Davis Quartz, distrugi remorcile Merryweather și duci Draugur-ul din container la depozitul LSA."
+],
+[
+"Use the Avenger's full power: clear the Merryweather defences, land next to the cargo and steal it.",
+"Folosești Avenger-ul din plin: cureți apărarea Merryweather, aterizezi lângă marfă și o furi."
+],
+[
+"Flight tests in the new F-160 Raiju jets: stealth mode, tricks and air targets.",
+"Teste de zbor cu noile avioane F-160 Raiju: modul stealth, figuri și ținte aeriene."
+],
+[
+"Stealthy infiltration of the Merryweather warehouse at McKenzie Airfield (Grapeseed) to take the cargo crates.",
+"Te strecori neobservat în depozitul Merryweather de pe aerodromul McKenzie (Grapeseed) ca să iei lăzile cu marfă."
+],
+[
+"Hostage rescue: get into the FIB building quietly and free Avi Schwartzman.",
+"Salvare de ostatic: intri discret în clădirea FIB și îl eliberezi pe Avi Schwartzman."
+],
+[
+"The finale: land the Avenger at Merryweather HQ, fight to the control room and open it with Avi's card.",
+"Finala: aterizezi cu Avenger-ul la sediul Merryweather, te lupți până la camera de control și intri cu cardul lui Avi."
+]
+],
+"svw": [
+[
+"As CEO, from the SecuroServ computer in the Office, after 4 Vehicle Cargo steals; 2–4 players. Take Ramp Buggies to the Union Depository and clear the escape route for the clients against the LSPD. Trade price: Ramp Buggy $2,400,000 (from $3,192,000).",
+"Ca CEO, de la computerul SecuroServ din birou, după 4 mașini furate pentru Vehicle Cargo; 2–4 jucători. Duci Ramp Buggy-uri la Union Depository și deschizi drumul de scăpare al clienților prin poliție. Preț redus: Ramp Buggy 2.400.000 $ (din 3.192.000 $)."
+],
+[
+"After 8 Vehicle Cargo steals. Take the transport truck carrying a modified classic restoration project and the Wastelander, against the Vagos. Trade price: Wastelander $495,000.",
+"După 8 mașini furate. Iei camionul de transport cu un proiect clasic modificat și Wastelander-ul, împotriva Vagos. Preț redus: Wastelander 495.000 $."
+],
+[
+"After 12. Land and sea attack on the Lost MC meth operation in Blaine County with amphibious Blazer Aquas; deliver one. Trade price: Blazer Aqua $1,320,000.",
+"După 12. Atac pe uscat și pe apă asupra laboratorului de meth al Lost MC din Blaine County, cu ATV-uri amfibii Blazer Aqua; duci unul la predare. Preț redus: Blazer Aqua 1.320.000 $."
+],
+[
+"After 16. Phantom Wedge against the LSPD: protect your team while they grab the drugs, then take them to McKenzie Airfield. Trade price: Phantom Wedge $1,920,000.",
+"După 16. Phantom Wedge împotriva poliției: îți aperi echipa cât ia drogurile, apoi le duci la aerodromul McKenzie. Preț redus: Phantom Wedge 1.920.000 $."
+],
+[
+"After 20. Government contract: use Rocket Voltics to get close to Kkangpae hackers and wipe their hard drives. Trade price: Rocket Voltic $2,880,000.",
+"După 20. Contract guvernamental: cu Rocket Voltic-uri ajungi lângă hackerii Kkangpae și le ștergi hard disk-urile. Preț redus: Rocket Voltic 2.880.000 $."
+],
+[
+"After 24. Coast Guard Duty: Technical Aquas against the Kkangpae on the water; deliver a Technical Aqua. Trade price: Technical Aqua $1,120,000.",
+"După 24. Coast Guard Duty: Technical Aqua-uri împotriva Kkangpae pe apă; duci un Technical Aqua la predare. Preț redus: Technical Aqua 1.120.000 $."
+],
+[
+"After 28. Armored Boxvilles against Merryweather: get the transmitter and deliver it to the safehouse. Trade price: Armored Boxville $2,200,000 (from $2,926,000).",
+"După 28. Armored Boxville-uri împotriva Merryweather: iei transmițătorul și îl duci la casa sigură. Preț redus: Armored Boxville 2.200.000 $ (din 2.926.000 $)."
+],
+[
+"After 32. Ruiner 2000 into Fort Zancudo: destroy the supply trucks, helicopters and planes, then escape to the extraction. Trade price: Ruiner 2000 $4,320,000 (from $5,745,600).",
+"După 32. Cu Ruiner 2000 în Fort Zancudo: distrugi camioanele, elicopterele și avioanele de aprovizionare, apoi fugi la punctul de extracție. Preț redus: Ruiner 2000 4.320.000 $ (din 5.745.600 $)."
+]
+],
+"seriesa": [
+[
+"Trevor's job, 4 players. Steal the coke from dealers on a yacht off Del Perro.",
+"Misiunea lui Trevor, 4 jucători. Furi cocaina de la dealerii de pe un iaht din dreptul Del Perro."
+],
+[
+"Steal a Trashmaster and collect the molly pills hidden in the Vagos' trash bags.",
+"Furi un Trashmaster și aduni pastilele ascunse în sacii de gunoi ai Vagos."
+],
+[
+"At night, sneak into the Lost MC camp (Stab City) and steal their Slamvans.",
+"Noaptea, te strecori în tabăra Lost MC (Stab City) și le furi Slamvan-urile."
+],
+[
+"Steal two Bensons full of weed and protect them with a Technical stolen from the Ballas at the Paleto Forest Sawmill.",
+"Furi două Benson-uri pline cu iarbă și le aperi cu un Technical furat de la Ballas, la gaterul din Paleto Forest."
+],
+[
+"Steal the meth ingredients (a tanker) from the O'Neil brothers' farm.",
+"Furi ingredientele pentru meth (o cisternă) de la ferma fraților O'Neil."
+],
+[
+"Deliver the whole haul to Trevor's deal at the El Gordo Lighthouse and defend it. Unlocks the Mule (heist) and the Technical.",
+"Duci toată marfa la tranzacția lui Trevor de la farul El Gordo și o aperi. Deblochează Mule (heist) și Technical."
+]
+],
+"cluckin": [
+[
+"Wait in Freemode for Vincent's call, then meet him at the V marker outside the Vespucci police station. Deliver counterfeit money to the abandoned FIB lockup on Clinton Avenue (Downtown Vinewood). Unlocks the Gauntlet Interceptor for purchase.",
+"Aștepți în Freemode apelul lui Vincent, apoi îl întâlnești la marcajul V din fața secției de poliție din Vespucci. Duci banii falși la depozitul FIB abandonat de pe Clinton Avenue (Downtown Vinewood). Deblochează Gauntlet Interceptor la cumpărare."
+],
+[
+"The tech for the raid: steal a laptop from a Cluckin' Bell employee at Del Perro Pier, take a hacking device from a Terrorbyte (La Puerta, drone waves), then hijack a freight train.",
+"Echipamentul raidului: furi laptopul unui angajat Cluckin' Bell de la Del Perro Pier, iei un dispozitiv de hacking dintr-un Terrorbyte (La Puerta, valuri de drone), apoi deturnezi un tren de marfă."
+],
+[
+"Steal weapons and gear from a gang hideout: Marabunta Grande, The Professionals or Merryweather. Award All the Sides: all three in one go. Take weapons and getaway cars from different gangs, or security rises.",
+"Furi arme și echipament de la o bandă: Marabunta Grande, The Professionals sau Merryweather. Premiul All the Sides: toate trei dintr-o dată. Ia armele și mașinile de la bande diferite, altfel crește paza."
+],
+[
+"Steal an untraceable getaway vehicle from one of the same three gangs (in any order with Concealed Weapons). Award Fly The Coop: all three; Vincent sells the unused ones for you.",
+"Furi un vehicul de fugă de nedepistat de la una din aceleași trei bande (în orice ordine cu Concealed Weapons). Premiul Fly The Coop: toate trei; Vincent le vinde pe cele nefolosite pentru tine."
+],
+[
+"Sabotage the cartel's supply lines; how you do it decides the finale's approach (Silent or Aggressive). Unlocks the Benson (Cluckin' Bell) trade price.",
+"Sabotezi liniile de aprovizionare ale cartelului; felul în care o faci alege abordarea finalei (Silent sau Aggressive). Deblochează prețul redus la Benson (Cluckin' Bell)."
+],
+[
+"Ride the freight train into the Cluckin' Bell factory in Paleto Bay, Silent or Aggressive, and leave in the MTL Flatbed with the crates. Host: $600,000 first time after the weekly reset, $400,000 after; about an hour's wait before the whole raid can start again. One-time: $250,000 as leader.",
+"Intri cu trenul de marfă în fabrica Cluckin' Bell din Paleto Bay, Silent sau Aggressive, și pleci cu MTL Flatbed-ul cu lăzile. Liderul: 600.000 $ prima dată după resetarea săptămânală, apoi 400.000 $; cam o oră de pauză până poți relua tot raidul. O singură dată: 250.000 $ ca lider."
+]
+],
+"casinostory": [
+[
+"Unlocked by owning the Master Penthouse. Rescue Tao Cheng from the derelict Blaine County motel and escort him back to the Casino.",
+"Se deblochează cu Master Penthouse. Îl salvezi pe Tao Cheng de la motelul abandonat din Blaine County și îl escortezi la cazinou."
+],
+[
+"Follow Vincent (head of security), knock out the hillbillies, recover the stolen Truffade Thrax (repair it at LS Customs if damaged) and bring it back.",
+"Îl urmezi pe Vincent (șeful securității), îi bați pe țărani, recuperezi Truffade Thrax-ul furat (îl repari la LS Customs dacă e avariat) și îl aduci înapoi."
+],
+[
+"Drive the management in the Cognoscenti to the buyout meeting at Marlowe Vineyards; protect Tao when it goes wrong, then go to the Pacific Bluffs Country Club.",
+"Duci conducerea cu Cognoscenti-ul la întâlnirea de la Marlowe Vineyards; îl aperi pe Tao când iese urât, apoi mergi la Pacific Bluffs Country Club."
+],
+[
+"Destroy Avery Duggan's oil tankers around the city and at the LS State Gas Company (Banning).",
+"Distrugi cisternele lui Avery Duggan prin oraș și la LS State Gas Company (Banning)."
+],
+[
+"The buyout meeting at the Casino: mercenaries attack, take them all out.",
+"Întâlnirea de la cazinou: atacă mercenarii, îi elimini pe toți."
+],
+[
+"Go to the ranch at La Fuente Blanca, take out Avery's bodyguards (cameras and spotting bring backup) and destroy his escape helicopter. Reward: Paragon R (Armored).",
+"Mergi la ferma La Fuente Blanca, elimini gărzile lui Avery (camerele și dacă ești văzut aduc întăriri) și îi distrugi elicopterul de fugă. Premiu: Paragon R (Armored)."
+]
+],
+"papertrail": [
+[
+"Starts after Agent ULP calls you: go to the U marker outside the IAA Headquarters. Get into Mason's apartment on San Andreas Avenue and hack his computer.",
+"Pornește după ce te sună agentul ULP: mergi la marcajul U din fața sediului IAA. Intri în apartamentul lui Mason de pe San Andreas Avenue și îi spargi computerul."
+],
+[
+"Hack an FIB surveillance drone, go to the motel, read the laptop and defuse the bomb in the back of the van.",
+"Preiei o dronă de supraveghere FIB, mergi la motel, citești laptopul și dezamorsezi bomba din spatele dubei."
+],
+[
+"Agent Johnson is missing: search her garage and the GPS history, find her, take her to the IAA HQ, lose the cops and drop her at Pillbox hospital.",
+"Agentul Johnson a dispărut: cauți în garajul ei și în istoricul GPS, o găsești, o duci la sediul IAA, scapi de poliție și o lași la spitalul Pillbox."
+],
+[
+"The Duggans move their hardware: find the convoy van with it, steal it and deliver it.",
+"Familia Duggan își mută echipamentele: găsești duba din convoi, o furi și o duci la predare."
+],
+[
+"Construction site: wait for ULP's drone cameras, find the keycard and use it in the elevator terminal.",
+"Șantierul: aștepți camerele dronelor lui ULP, găsești cardul de acces și îl folosești la terminalul liftului."
+],
+[
+"The finale at the silo: open the hatch, reach the control room, find the power breaker and put the fuses back in.",
+"Finala la silozul de rachete: deschizi trapa, ajungi în camera de control, găsești tabloul electric și pui siguranțele la loc."
+]
+],
+"shorttrips": [
+[
+"Needs exactly 2 players (one Franklin, one Lamar); your own weapons and armor are not used, snacks are. Start in the back room of Record A Studios (or Pause → Online → Jobs). Lamar's LD Organics warehouse is raided: fight off the gang and take back his loaded Mule.",
+"Cere exact 2 jucători (unul Franklin, unul Lamar); armele și armura tale nu contează, snacks-urile da. Pornești din camera din spate de la Record A Studios (sau Pauză → Online → Jobs). Depozitul LD Organics al lui Lamar e atacat: respingi banda și recuperezi Mule-ul încărcat."
+],
+[
+"Payback: storm the Vagos weed storage in Blaine County and burn their plants, race each other, then steal a Vagos van (Youga Classic) and drive it to Franklin's house.",
+"Răzbunarea: atacați depozitele de iarbă ale Vagos din Blaine County și le ardeți plantele, vă întreceți, apoi furați o dubă Vagos (Youga Classic) și o duceți la casa lui Franklin."
+],
+[
+"Meet Jimmy Boston and Marnie Allen, deal with the Vagos, then a short publicity stunt for LD Organics. About $50,000 on Normal, $62,500 on Hard.",
+"Vă întâlniți cu Jimmy Boston și Marnie Allen, rezolvați problema cu Vagos, apoi o mică reclamă pentru LD Organics. Cam 50.000 $ pe Normal, 62.500 $ pe Hard."
+]
+],
+"lastdose": [
+[
+"After all six First Dose missions Dax calls you; start at the corona north of The Freakshop. Labrat is kidnapped by men in white: a long gunfight with helicopters (bring ammo, snacks, armor). Reward: Floral Guffy pool sliders.",
+"După cele șase misiuni First Dose te sună Dax; pornești din cercul de la nord de The Freakshop. Labrat e răpit de oameni în alb: o luptă lungă, cu elicoptere (ia muniție, snacks, armură). Premiu: șlapii Floral Guffy."
+],
+[
+"Interrogate suspects at a hideout, then on Elysian Island photograph the five clues in the warehouse (bulletin board, supply crate…) and grab the keycard.",
+"Interoghezi suspecți la o ascunzătoare, apoi pe Elysian Island fotografiezi cele cinci indicii din depozit (panoul cu poze, lada cu provizii…) și iei cardul de acces."
+],
+[
+"With the keycard, get into the FriedMind headquarters, find the clipboard and the keys, fight down to the basement and rescue Labrat; Friedlander shows up; drive Labrat back to The Freakshop.",
+"Cu cardul de acces intri în sediul FriedMind, găsești clipboard-ul și cheile, te lupți până la subsol și îl salvezi pe Labrat; apare Friedlander; îl duci pe Labrat înapoi la The Freakshop."
+],
+[
+"Ambush Dr. Friedlander's rehab clinic: shoot him on the balcony to start each wave, then a trip with aliens and clones of Friedlander, Dax, Luchadora and yourself; at the end: let go.",
+"Ataci clinica de dezintoxicare a doctorului Friedlander: îl împuști pe balcon ca să pornească fiecare val, apoi o călătorie cu extratereștri și clone ale lui Friedlander, Dax, Luchadora și ale tale; la final: nu te mai opune."
+],
+[
+"The finale: chase Friedlander's cargo plane with Luchadora, crash into its back, clear FriedMind's men and steal the plane with the drugs. Reward: Friedlander's Ocelot Virtue for free (+ Lime Leopard Slab cap and canvas shoes).",
+"Finala: urmărești avionul cargo al lui Friedlander cu Luchadora, intrați prin spatele lui, curățați oamenii FriedMind și furați avionul cu drogurile. Premiu: Ocelot Virtue-ul lui Friedlander gratis (+ șapca Lime Leopard Slab și tenișii)."
+]
+],
+"clientjobs": [
+[
+"Solo. Find the bank robbery in progress, take the gold from the robbers and deliver it. About $30,000–35,000; 3–7 minutes.",
+"Solo. Găsești jaful de bancă în desfășurare, iei aurul de la hoți și îl livrezi. Cam 30.000–35.000 $; 3–7 minute."
+],
+[
+"Solo. Hack several moving vehicles to find which ones carry the data drives, steal them and deliver to the client. About $31,500; the easiest one.",
+"Solo. Spargi mai multe vehicule în mers ca să afli care duc hard disk-urile, le furi și le duci clientului. Cam 31.500 $; cea mai ușoară."
+],
+[
+"Solo, needs the Drone Station ($815,000). Get into the Lifeinvader servers, track down a high-value target and take him out; the office part is faster loud, with a shotgun.",
+"Solo, cere Drone Station (815.000 $). Intri în serverele Lifeinvader, găsești o țintă importantă și o elimini; partea din birou merge mai repede „cu zgomot”, cu un shotgun."
+],
+[
+"Solo, needs the Drone Station. Steal the diamonds from the security team delivering them to Vangelico and take them to the client. About $31,500.",
+"Solo, cere Drone Station. Furi diamantele de la echipa de pază care le duce la Vangelico și le duci clientului. Cam 31.500 $."
+],
+[
+"2 players or more (a Client Challenge with its own 10-minute cooldown).",
+"2 jucători sau mai mulți (Client Challenge, cu propria pauză de 10 minute)."
+],
+[
+"2 players or more (a Client Challenge with its own 10-minute cooldown).",
+"2 jucători sau mai mulți (Client Challenge, cu propria pauză de 10 minute)."
+]
+],
+"repo": [
+[
+"Start at Premium Deluxe Motorsport (Pillbox Hill). Destroy the rival's imported cars in the warehouse on Autopia Parkway (LSIA), then the special ones in the basement, and escape.",
+"Pornești de la Premium Deluxe Motorsport (Pillbox Hill). Distrugi mașinile importate ale rivalului din depozitul de pe Autopia Parkway (LSIA), apoi pe cele speciale din subsol, și fugi."
+],
+[
+"Raid the La Mesa police station impound, steal the target car, lose the cops and bring it to Simeon's garage at the docks (Terminal).",
+"Ataci parcarea de la secția de poliție din La Mesa, furi mașina-țintă, scapi de poliție și o duci în garajul lui Simeon din port (Terminal)."
+],
+[
+"Steal an Apocalypse Sasquatch monster truck from the Maze Bank Arena, wreck Simeon's rivals' cars with it, deliver it to the docks.",
+"Furi un monster truck Apocalypse Sasquatch de la Maze Bank Arena, distrugi cu el mașinile rivalilor lui Simeon, îl duci în port."
+],
+[
+"Find a Cargobob and airlift cars out of Rockford Hills mansions without setting off the alarms; drop them at the parking lot.",
+"Găsești un Cargobob și ridici mașini din vilele din Rockford Hills fără să pornești alarmele; le lași în parcare."
+],
+[
+"Steal the cars on a client's wish list around the city and deliver them to the docks.",
+"Furi mașinile de pe lista unui client, prin oraș, și le duci în port."
+],
+[
+"Steal the limited-edition Brickade RV from Larry's RV Sales (Route 68, Harmony) and drive it to the dealership.",
+"Furi RV-ul Brickade de la Larry's RV Sales (Route 68, Harmony) și îl duci la showroom."
+],
+[
+"Find a Fire Truck, put out the fires on Simeon's shipment in Terminal and kill the attackers.",
+"Găsești un Fire Truck, stingi incendiile de la transportul lui Simeon din Terminal și elimini atacatorii."
+],
+[
+"At LSIA: steal back the cars from a cargo plane and take them to the dealership.",
+"La aeroportul LSIA: furi înapoi mașinile dintr-un avion cargo și le duci la showroom."
+]
+],
+"fleeca": [
+[
+"Lester's test, 2 players. Scope out the Fleeca bank on the Great Ocean Highway (Banham Canyon) and drive a Granger full of equipment to the leader's garage.",
+"Testul lui Lester, 2 jucători. Cercetezi banca Fleeca de pe Great Ocean Highway (Banham Canyon) și duci un Granger plin cu echipament în garajul liderului."
+],
+[
+"Steal an armored Kuruma from the Kkangpae in a Del Perro parking garage. Unlocks the Kuruma and Kuruma (Armored) at trade price.",
+"Furi un Kuruma blindat de la Kkangpae dintr-o parcare etajată din Del Perro. Deblochează Kuruma și Kuruma (Armored) la preț redus."
+],
+[
+"Driver and Driller: drill the safety deposit box with the bonds, escape the police in the armored Kuruma, and a Cargobob lifts the car away.",
+"Șofer și Driller: dai cu burghiul în cutia de valori cu obligațiunile, scapi de poliție cu Kuruma blindat, iar un Cargobob ridică mașina."
+]
+],
+"prison": [
+[
+"Exactly 4 players for every setup. Steal the Vagos' Velum 5-Seater from McKenzie Field Hangar (Grapeseed). Plane, Bus and Station in any order.",
+"Exact 4 jucători la fiecare setup. Furi Velum 5-Seater-ul Vagos de la McKenzie Field Hangar (Grapeseed). Plane, Bus și Station în orice ordine."
+],
+[
+"Hijack the prison bus headed to Bolingbroke (take out the escort and the driver), lose the cops and deliver it.",
+"Deturnezi autobuzul de deținuți spre Bolingbroke (elimini escorta și șoferul), scapi de poliție și îl predai."
+],
+[
+"Two teams: one steals a police cruiser, walks into Mission Row police station and takes the inmate transfer schedule; the other takes Rashkovsky's Lampadati Casco from a container on the cargo ship and drops it near Sandy Shores. Unlocks the Casco.",
+"Două echipe: una fură o mașină de poliție, intră în secția din Mission Row și ia programul transferurilor; cealaltă ia Lampadati Casco-ul lui Rashkovsky dintr-un container de pe navă și îl lasă lângă Sandy Shores. Deblochează Casco."
+],
+[
+"After the other three. Two teams: one kills Rashkovsky's former partner (Dima Popov), the other kills two lawyers at City Hall and brings back the briefcase.",
+"După celelalte trei. Două echipe: una îl elimină pe fostul partener al lui Rashkovsky (Dima Popov), cealaltă elimină doi avocați la City Hall și aduce servieta."
+],
+[
+"Four roles: Prisoner and Prison Officer ride the bus into Bolingbroke, Demolition stops the inbound bus, the Pilot picks them up in the Velum. $350,000 / $700,000 / $875,000 (Easy / Normal / Hard). Unlocks the Velum 5-Seater and the Prison Bus at trade price.",
+"Patru roluri: Prisoner și Prison Officer intră cu autobuzul în Bolingbroke, Demolition oprește autobuzul care vine, Pilot îi ia cu Velum-ul. 350.000 $ / 700.000 $ / 875.000 $ (Easy / Normal / Hard). Deblochează Velum 5-Seater și Prison Bus la preț redus."
+]
+],
+"knoway": [
+[
+"Starts at a payphone (Echo Rock Shopping Plaza, Alta). Drive a remote-controlled KnoWay taxi to smear the company, steal the hard drives, lose the cops and leave them in Avi's Felon GT at his dead drop. Award Autonomous: all objectives with the taxi. First completion: KnoWay hoodie.",
+"Pornești de la un telefon public (Echo Rock Shopping Plaza, Alta). Conduci de la distanță un taxi KnoWay ca să strici imaginea firmei, furi hard disk-urile, scapi de poliție și le lași în Felon GT-ul lui Avi, la ascunzătoare. Premiul Autonomous: toate obiectivele cu taxiul. Prima reușită: hanoracul KnoWay."
+],
+[
+"Luxury Autos (Rockford Hills): get inside, take out the boss and leave in the Omnis e-GT (a Menacer shows up). Award Explosive Leadership: kill the boss with the explosive.",
+"Luxury Autos (Rockford Hills): intri, îl elimini pe șef și pleci cu Omnis e-GT-ul (apare și un Menacer). Premiul Explosive Leadership: șeful eliminat cu explozibilul."
+],
+[
+"Payphone at Caipira Airways (LSIA): go to the LSIA Terminal 4 station, ride the LS Transit train and ambush the target in the subway tunnel, escape the mercenaries and bring the briefcase to the dead drop. Bonus $10,000: the ECU in the tunnel. Award Subway Stunt: the jump at the tunnel exit.",
+"Telefonul de la Caipira Airways (LSIA): mergi la stația Terminal 4, te urci în trenul LS Transit și ataci ținta în tunel, scapi de mercenari și duci servieta la ascunzătoare. Bonus 10.000 $: ECU-ul din tunel. Premiul Subway Stunt: saltul la ieșirea din tunel."
+],
+[
+"Chamberlain Hills (Carson Ave / Innocence Blvd): disguised as a garbage man with a Trashmaster, collect the trash from the KnoWay offices and steal the data. Award Waste Not: collect all the trash; all objectives in one go: +$50,000 ($100,000 on Hard).",
+"Chamberlain Hills (Carson Ave / Innocence Blvd): deghizat în gunoier, cu un Trashmaster, aduni gunoiul de la birourile KnoWay și furi datele. Premiul Waste Not: tot gunoiul; toate obiectivele dintr-o dată: +50.000 $ (100.000 $ pe Hard)."
+],
+[
+"Strawberry (by Totally Rental): the hardest one; the FIB arrests you, then helicopters and a Seashark escape to Avi's tugboat. Pays about $245,000 (Normal) / $367,500 (Hard); first time as leader +$250,000. Award The Cleanest Break: the Elite Challenge.",
+"Strawberry (lângă Totally Rental): cea mai grea; te arestează FIB, apoi elicoptere și fuga cu un Seashark până la remorcherul lui Avi. Plătește cam 245.000 $ (Normal) / 367.500 $ (Hard); prima dată ca lider +250.000 $. Premiul The Cleanest Break: Elite Challenge-ul."
+],
+[
+"Only if you own a Prix Luxury Mansion: after A Clean Break, defend your mansion with Michael De Santa. First completion: $500,000 one-time.",
+"Doar dacă ai un Prix Luxury Mansion: după A Clean Break îți aperi vila alături de Michael De Santa. Prima reușită: 500.000 $ o singură dată."
+]
+],
+"mobileops": [
+[
+"Unlocks after 2 stolen Bunker resupplies. Take down Merryweather's air supply line in Blaine County with Dune FAVs, destroy the Cargobob, return the Dune FAV. Trade price: Dune FAV $850,000 (from $1,130,500).",
+"Se deblochează după 2 aprovizionări furate pentru Bunker. Distrugi linia de aprovizionare aeriană Merryweather din Blaine County cu Dune FAV-uri, doborî Cargobob-ul, aduci Dune FAV-ul înapoi. Preț redus: Dune FAV 850.000 $ (din 1.130.500 $)."
+],
+[
+"After 4 resupplies. Reach the enemy base by Dinghy, hack the doors of a weaponized Half-track and drive it to the drop-off through the air attacks. Trade price: Half-track $1,695,000 (from $2,254,350).",
+"După 4 aprovizionări. Ajungi cu un Dinghy la baza inamică, spargi ușile unui Half-track înarmat și îl duci la punctul de predare prin atacurile aeriene. Preț redus: Half-track 1.695.000 $ (din 2.254.350 $)."
+],
+[
+"After 6 resupplies. Protect three dignitaries leaving LSIA by plane and helicopter with turreted trailers, then deliver the Anti-Aircraft Trailer. Trade price: Anti-Aircraft Trailer $1,400,000 (from $1,862,000).",
+"După 6 aprovizionări. Aperi trei demnitari care pleacă de pe LSIA cu avionul și elicopterul, folosind remorci cu turelă, apoi duci Anti-Aircraft Trailer-ul. Preț redus: Anti-Aircraft Trailer 1.400.000 $ (din 1.862.000 $)."
+],
+[
+"After 8 resupplies. A downed freighter at sea: recover the APCs and deliver them. Trade price: APC $2,325,000 (from $3,092,250).",
+"După 8 aprovizionări. Un cargou eșuat pe mare: recuperezi APC-urile și le duci la predare. Preț redus: APC 2.325.000 $ (din 3.092.250 $)."
+],
+[
+"After 10 resupplies. A Company MOC is exposed: drive it to the docks fast enough to dodge the missile lock while the others defend it.",
+"După 10 aprovizionări. Un MOC al Companiei e descoperit: îl duci în port destul de repede ca să eviți rachetele, în timp ce ceilalți îl apără."
+],
+[
+"After 12 resupplies. In weaponized Tampas: destroy the signal jammers, hunt down the traitor agent, deliver a Weaponized Tampa. Trade price: Weaponized Tampa $1,585,000 (from $2,108,050).",
+"După 12 aprovizionări. Cu Tampa-uri înarmate: distrugi bruiajele, îl vânezi pe agentul trădător, duci un Weaponized Tampa la predare. Preț redus: Weaponized Tampa 1.585.000 $ (din 2.108.050 $)."
+],
+[
+"After 14 resupplies. Enemy agents hide stolen Company data on Oppressor bikes: take the bikes and deliver them to a friendly cargo plane.",
+"După 14 aprovizionări. Agenții inamici ascund datele furate pe motociclete Oppressor: le iei și le duci la un avion cargo prietenos."
+],
+[
+"After Data Breach. Jump out of the cargo plane, destroy the enemy MOCs at the docks and deliver an Oppressor. Trade price: Oppressor $2,650,000 (from $3,524,500).",
+"După Data Breach. Sari din avionul cargo, distrugi MOC-urile inamice din port și duci un Oppressor la predare. Preț redus: Oppressor 2.650.000 $ (din 3.524.500 $)."
+]
+],
+"firstdose": [
+[
+"After Ron's call, go to Sandy Shores (Ace Liquor): fight off the Lost MC, recover Dax's stolen Journey II and drive Dax to the abandoned warehouse in the Mirror Park railyard, which becomes The Freakshop. Unlocks the Fooligan Jobs. Award: $50,000 as leader.",
+"După apelul lui Ron, mergi în Sandy Shores (Ace Liquor): respingi Lost MC, recuperezi Journey II-ul furat al lui Dax și îl duci pe Dax la depozitul abandonat din Mirror Park, care devine The Freakshop. Deblochează Fooligan Jobs. Premiu: 50.000 $ ca lider."
+],
+[
+"From the D marker by The Freakshop. Pick up party supplies at Jetsam Terminal, then go to the Lost MC clubhouse in East Vinewood, photograph their plans and steal their weed; back to The Freakshop. Award: $50,000.",
+"Din marcajul D de lângă The Freakshop. Iei proviziile de la Jetsam Terminal, apoi mergi la clubul Lost MC din East Vinewood, fotografiezi planurile și le furi iarba; înapoi la The Freakshop. Premiu: 50.000 $."
+],
+[
+"Destroy the Lost's property in Stab City, find their meth at Millar's Fishery and escape in the Dodo seaplane back to the storm drain by The Freakshop. Award: $50,000.",
+"Distrugi bunurile Lost din Stab City, le găsești metamfetamina la Millar's Fishery și fugi cu hidroavionul Dodo până la canalul de lângă The Freakshop. Premiu: 50.000 $."
+],
+[
+"You try the product: a wild trip through random scenes (Kifflom, the rabbit hole, rabbit and hunter) ending in a free fall to the Up-n-Atom on Vinewood Boulevard. You cannot fail it. Award: $50,000 (+ Run Rabbit Run as the rabbit).",
+"Încerci produsul: o călătorie nebună prin scene la întâmplare (Kifflom, gaura iepurelui, iepure și vânător) care se termină cu o cădere liberă la Up-n-Atom de pe Vinewood Boulevard. Nu o poți pierde. Premiu: 50.000 $ (+ Run Rabbit Run ca iepure)."
+],
+[
+"Wreck the competition: destroy the lab equipment and the delivery vans at the hippy camp, then at the Altruist Camp. Heavy fighting: bring armor. Award: $50,000.",
+"Distrugi concurența: echipamentele de laborator și dubele de livrare din tabăra hipioților, apoi din tabăra Altruist. Luptă grea: ia armură. Premiu: 50.000 $."
+],
+[
+"Humane Labs: open the door with the keypad, search the loading bay for intel, then take the chemicals and the Brickade 6x6. Reward: the Acid Lab (Brickade 6x6) for free. Award: $50,000.",
+"Humane Labs: deschizi ușa cu tastatura, cauți informațiile în zona de încărcare, apoi iei substanțele și Brickade 6x6-ul. Premiu: Acid Lab-ul (Brickade 6x6) gratis. Premiu: 50.000 $."
+]
+],
+"pacific": [
+[
+"Lester's big bank job, 4 players. Photograph the Post OP vans and steal the right one. Unlocks the Boxville (Post OP).",
+"Marele jaf de bancă al lui Lester, 4 jucători. Fotografiezi dubele Post OP și o furi pe cea bună. Deblochează Boxville (Post OP)."
+],
+[
+"Bring a transponder to Avi Schwartzman so he can tune it to the bank's dye-pack frequency.",
+"Îi duci un transponder lui Avi Schwartzman ca să-l regleze pe frecvența pachetelor cu vopsea ale băncii."
+],
+[
+"Steal the data from a black Gang Burrito. Unlocks the Gang Burrito (custom).",
+"Furi datele dintr-un Gang Burrito negru. Deblochează Gang Burrito (custom)."
+],
+[
+"Hijack a Merryweather convoy to get the thermal charges. Unlocks the Savage.",
+"Ataci un convoi Merryweather ca să iei încărcăturile termice. Deblochează Savage."
+],
+[
+"Steal four Lectro bikes from the Lost MC camp in East Los Santos, the getaway bikes for the finale.",
+"Furi patru motociclete Lectro din tabăra Lost MC din East Los Santos, motocicletele de fugă din finală."
+],
+[
+"Rob the Pacific Standard bank in Vinewood: crowd control, the vault hack and drill, then the escape on the Lectros to the boat. Unlocks the Lectro.",
+"Jefuiești banca Pacific Standard din Vinewood: controlul ostaticilor, hack-ul și burghiul la seif, apoi fuga pe Lectro până la barcă. Deblochează Lectro."
+]
+],
+"fibfiles": [
+[
+"From Jodi at the Garment Factory; 1–4 players, all solo-friendly; three preps then the finale. Bring down a ghost IAA cargo plane over the Alamo Sea, recover its black box from the wreck and deliver it (one prep: the Hacking Device). About $155,000. Trophy: a golden plane.",
+"De la Jodi, în Garment Factory; 1–4 jucători, toate merg solo; trei pregătiri apoi finala. Dobori un avion cargo IAA „fantomă” deasupra Alamo Sea, recuperezi cutia neagră din epavă și o predai (o pregătire: Hacking Device). Cam 155.000 $. Trofeu: un avion de aur."
+],
+[
+"Three preps (one is the Private Military Armor), then sneak into Fort Zancudo, hack the alarm, steal the Scarab tank, escape through the tunnel and deliver it. About $158,000. Trophy: a golden tank.",
+"Trei pregătiri (una e Private Military Armor), apoi te strecori în Fort Zancudo, spargi alarma, furi tancul Scarab, fugi prin tunel și îl predai. Cam 158.000 $. Trofeu: un tanc de aur."
+],
+[
+"Three preps (EMP Charges; a drone face scan of the owner from a roof…), then a stealth break-in to a penthouse to recover stolen art; the target changes (one is a Vice City Easter egg). About $153,000.",
+"Trei pregătiri (EMP Charges; scanarea feței proprietarului cu drona de pe un acoperiș…), apoi o spargere discretă într-un penthouse ca să recuperezi arta furată; ținta variază (una e o referință la Vice City). Cam 153.000 $."
+],
+[
+"Preps: Mobile Tracking, Thermal Charges, Encryption Bypass; the finale goes after Maze Bank's secret slush fund (hard drives, server blades, black books; the drive is in a house basement). $150,000 + up to $150,000 from challenges. Trophy: a hand holding a golden hard drive.",
+"Pregătiri: Mobile Tracking, Thermal Charges, Encryption Bypass; finala vizează fondul secret al Maze Bank (hard disk-uri, servere, agende negre; hard disk-ul e în subsolul unei case). 150.000 $ + până la 150.000 $ din provocări. Trofeu: o mână care ține un hard disk de aur."
+]
+],
+"payphone": [
+[
+"A drunk tech mogul outside a hotel. Bonus: pick him up in a taxi and kill him the way Franklin says (e.g. a gas station explosion, or into the sea). Trophy: a model taxi.",
+"Un magnat al tehnologiei beat, în fața unui hotel. Bonus: îl iei cu un taxi și îl elimini cum spune Franklin (ex. explozie la benzinărie sau în mare). Trofeu: o machetă de taxi."
+],
+[
+"A corrupt judge at the Los Santos Golf Club. Bonus: wear the golf outfit and use a golf club, a remote bomb or a golf caddy, as asked. Trophy: golf ball and tee.",
+"Un judecător corupt la Los Santos Golf Club. Bonus: îmbraci ținuta de golf și folosești o crosă, o bombă cu telecomandă sau un cart de golf, cum ți se cere. Trofeu: minge și tee de golf."
+],
+[
+"A cofounder in a motel room with his Mariachi Tornado. Bonus: wait until he is in his car and blow it up (or fire / scoped rifle, as asked). Trophy: a sticky bomb.",
+"Un cofondator într-o cameră de motel, cu Mariachi Tornado-ul lui. Bonus: aștepți să urce în mașină și o arunci în aer (sau foc / pușcă cu lunetă, cum ți se cere). Trofeu: o bombă lipicioasă."
+],
+[
+"A CEO filming at a construction site (El Burro Heights, Redwood Lights Track or Paleto). Bonus: make it look like a workplace accident (bulldozer, container, gas tank). Trophy: construction helmet.",
+"Un CEO care filmează pe un șantier (El Burro Heights, Redwood Lights Track sau Paleto). Bonus: faci să pară un accident de muncă (buldozer, container, butelie). Trofeu: casca de protecție."
+],
+[
+"Several online trolls spread across the map (more with associates in your organization). Bonus: the way Franklin asks (fast, headshots, run over). Trophy: an iFruit laptop full of bullet holes.",
+"Mai mulți „troli” de pe internet, împrăștiați pe hartă (mai mulți dacă ai asociați în organizație). Bonus: cum cere Franklin (repede, în cap, călcați cu mașina). Trofeu: un laptop iFruit ciuruit."
+],
+[
+"A spoiled popstar driving his Annis Euros around Los Santos. Bonus: the asked method (drive-by, ramming with a truck…). Trophy: a model Annis Euros.",
+"Un cântăreț răsfățat care conduce Annis Euros-ul prin Los Santos. Bonus: metoda cerută (drive-by, lovit cu un camion…). Trofeu: o machetă Annis Euros."
+],
+[
+"Four dealers at once; needs 2+ players in your organization. Bonus: kill all four at the same time (silenced pistol, explosives or scoped rifle, stashed nearby). Trophy: a Merryweather cap.",
+"Patru dealeri deodată; cere 2+ jucători în organizație. Bonus: îi elimini pe toți patru în același timp (pistol cu amortizor, explozibil sau pușcă cu lunetă, ascunse în apropiere). Trofeu: o șapcă Merryweather."
+],
+[
+"A group of hitmen; needs 2+ players. Bonus: kill them before or after they reach their spot, as asked. Trophy: the Coil logo.",
+"Un grup de asasini; cere 2+ jucători. Bonus: îi elimini înainte sau după ce ajung la locul lor, cum ți se cere. Trofeu: logo-ul Coil."
+]
+],
+"humane": [
+[
+"4 players. Get the lab's access codes from IAA agent Karen while holding off the FIB.",
+"4 jucători. Iei codurile de acces ale laboratorului de la agentul IAA Karen, în timp ce ții FIB la distanță."
+],
+[
+"Steal two Insurgents (Pick-Up) from a Merryweather test site at Davis Quartz.",
+"Furi două Insurgent (Pick-Up) de la un teren de teste Merryweather din Davis Quartz."
+],
+[
+"Steal a Hydra fitted with an EMP from the aircraft carrier. Unlocks the Hydra.",
+"Furi un Hydra echipat cu EMP de pe portavion. Deblochează Hydra."
+],
+[
+"Steal a Valkyrie helicopter from Merryweather at the Los Santos Naval Port.",
+"Furi un elicopter Valkyrie de la Merryweather din Portul Naval Los Santos."
+],
+[
+"Drive the EMP to the research lab in an unarmed Insurgent and hack the garage door (Data Crack).",
+"Duci EMP-ul la laborator cu un Insurgent neînarmat și spargi ușa garajului (Data Crack)."
+],
+[
+"The raid on Humane Labs and Research: an infiltration team inside, a support team with the Valkyrie and a pickup. Unlocks the Insurgent, Insurgent Pick-Up and Valkyrie.",
+"Raidul la Humane Labs and Research: o echipă intră, una de sprijin cu Valkyrie și una care îi ia. Deblochează Insurgent, Insurgent Pick-Up și Valkyrie."
+]
+],
+"geraldlp": [
+[
+"Start at Gerald's apartment (Casa Cristina, Strawberry). Hunt the Salva (Marabunta Grande) crews across the city, kill their boss at the Alta construction site and photograph him.",
+"Pornești de la apartamentul lui Gerald (Casa Cristina, Strawberry). Vânezi grupurile Salva (Marabunta Grande) prin oraș, îl elimini pe șef la șantierul din Alta și îi faci o poză."
+],
+[
+"Steal the Lost MC bikers' drugs at four spots (Vespucci Canals, Downtown Vinewood, El Burro Heights, Cypress Flats) and regroup at Gerald's.",
+"Furi drogurile motocicliștilor Lost MC din patru locuri (Vespucci Canals, Downtown Vinewood, El Burro Heights, Cypress Flats) și te întorci la Gerald."
+],
+[
+"Find the van with drug-filled action figures: Little Seoul, then the ULSA campus, then a third spot; bring the van to Gerald.",
+"Găsești duba cu figurine pline cu droguri: Little Seoul, apoi campusul ULSA, apoi un al treilea loc; aduci duba la Gerald."
+],
+[
+"Raid the Raven Slaughterhouse (Cypress Flats): crack the safe, steal the formula, kill the gang boss.",
+"Ataci abatorul Raven (Cypress Flats): spargi seiful, furi formula, îl elimini pe șeful bandei."
+],
+[
+"Gerald's stolen batch has a tracker: get to the deal (Elysian Island), search the crates, then destroy the evidence at the buyers.",
+"Marfa furată a lui Gerald are un dispozitiv de urmărire: ajungi la tranzacție (Elysian Island), cauți prin lăzi, apoi distrugi dovezile la cumpărători."
+],
+[
+"The big sale: drive the Mule Custom to the buyers and protect it from the Ballas, then deliver it to the new spot on Elysian Island.",
+"Vânzarea mare: duci Mule Custom-ul la cumpărători și îl aperi de Ballas, apoi îl livrezi la noul loc din Elysian Island."
+]
+],
+"lowriders": [
+[
+"Rank 5, from Lamar's LD marker; needs 4 players. Two teams in lowriders start a war between the Vagos and the Ballas, regroup at the Big House Storage lot, then return to Benny's Original Motor Works.",
+"Rang 5, din marcajul LD al lui Lamar; cere 4 jucători. Două echipe în lowridere pornesc un război între Vagos și Ballas, se regrupează la Big House Storage, apoi se întorc la Benny's Original Motor Works."
+],
+[
+"2 players. Drive two hot lowriders (a Voodoo and a Faction) from Del Perro Pier to the deal in Cypress Flats without being spotted by the cops, then take out the Ballas.",
+"2 jucători. Duci două lowridere „fierbinți” (un Voodoo și un Faction) de la Del Perro Pier la întâlnirea din Cypress Flats fără să te vadă poliția, apoi elimini Ballas."
+],
+[
+"2 players. At LSIA, blow open the police van doors and rescue Gerald before he is flown out of the state; take him to the drop-off.",
+"2 jucători. Pe LSIA, arunci în aer ușile dubei de poliție și îl salvezi pe Gerald înainte să fie dus cu avionul din stat; îl duci la punctul de predare."
+],
+[
+"4 players. Shoot up the Vagos funeral of Little Al (killed in the drive-by), take out the gangsters and take the cocaine hidden in the Romero hearses.",
+"4 jucători. Ataci înmormântarea lui Little Al la Vagos (ucis în drive-by), elimini gangsterii și iei cocaina ascunsă în dricurile Romero."
+],
+[
+"2 players. One snipes from cover, the other sneaks into the Ballas lowrider meet: destroy one car and steal another (a Chino).",
+"2 jucători. Unul trage de la distanță, celălalt se strecoară la întâlnirea de lowridere a Ballas: distrugi o mașină și furi alta (un Chino)."
+],
+[
+"2 players. Watch a Vagos lowrider meet from a vantage point, photograph the cars as they arrive, then steal the two Lamar picks.",
+"2 jucători. Privești o întâlnire de lowridere a Vagos de la distanță, fotografiezi mașinile când sosesc, apoi furi cele două alese de Lamar."
+],
+[
+"4 players. In the Moonbeam Custom: take out the Ballas OGs on Grove Street and the Vagos shot callers around Los Santos and Chumash, then destroy the Moonbeam in Del Perro.",
+"4 jucători. Cu Moonbeam Custom-ul: elimini veteranii Ballas de pe Grove Street și șefii Vagos prin Los Santos și Chumash, apoi distrugi Moonbeam-ul în Del Perro."
+],
+[
+"4 players. Steal two Buccaneers, lose the cops, deliver them to Benny's and defend the place from the Vagos attack.",
+"4 jucători. Furi două Buccaneer-uri, scapi de poliție, le duci la Benny's și aperi locul de atacul Vagos."
+]
+]
+};
+// corrections found while checking (13.11.2026)
+const MFIX = {
+  svw: { players: "2–4", rename: { "Coastal Calling": "Coast Guard Duty" },
+    about: ["Eight missions for the CEO, from the SecuroServ computer in the Office: each needs 4 more Vehicle Cargo steals (4, 8 … 32), 2–4 players, and unlocks the trade price of its special vehicle at Warstock.", "Opt misiuni pentru CEO, de la computerul SecuroServ din birou: fiecare cere încă 4 mașini furate pentru Vehicle Cargo (4, 8 … 32), 2–4 jucători, și deblochează prețul redus al vehiculului ei special la Warstock."] },
+  mobileops: { players: "2–4",
+    about: ["Eight operations for Agent 14 from the Mobile Operations Center (2–4 players). They unlock with stolen Bunker resupplies: 2, 4, 6 … 14, and Work Dispute after Data Breach; most unlock a Warstock trade price.", "Opt operațiuni pentru Agent 14 din Mobile Operations Center (2–4 jucători). Se deblochează cu aprovizionări furate pentru Bunker: 2, 4, 6 … 14, iar Work Dispute după Data Breach; cele mai multe deblochează un preț redus la Warstock."] },
+  lowriders: { players: "2–4", rename: { "Desperate Times": "Desperate Times Call For..." },
+    about: ["Lamar's Lowriders: eight missions in a fixed order, from rank 5, from his LD marker. None can be played solo: some need 2 players, some 4.", "Lowriders ale lui Lamar: opt misiuni într-o ordine fixă, de la rangul 5, din marcajul lui LD. Niciuna nu merge solo: unele cer 2 jucători, altele 4."] },
+  shorttrips: { players: "2" },
+  clientjobs: { players: "1–4", add: [["Collector's Pieces", "se", 0], ["Deal Breaker", "se", 0]],
+    about: ["Six jobs from Paige Harris on the Terrorbyte's touchscreen (needs a Nightclub and the Terrorbyte). About $30,000–35,000 each. After a job: that job waits 30 minutes, the others 5; the two 2-player ones have their own 10-minute wait.", "Șase misiuni de la Paige Harris pe ecranul din Terrorbyte (cere Nightclub și Terrorbyte). Cam 30.000–35.000 $ fiecare. După o misiune: aceeași așteaptă 30 de minute, celelalte 5; cele două pentru 2 jucători au propria pauză de 10 minute."] },
+  clubhouse: { players: "1–8",
+    about: ["Malc's contracts on the notice board of your MC Clubhouse: three at a time, at random; you pick one. As MC President; some need 2+ members.", "Contractele lui Malc de pe panoul din MC Clubhouse: câte trei, la întâmplare; alegi unul. Ca președinte de MC; unele cer 2+ membri."] },
+  fibfiles: { about: ["Jodi Marshall's four FIB Files at the Darnell Bros Garment Factory: three preps and a finale each, 1–4 players, all solo-friendly, about $150,000 a finale. The Priority File of the week pays double, once per weekly reset. The factory also has a small safe.", "Cele patru dosare FIB ale lui Jodi Marshall din Darnell Bros Garment Factory: trei pregătiri și o finală fiecare, 1–4 jucători, toate merg solo, cam 150.000 $ pe finală. Priority File-ul săptămânii plătește dublu, o dată pe săptămână. Fabrica are și un seif mic."] },
+  payphone: { about: ["Franklin's hits at public payphones, after 3 Security Contracts (then call Franklin). $15,000 base + the assassination bonus if you kill the way Franklin asks (now +$30,000; older guides say +$70,000), and a trophy on the Agency shelf the first time. Wait between hits: 10 minutes (it was 20). The Dealers and The Hitmen need 2+ players.", "Asasinatele lui Franklin la telefoane publice, după 3 Security Contracts (apoi îl suni pe Franklin). 15.000 $ de bază + bonusul dacă elimini cum cere Franklin (acum +30.000 $; ghidurile vechi spun +70.000 $) și un trofeu pe raftul din Agency prima dată. Pauza dintre misiuni: 10 minute (era 20). The Dealers și The Hitmen cer 2+ jucători."] }
+};
+function applyMissionDetails() {
+  Object.entries(MFIX).forEach(([id, f]) => { const o = OPS[id]; if (!o) return;
+    if (f.players) o.players = f.players; if (f.about) o.about = f.about;
+    const st = o.parts[0] && o.parts[0].steps; if (!st) return;
+    if (f.rename) st.forEach(s => { if (f.rename[s[0]]) s[0] = f.rename[s[0]]; });
+    if (f.add) f.add.forEach(a => { if (!st.some(s => s[0] === a[0])) st.push([...a]); }); });
+  Object.entries(MDET).forEach(([id, list]) => { const o = OPS[id]; if (!o || !o.parts[0]) return;
+    if (list[0] && list[0].length === 3) { o.parts[0].steps = list.map(([n, en, ro], i) => [n, "se", 0, en, ro]); return; }   // a full list with names (clubhouse)
+    o.parts[0].steps.forEach((s, i) => { if (list[i]) { s[3] = list[i][0]; s[4] = list[i][1]; } }); });
+}
+applyMissionDetails();
 
 function ProductionManager(sec) {
 const ROOT = sec.el;
@@ -9930,6 +10747,8 @@ function jmNowHtml() {
   const doing = [];
   Object.entries(OPS).forEach(([id, o]) => o.parts.forEach(p => { const [a, b] = opProg(id, p); if (a > 0 && a < b) doing.push(`<a class="jm-chip doing" href="#op-${id}">▶ ${escapeHtml(p.name || o.name)} <b>${a}/${b}</b></a>`); }));
   Object.entries(OPS).forEach(([id, o]) => { if (!o.board || !BOARDS[o.board]) return; const [a, b] = bdProg(o.board); if (a > 0 && a < b) doing.push(`<a class="jm-chip doing" href="#op-${id}">▶ ${escapeHtml(o.name)} <b>${a}/${b}</b></a>`); });
+  { const now = Date.now(); Object.entries(S.trkT || {}).filter(([, tm]) => tm.end > now).sort((a, b) => a[1].end - b[1].end).slice(0, 6)
+      .forEach(([key, tm]) => doing.push(`<a class="jm-chip doing" href="${tm.href || "#jobs"}">⏳ ${escapeHtml(tm.label.replace(/^[^:]*: /, ""))} <b>${fmtLeft(tm.end - now)}</b></a>`)); }   // idea 160: the running timers
   const w = OpsWeek.data, week = [];
   if (w) {
     Object.entries(w.salvage).forEach(([pid, car]) => { const p = OPS.salvage.parts.find(x => x.id === pid); week.push(`<a class="jm-chip week" href="#op-salvage">🚗 ${escapeHtml(car)} <small>${escapeHtml(p ? p.name.replace(/^The | Robbery$/g, "") : pid)}</small></a>`); });
@@ -9957,7 +10776,7 @@ const ARENA_MODES = [
 ];
 // idea 159 (Mihai, 13.11.2026): eight categories instead of four, after the research of all GTA Online missions
 const STORYOPS = ["dre", "cluckin", "oscar", "knoway"], STORYM = ["lowriders", "geraldlp", "repo", "casinostory", "superyacht", "shorttrips", "papertrail", "firstdose", "lastdose", "overthrow", "faber"],
-  PROPOPS = ["mobileops", "svw", "clientjobs", "lsaops", "clubhouse", "fronts"], AGENCYW = ["agency", "seccon", "payphone"], ODDJOBS = ["taxi", "pizza", "quickiepharm", "safeguard", "firefighter", "forklift", "paperroute"];
+  PROPOPS = ["mobileops", "svw", "clientjobs", "lsaops", "clubhouse", "fooligan", "fronts"], AGENCYW = ["agency", "seccon", "payphone"], ODDJOBS = ["taxi", "pizza", "quickiepharm", "safeguard", "firefighter", "forklift", "paperroute"];
 const JM_CATS = [
   { k: "heists", route: "heists", name: "Heists", kick: "Plan the score", col: "#e5322d", list: () => HEISTS },
   { k: "contracts", route: "contracts", name: "Contracts", kick: "Rob and repeat", col: "#29c5f6", list: () => CONTRACTS },
@@ -9974,20 +10793,19 @@ const jmBack = c => `<a class="btn" href="#${c ? c.route : "jobs"}">← ${c ? c.
 function jobsHtml() {
   const card = c => `<a class="jm-hub-card" href="#${c.route}" style="--c:${c.col}" title="${escapeHtml(c.name)}">
       <img src="${prImg(window.JM_HUB[c.k])}" alt="" loading="lazy"><span class="jm-hub-n">${c.list().length}</span>
-      <span class="jm-hub-t"><i>${escapeHtml(c.kick)}</i><b>${escapeHtml(c.name)}</b></span></a>`;
+      <span class="jm-hub-t"><i>${escapeHtml(c.kick)}</i><b>${c.name.length > 8 && c.name.includes(" ") ? escapeHtml(c.name.split(" ")[0]) + "<br>" + escapeHtml(c.name.split(" ").slice(1).join(" ")) : escapeHtml(c.name)}</b></span></a>`;   // Mihai (13.11.2026), variant B: long names on two lines
   return `<div class="focus-head"><div><h2>Job Manager</h2><p class="muted">${t("jobsSub")}</p></div></div>
     ${jmNowHtml()}
     <div class="jm-hub">${JM_CATS.map(c => `<div class="jm-hub-cell">${card(c)}<p class="muted">${escapeHtml(OPS_CAT[c.k][lang === "ro" ? 1 : 0])}</p></div>`).join("")}</div>`;
 }
 // the hub titles (Mihai's size 2, 09.11.2026): about a quarter of the card's height, at most 62% of its width; measured, because the names differ a lot in length
 function jmHubFit(root) {
-  root.querySelectorAll(".jm-hub-card").forEach(a => {
-    const b = a.querySelector(".jm-hub-t b"), W = a.clientWidth, H = a.clientHeight;
-    if (!W || !b) return;
-    b.style.fontSize = "100px";
-    const w = b.scrollWidth || 1;
-    b.style.fontSize = Math.min(100 * W * .62 / w, H * .25 / .82) + "px";
-  });
+  // Mihai (13.11.2026), variant B: every hub title the same size, the largest that fits all of them (62% of the width, 42% of the height)
+  const bs = [...root.querySelectorAll(".jm-hub-card .jm-hub-t b")];
+  let px = 1e9;
+  bs.forEach(b => { const a = b.closest(".jm-hub-card"), W = a.clientWidth, H = a.clientHeight; if (!W) return;
+    b.style.fontSize = "100px"; px = Math.min(px, 100 * W * .62 / (b.scrollWidth || 1), 100 * H * .42 / (b.scrollHeight || 1)); });
+  if (px < 1e9) bs.forEach(b => b.style.fontSize = px + "px");
 }
 const jmFitAll = () => { if (VIEW === "jobs") jmHubFit(focusEl); };
 addEventListener("resize", () => requestAnimationFrame(jmFitAll));
@@ -10045,6 +10863,8 @@ function opCardHtml(k) {
   const o = OPS[k], img = o.img && JOB_IMG[o.img];
   const parts = o.parts.length, runs = o.parts.reduce((a, p) => a + opGet(k, p.id).n, 0);
   let tag = opWeekTag(k);
+  { const pre = k === "bounties" ? "bail:" : k === "salvage" ? "salvageyard:" : k + ":", now = Date.now(), run = Object.entries(S.trkT || {}).filter(([key, tm]) => key.startsWith(pre) && tm.end > now).sort((a, b) => a[1].end - b[1].end)[0];   // idea 160
+    if (!tag && run) tag = "⏳ " + fmtLeft(run[1].end - now); else if (!tag && (ODD[k] || k === "bounties") && trkGet(k === "bounties" ? "bail" : k).earn) tag = money(trkGet(k === "bounties" ? "bail" : k).earn); }
   if (!tag && parts === 1) { const [a, b] = opProg(k, o.parts[0]); tag = a ? `${a} / ${b}` : runs ? t("opRuns", runs) : ""; }
   if (!tag && parts > 1) tag = o.unit === "acts" ? t("opActs", o.parts.filter(p => opGet(k, p.id).n > 0).length, parts) : runs ? t("opRuns", runs) : t("opParts", parts);
   const tg = (tag ? `<span class="soon-tag on">${escapeHtml(tag)}</span>` : "") + (o.cat === "heist" ? opPlayersHtml(o) : "");
@@ -10059,7 +10879,7 @@ function opStepsHtml(id, part, live) {
   const st = opGet(id, part.id), [a, b] = opProg(id, part);
   return `<ol class="op-steps">${part.steps.map(([nm, kind, opt, en, ro], i) => `<li class="${st.d[i] ? "done" : ""} ${kind === "fi" ? "fin" : ""}">
       <label><input type="checkbox" data-op-step="${part.id}:${i}" ${st.d[i] ? "checked" : ""}><span class="op-n">${i + 1}</span><span class="op-nm"><span class="op-t">${escapeHtml(nm)}</span>${en ? `<small class="op-desc">${escapeHtml(lang === "ro" ? ro : en)}</small>` : ""}</span>
-      <span class="op-kind k-${kind}">${t("opK_" + kind)}</span>${opt ? `<span class="op-opt">${t("opOpt")}</span>` : ""}</label></li>`).join("")}</ol>
+      ${kind === "se" && ["story", "property", "agency"].includes(OPS[id].cat) ? "" : `<span class="op-kind k-${kind}">${t("opK_" + kind)}</span>`}${opt ? `<span class="op-opt">${t("opOpt")}</span>` : ""}</label></li>`).join("")}</ol>
     <div class="op-foot"><div class="op-bar"><i style="width:${b ? a / b * 100 : 0}%"></i></div><span class="muted">${a} / ${b}${st.n ? " · " + t("opRuns", st.n) : ""}</span>
       <button class="btn primary small" data-op-fin="${part.id}" ${live === false ? "disabled" : ""}>✅ ${t("opFinDone")}</button>
       <button class="btn ghost small" data-op-reset="${part.id}">${t("opReset")}</button></div>`;
@@ -10245,6 +11065,258 @@ function bindBoard(root, id) {
     toast(lang === "ro" ? "Finala trecută. Prep-urile încep din nou." : "Finale recorded. The prep work starts over.", { label: t("undo"), run: () => { S.boards[id] = JSON.parse(before); redraw(true); } });
   });
 }
+/* ---------- idea 160 (Mihai, 13.11.2026): working screens for the Job Manager — timers with a bell, counters, money, unlocks ----------
+   S.trk[id] = { runs, units, earn, mins (minutes logged), cnt: {}, ms: {manual unlocks}, log: [[time, units, $]] } ; S.trkT[key] = { end, label, href, done } */
+const trkSt = id => { const t2 = S.trk || (S.trk = {}); return t2[id] || (t2[id] = { runs: 0, units: 0, earn: 0, mins: 0, cnt: {}, ms: {}, log: [] }); };
+const trkGet = id => (S.trk && S.trk[id]) || { runs: 0, units: 0, earn: 0, mins: 0, cnt: {}, ms: {}, log: [] };
+const trkT = () => S.trkT || (S.trkT = {});
+const L2 = p => p ? p[lang === "ro" ? 1 : 0] : "";
+const LL = (en, ro) => lang === "ro" ? ro : en;
+function fmtLeft(ms) { const s = Math.max(0, Math.round(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return h ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}:${String(x).padStart(2, "0")}`; }
+// a timer: starts now, rings when it ends (the bell's list, a chime, a desktop notification)
+function trkStart(key, min, label, href) { trkT()[key] = { end: Date.now() + min * 60000, label, href, done: 0 }; save(true); ghMarkDirty(); }
+function trkStop(key) { delete trkT()[key]; save(true); ghMarkDirty(); }
+function trkTimerHtml(key, min, label, href, startLbl) {
+  const tm = trkT()[key], left = tm ? tm.end - Date.now() : 0, running = tm && left > 0;
+  return `<div class="trk-timer ${running ? "run" : tm ? "ready" : ""}" data-trk-tm="${key}">
+    <span class="trk-clock" data-trk-left="${key}">${running ? "⏳ " + fmtLeft(left) : tm ? "✅ " + LL("ready", "gata") : "—"}</span>
+    <button type="button" class="btn small ${running ? "ghost" : "primary"}" data-trk-start="${key}" data-min="${min}" data-label="${escapeHtml(label)}" data-href="${href}">${running ? LL("Restart", "Repornește") : startLbl || LL("Start", "Pornește")}</button>
+    ${tm ? `<button type="button" class="btn ghost small" data-trk-stop="${key}" aria-label="${LL("Clear", "Șterge")}">✕</button>` : ""}</div>`;
+}
+// every second: the clocks on screen, and the bell when a timer ends
+function trkTick() {
+  const all = S.trkT || {}, now = Date.now();
+  Object.entries(all).forEach(([k, tm]) => {
+    if (!tm.done && tm.end <= now) { tm.done = 1; save(true); notify("🔔 " + tm.label, "full"); if (focusEl.querySelector(`[data-trk-tm="${k}"]`)) { focusEl._last = null; renderFocus(); } }
+  });
+  focusEl.querySelectorAll("[data-trk-left]").forEach(el => { const tm = all[el.dataset.trkLeft]; if (tm && tm.end > now) el.textContent = "⏳ " + fmtLeft(tm.end - now); });
+}
+function trkMsDone(id, m, st) {
+  const [mid, , need, kind] = m;
+  if (kind === "manual") return !!st.ms[mid];
+  const have = kind === "units" ? st.units : kind === "runs" ? st.runs : (st.cnt[kind] || 0);
+  return have >= need;
+}
+function trkMsHtml(id, d, st) {
+  if (!d.ms || !d.ms.length) return "";
+  return `<section class="adv-card trk-ms"><h4>🏅 ${LL("Unlocks and awards", "Deblocări și premii")}</h4><ul>${d.ms.map(m => {
+    const [mid, txt, need, kind] = m, ok = trkMsDone(id, m, st);
+    const have = kind === "manual" ? (st.ms[mid] ? 1 : 0) : kind === "units" ? st.units : kind === "runs" ? st.runs : (st.cnt[kind] || 0);
+    return `<li class="${ok ? "ok" : ""}">${kind === "manual" ? `<label><input type="checkbox" data-trk-ms="${mid}" ${ok ? "checked" : ""}> ${escapeHtml(L2(txt))}</label>`
+      : `<span>${ok ? "✅" : "⬜"} ${escapeHtml(L2(txt))}</span><span class="trk-bar"><i style="width:${Math.min(100, have / need * 100)}%"></i></span><small>${Math.min(have, need)} / ${need}</small>`}</li>`; }).join("")}</ul></section>`;
+}
+function trkStatsHtml(id, d, st) {
+  const avg = st.runs ? st.earn / st.runs : 0, perH = st.mins ? st.earn / st.mins * 60 : 0;
+  return `<div class="trk-stats"><div><b>${st.runs}</b><small>${LL("runs", "runde")}</small></div><div><b>${st.units}</b><small>${escapeHtml(L2(d.unit))}${lang === "ro" ? "" : "s"}</small></div>
+    <div><b>${money(st.earn)}</b><small>${LL("earned", "câștigat")}</small></div><div><b>${avg ? money(avg) : "—"}</b><small>${LL("per run", "pe rundă")}</small></div>
+    <div><b>${perH ? money(perH) : "—"}</b><small>${LL("per hour", "pe oră")}</small></div></div>`;
+}
+// an Odd Job: log a run (how many, how much, how long), the timers per place, the unlocks, the facts
+function oddHtml(id) {
+  const d = ODD[id], st = trkGet(id);
+  const cnt = (d.cnt || []).map(([k, lb]) => `<label class="trk-f">${escapeHtml(L2(lb))}<span class="trk-step"><button type="button" class="btn ghost small" data-trk-cnt="${k}:-1">−</button><b>${st.cnt[k] || 0}</b><button type="button" class="btn ghost small" data-trk-cnt="${k}:1">+</button></span></label>`).join("");
+  const loc = d.loc ? `<section class="adv-card trk-loc"><h4>⏱ ${LL("Cooldowns", "Pauze")} (${d.loc.min} min)</h4>${d.loc.list.map(([k, nm]) => `<div class="trk-row"><span>${escapeHtml(nm)}</span>${trkTimerHtml(id + ":" + k, d.loc.min, nm + " " + LL("is open again", "e din nou deschisă"), "#op-" + id, LL("Done 5 → start", "Am făcut 5 → pornește"))}</div>`).join("")}</section>` : "";
+  return `<section class="adv-card trk-main">${trkStatsHtml(id, d, st)}
+    <div class="trk-add"><label class="trk-f">${LL("How many", "Câte")} ${escapeHtml(L2(d.unit))}${lang === "ro" ? "" : "s"}<input type="number" min="0" max="99" value="${d.per}" data-trk-in="units"></label>
+      <label class="trk-f">${LL("Earned", "Câștigat")} ($)<input type="number" min="0" step="500" value="${d.est || ""}" placeholder="0" data-trk-in="earn"></label>
+      <label class="trk-f">${LL("Minutes (optional)", "Minute (opțional)")}<input type="number" min="0" max="600" value="" placeholder="—" data-trk-in="mins"></label>
+      <button type="button" class="btn primary" data-trk-add>➕ ${LL("Log the run", "Adaugă runda")}</button>
+      ${st.log.length ? `<button type="button" class="btn ghost small" data-trk-undo>↶ ${LL("Undo the last one", "Anulează ultima")}</button>` : ""}</div>
+    ${cnt ? `<div class="trk-cnts">${cnt}</div>` : ""}
+    <p class="muted trk-pay">💵 ${escapeHtml(L2(d.pay))}</p></section>
+    ${loc}${trkMsHtml(id, d, st)}
+    <section class="adv-card trk-facts"><h4>ℹ ${LL("Good to know", "Bine de știut")}</h4><ul>${d.facts.map(f => `<li>${escapeHtml(L2(f))}</li>`).join("")}</ul>
+      ${st.log.length ? `<h4>${LL("Last runs", "Ultimele runde")}</h4><ul class="trk-log">${st.log.slice(-5).reverse().map(([ts, u, e, m]) => `<li>${new Date(ts).toLocaleString(lang === "ro" ? "ro-RO" : "en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })} · ${u} ${escapeHtml(L2(d.unit))} · ${money(e)}${m ? ` · ${m} min` : ""}</li>`).join("")}</ul>` : ""}</section>`;
+}
+// the Bail Office: the board (3 standard + Most Wanted), the agents, the safe, the Madrazo Hit
+function bailHtml() {
+  const st = trkGet("bail"), b = st.cnt;
+  const ag = b.agents || 0, sel = st.ms.today || "";
+  const stdDone = b.stdOnBoard || 0;
+  const std = BAIL.std.map(([k, nm, gang, tg]) => `<option value="${k}">${escapeHtml(nm)} · ${escapeHtml(gang)}</option>`).join("");
+  const mwRows = BAIL.mw.map(([k, nm, d, extra]) => `<li class="${st.ms["mw_" + k] ? "ok" : ""}"><label><input type="radio" name="bail-mw" value="${k}" ${sel === k ? "checked" : ""} data-bail-today> <b>${escapeHtml(nm)}</b></label>
+      <small>${escapeHtml(L2(d))}</small><label class="trk-x"><input type="checkbox" data-trk-ms="mwx_${k}" ${st.ms["mwx_" + k] ? "checked" : ""}> ${LL("Extra", "Extra")}: ${escapeHtml(L2(extra))}</label>
+      <span class="trk-tag">${st.ms["mw_" + k] ? "✅ " + LL("caught", "prins") + (b["mwn_" + k] > 1 ? " ×" + b["mwn_" + k] : "") : ""}</span></li>`).join("");
+  const agents = [1, 2].filter(i => i <= ag).map(i => `<div class="trk-row"><span>${LL("Agent", "Agent")} ${i}</span>${trkTimerHtml("bail:agent" + i, BAIL.agentMin, LL("Bail Office: agent " + i + " is back — the safe has new money", "Bail Office: agentul " + i + " s-a întors — seiful are bani noi"), "#op-bounties", LL("Sent", "Trimis"))}</div>`).join("");
+  return `<section class="adv-card trk-main">
+    <div class="trk-stats"><div><b>${b.alive || 0}</b><small>${LL("caught alive", "prinși vii")}</small></div><div><b>${b.dead || 0}</b><small>${LL("dead", "morți")}</small></div>
+      <div><b>${b.mwTotal || 0}</b><small>Most Wanted</small></div><div><b>${money(st.earn)}</b><small>${LL("earned", "câștigat")}</small></div><div><b>${money(b.safe || 0)}</b><small>${LL("in the safe", "în seif")}</small></div></div>
+    <div class="trk-own"><label class="trk-f">${LL("Agents hired", "Agenți angajați")}<select data-bail-agents>${[0, 1, 2].map(n => `<option value="${n}" ${n === ag ? "selected" : ""}>${n}</option>`).join("")}</select></label>
+      <span class="muted">${LL("Holding cell processing", "Procesarea în celulă")}: <b>${BAIL.cell[ag]} min</b> · ${LL("each agent costs $750,000", "fiecare agent costă 750.000 $")}</span></div></section>
+  <div class="trk-grid">
+    <section class="adv-card"><h4>🎯 ${LL("Standard targets", "Ținte standard")} <small class="muted">(${stdDone} / 3)</small></h4>
+      <p class="muted">${LL("Three on the computer; when all three are done, the board refreshes after 48 minutes.", "Trei pe computer; după ce le prinzi pe toate trei, panoul se reîmprospătează după 48 de minute.")}</p>
+      <div class="trk-add"><label class="trk-f">${LL("Bounty", "Recompensă")}<select data-bail-type>${std}</select></label>
+        <label class="trk-f">${LL("Paid", "Plătit")} ($)<input type="number" step="500" value="${b.stdPay || BAIL.stdPay}" data-bail-pay="std"></label></div>
+      <div class="trk-btns"><button type="button" class="btn primary" data-bail-catch="std:alive">✅ ${LL("Caught alive", "Prins viu")}</button><button type="button" class="btn ghost" data-bail-catch="std:dead">☠ ${LL("Dead (−75%)", "Mort (−75%)")}</button></div>
+      <div class="trk-row"><span>${LL("Board refresh", "Panou nou")}</span>${trkTimerHtml("bail:board", BAIL.boardMin, LL("Bail Office: three new standard targets", "Bail Office: trei ținte standard noi"), "#op-bounties")}</div></section>
+    <section class="adv-card"><h4>⭐ Most Wanted <small class="muted">${LL("one a day", "una pe zi")}</small></h4>
+      <ul class="trk-mw">${mwRows}</ul>
+      <div class="trk-add"><label class="trk-f">${LL("Paid", "Plătit")} ($)<input type="number" step="1000" value="${b.mwPay || BAIL.mwPay}" data-bail-pay="mw"></label></div>
+      <div class="trk-btns"><button type="button" class="btn primary" data-bail-catch="mw:alive" ${sel ? "" : "disabled"}>✅ ${LL("Caught alive", "Prins viu")}</button><button type="button" class="btn ghost" data-bail-catch="mw:dead" ${sel ? "" : "disabled"}>☠ ${LL("Dead (−75%)", "Mort (−75%)")}</button></div>
+      <div class="trk-row"><span>${LL("Next Most Wanted", "Următorul Most Wanted")}</span>${trkTimerHtml("bail:mw", BAIL.mwHours * 60, LL("Bail Office: a new Most Wanted target", "Bail Office: o nouă țintă Most Wanted"), "#op-bounties")}</div></section>
+    <section class="adv-card"><h4>👮 ${LL("Agents and the safe", "Agenți și seif")}</h4>
+      ${ag ? agents : `<p class="muted">${LL("No agents hired: set how many you have above.", "N-ai agenți: alege sus câți ai.")}</p>`}
+      <p class="muted">${LL("Each trip: about $5,000–10,000 into the safe; send them again by hand.", "Fiecare tură: cam 5.000–10.000 $ în seif; îi trimiți din nou de mână.")}</p>
+      <div class="trk-add"><label class="trk-f">${LL("Safe now", "Seiful acum")} ($)<input type="number" step="1000" value="${b.safe || 0}" data-bail-safe></label>
+        <button type="button" class="btn small" data-bail-collect>💰 ${LL("Collected", "Colectat")}</button></div></section>
+    <section class="adv-card"><h4>🎯 Madrazo Hit</h4><p class="muted">${LL("Only for Bail Office owners: once a day, about $30,000 for a couple of minutes.", "Doar pentru proprietarii de Bail Office: o dată pe zi, cam 30.000 $ pentru câteva minute.")}</p>
+      <div class="trk-btns"><button type="button" class="btn primary" data-bail-madrazo>✅ ${LL("Done today", "Făcut azi")}</button></div>
+      <div class="trk-row"><span>${LL("Next one", "Următorul")}</span>${trkTimerHtml("bail:madrazo", 24 * 60, LL("A new Madrazo Hit is available", "Un nou Madrazo Hit e disponibil"), "#op-bounties")}</div></section>
+  </div>`;
+}
+function bindTrk(root, id) {
+  const redraw = () => { save(true); ghMarkDirty(); const sc = focusEl.scrollTop; focusEl._last = null; renderFocus(); focusEl.scrollTop = sc; };
+  root.querySelectorAll("[data-trk-start]").forEach(b => b.onclick = () => { trkStart(b.dataset.trkStart, +b.dataset.min, b.dataset.label, b.dataset.href); redraw(); });
+  root.querySelectorAll("[data-trk-stop]").forEach(b => b.onclick = () => { trkStop(b.dataset.trkStop); redraw(); });
+  root.querySelectorAll("[data-trk-ms]").forEach(c => c.onchange = () => { trkSt(id).ms[c.dataset.trkMs] = c.checked ? 1 : 0; redraw(); });
+  root.querySelectorAll("[data-trk-cnt]").forEach(b => b.onclick = () => { const [k, d] = b.dataset.trkCnt.split(":"), st = trkSt(id); st.cnt[k] = Math.max(0, (st.cnt[k] || 0) + +d); redraw(); });
+  const add = root.querySelector("[data-trk-add]");
+  if (add) add.onclick = () => {
+    const v = k => +(root.querySelector(`[data-trk-in="${k}"]`) || {}).value || 0, st = trkSt(id), d = ODD[id];
+    const u = v("units"), e = v("earn"), m = v("mins");
+    st.units += u; st.earn += e; st.mins += m; if (u >= d.per) st.runs++;
+    st.log.push([Date.now(), u, e, m]); if (st.log.length > 60) st.log.shift();
+    redraw(); toast(LL("Run logged.", "Rundă adăugată."));
+  };
+  const un = root.querySelector("[data-trk-undo]");
+  if (un) un.onclick = () => { const st = trkSt(id), l = st.log.pop(); if (!l) return; st.units -= l[1]; st.earn -= l[2]; st.mins -= l[3] || 0; if (l[1] >= ODD[id].per) st.runs = Math.max(0, st.runs - 1); redraw(); };
+  if (id !== "bounties") return;
+  const st = trkSt("bail"), b = st.cnt;
+  const ag = root.querySelector("[data-bail-agents]"); if (ag) ag.onchange = () => { b.agents = +ag.value; redraw(); };
+  root.querySelectorAll("[data-bail-today]").forEach(r => r.onchange = () => { st.ms.today = r.value; redraw(); });
+  root.querySelectorAll("[data-bail-pay]").forEach(i => i.onchange = () => { b[i.dataset.bailPay + "Pay"] = +i.value || 0; save(true); ghMarkDirty(); });
+  const sf = root.querySelector("[data-bail-safe]"); if (sf) sf.onchange = () => { b.safe = +sf.value || 0; redraw(); };
+  const col = root.querySelector("[data-bail-collect]"); if (col) col.onclick = () => { st.earn += b.safe || 0; b.safeTotal = (b.safeTotal || 0) + (b.safe || 0); b.safe = 0; redraw(); };
+  const md = root.querySelector("[data-bail-madrazo]"); if (md) md.onclick = () => { b.madrazo = (b.madrazo || 0) + 1; trkStart("bail:madrazo", 24 * 60, LL("A new Madrazo Hit is available", "Un nou Madrazo Hit e disponibil"), "#op-bounties"); redraw(); };
+  root.querySelectorAll("[data-bail-catch]").forEach(btn => btn.onclick = () => {
+    const [kind, how] = btn.dataset.bailCatch.split(":"), full = kind === "std" ? (b.stdPay || BAIL.stdPay) : (b.mwPay || BAIL.mwPay);
+    const pay = Math.round(how === "alive" ? full : full * BAIL.deadPart);
+    st.earn += pay; b[how] = (b[how] || 0) + 1; st.runs++;
+    if (kind === "std") {
+      b.stdOnBoard = (b.stdOnBoard || 0) + 1;
+      if (b.stdOnBoard >= 3) { b.stdOnBoard = 0; trkStart("bail:board", BAIL.boardMin, LL("Bail Office: three new standard targets", "Bail Office: trei ținte standard noi"), "#op-bounties"); }
+    } else {
+      const k = st.ms.today; b.mwTotal = (b.mwTotal || 0) + 1; if (k) { st.ms["mw_" + k] = 1; b["mwn_" + k] = (b["mwn_" + k] || 0) + 1; }
+      st.ms.today = ""; trkStart("bail:mw", BAIL.mwHours * 60, LL("Bail Office: a new Most Wanted target", "Bail Office: o nouă țintă Most Wanted"), "#op-bounties");
+    }
+    st.log.push([Date.now(), 1, pay, 0]); if (st.log.length > 60) st.log.shift();
+    redraw(); toast(LL(`+${money(pay)} logged.`, `+${money(pay)} adăugat.`));
+  });
+}
+// idea 160, phase 2 (13.11.2026): Payphone Hits, Client Jobs, Salvage Yard; a timer after some finales
+const PAYPH = { min: 10, base: 15000, bonus: 30000 };
+function payphoneHtml() {
+  const st = trkGet("payphone"), b = st.cnt, steps = OPS.payphone.parts[0].steps;
+  const sel = st.ms.sel || "", tro = steps.filter((s, i) => st.ms["tr" + i]).length;
+  return `<section class="adv-card trk-main">
+    <div class="trk-stats"><div><b>${st.runs}</b><small>${LL("hits", "asasinate")}</small></div><div><b>${b.bonus || 0}</b><small>${LL("with the bonus", "cu bonus")}</small></div>
+      <div><b>${tro} / 8</b><small>${LL("trophies", "trofee")}</small></div><div><b>${money(st.earn)}</b><small>${LL("earned", "câștigat")}</small></div></div>
+    <div class="trk-add"><label class="trk-f">${LL("Target", "Ținta")}<select data-pp-sel><option value="">—</option>${steps.map((s, i) => `<option value="${i}" ${String(i) === sel ? "selected" : ""}>${escapeHtml(s[0])}${st.ms["tr" + i] ? " 🏆" : ""}</option>`).join("")}</select></label>
+      <label class="trk-f">${LL("Base", "De bază")} ($)<input type="number" step="1000" value="${b.base || PAYPH.base}" data-pp-pay="base"></label>
+      <label class="trk-f">${LL("Bonus", "Bonus")} ($)<input type="number" step="1000" value="${b.bonusPay || PAYPH.bonus}" data-pp-pay="bonusPay"></label></div>
+    <div class="trk-btns"><button type="button" class="btn primary" data-pp-done="1">🎯 ${LL("Done with the bonus", "Făcut cu bonus")}</button><button type="button" class="btn ghost" data-pp-done="0">${LL("Done, no bonus", "Făcut, fără bonus")}</button></div>
+    <div class="trk-row"><span>${LL("Next hit (call Franklin)", "Următorul (îl suni pe Franklin)")}</span>${trkTimerHtml("payphone:cd", PAYPH.min, LL("Payphone Hits: you can call Franklin for a new hit", "Payphone Hits: îl poți suna pe Franklin pentru unul nou"), "#op-payphone")}</div>
+    <p class="muted trk-pay">${LL("The trophies show up below as ticks: tick a target when you got its bonus once.", "Trofeele apar mai jos ca bife: bifează o țintă când i-ai luat bonusul o dată.")}</p></section>`;
+}
+const CJ = { same: 30, other: 5, coop: 10, pay: 31500 };
+function clientJobsHtml() {
+  const st = trkGet("clientjobs"), steps = OPS.clientjobs.parts[0].steps;
+  return `<section class="adv-card trk-main">
+    <div class="trk-stats"><div><b>${st.runs}</b><small>${LL("jobs", "misiuni")}</small></div><div><b>${money(st.earn)}</b><small>${LL("earned", "câștigat")}</small></div></div>
+    <div class="trk-add"><label class="trk-f">${LL("Paid", "Plătit")} ($)<input type="number" step="500" value="${st.cnt.pay || CJ.pay}" data-cj-pay></label></div>
+    <div class="trk-row"><span><b>${LL("Any other job", "Orice altă misiune")}</b></span>${trkTimerHtml("clientjobs:any", CJ.other, LL("Client Jobs: you can start another job", "Client Jobs: poți porni altă misiune"), "#op-clientjobs")}</div>
+    ${steps.map((s, i) => `<div class="trk-row"><span>${escapeHtml(s[0])} <button type="button" class="btn small primary" data-cj-done="${i}">✅ ${LL("Done", "Făcut")}</button></span>${trkTimerHtml("clientjobs:" + i, i >= 4 ? CJ.coop : CJ.same, LL(s[0] + " can be played again", s[0] + " se poate juca din nou"), "#op-clientjobs")}</div>`).join("")}
+    <p class="muted trk-pay">${LL("“Done” starts both timers: this job (30 min, or 10 for the 2-player ones) and the 5 minutes for any other.", "„Făcut” pornește ambele cronometre: misiunea asta (30 de minute, sau 10 la cele pentru 2 jucători) și cele 5 minute pentru oricare alta.")}</p></section>`;
+}
+const SALV = { safeMax: 24000, tow: 35000, min: 48 };
+function salvageHtml() {
+  const st = trkGet("salvageyard"), b = st.cnt;
+  return `<section class="adv-card trk-main"><h4>🚚 ${LL("Tow Truck and the safe", "Tow Truck și seiful")}</h4>
+    <div class="trk-stats"><div><b>${b.tows || 0}</b><small>${LL("cars towed", "mașini remorcate")}</small></div><div><b>${money(b.safe || 0)}</b><small>${LL("in the safe", "în seif")}</small></div><div><b>${money(st.earn)}</b><small>${LL("earned", "câștigat")}</small></div></div>
+    <div class="trk-add"><label class="trk-f">${LL("Tow paid", "Remorcare plătită")} ($)<input type="number" step="1000" value="${b.towPay || SALV.tow}" data-sv-towpay></label>
+      <button type="button" class="btn primary" data-sv-tow>🚚 ${LL("Tow done", "Remorcare făcută")}</button></div>
+    <div class="trk-row"><span>${LL("Next tow (keeps the reputation up)", "Următoarea remorcare (ține reputația sus)")}</span>${trkTimerHtml("salvageyard:tow", SALV.min, LL("Salvage Yard: time for a tow, so the safe keeps paying well", "Salvage Yard: e timpul pentru o remorcare, ca seiful să plătească bine"), "#op-salvage")}</div>
+    <div class="trk-add"><label class="trk-f">${LL("Safe now", "Seiful acum")} ($)<input type="number" step="1000" value="${b.safe || 0}" data-sv-safe></label><button type="button" class="btn small" data-sv-collect>💰 ${LL("Collected", "Colectat")}</button></div>
+    <p class="muted trk-pay">${LL("The safe pays every in-game day (48 minutes), up to about $24,000 at full reputation (+20% with the Staff upgrade). The reputation drops every day; each tow adds about 25%. Towed cars are only salvaged: $30,000–40,000 each.", "Seiful plătește la fiecare zi din joc (48 de minute), până la cam 24.000 $ la reputație maximă (+20% cu Staff). Reputația scade în fiecare zi; fiecare remorcare adaugă cam 25%. Mașinile remorcate doar se dezmembrează: 30.000–40.000 $ fiecare.")}</p></section>`;
+}
+function bindTrk2(root, id) {
+  const redraw = () => { save(true); ghMarkDirty(); const sc = focusEl.scrollTop; focusEl._last = null; renderFocus(); focusEl.scrollTop = sc; };
+  if (id === "payphone") {
+    const st = trkSt("payphone"), b = st.cnt;
+    const s = root.querySelector("[data-pp-sel]"); if (s) s.onchange = () => { st.ms.sel = s.value; redraw(); };
+    root.querySelectorAll("[data-pp-pay]").forEach(i => i.onchange = () => { b[i.dataset.ppPay] = +i.value || 0; save(true); ghMarkDirty(); });
+    root.querySelectorAll("[data-pp-done]").forEach(btn => btn.onclick = () => {
+      const bonus = btn.dataset.ppDone === "1", pay = (b.base || PAYPH.base) + (bonus ? (b.bonusPay || PAYPH.bonus) : 0);
+      st.runs++; st.earn += pay; if (bonus) { b.bonus = (b.bonus || 0) + 1; if (st.ms.sel !== "" && st.ms.sel != null) { st.ms["tr" + st.ms.sel] = 1; opPart("payphone", "m").d[+st.ms.sel] = true; } }
+      st.log.push([Date.now(), 1, pay, 0]); trkStart("payphone:cd", PAYPH.min, LL("Payphone Hits: you can call Franklin for a new hit", "Payphone Hits: îl poți suna pe Franklin pentru unul nou"), "#op-payphone");
+      redraw(); toast(LL(`+${money(pay)} logged.`, `+${money(pay)} adăugat.`)); });
+  }
+  if (id === "clientjobs") {
+    const st = trkSt("clientjobs");
+    const p = root.querySelector("[data-cj-pay]"); if (p) p.onchange = () => { st.cnt.pay = +p.value || 0; save(true); ghMarkDirty(); };
+    root.querySelectorAll("[data-cj-done]").forEach(btn => btn.onclick = () => {
+      const i = +btn.dataset.cjDone, nm = OPS.clientjobs.parts[0].steps[i][0], pay = st.cnt.pay || CJ.pay;
+      st.runs++; st.earn += pay; st.log.push([Date.now(), 1, pay, 0]); opPart("clientjobs", "m").d[i] = true;
+      trkStart("clientjobs:" + i, i >= 4 ? CJ.coop : CJ.same, LL(nm + " can be played again", nm + " se poate juca din nou"), "#op-clientjobs");
+      trkStart("clientjobs:any", CJ.other, LL("Client Jobs: you can start another job", "Client Jobs: poți porni altă misiune"), "#op-clientjobs");
+      redraw(); });
+  }
+  if (id === "salvage") {
+    const st = trkSt("salvageyard"), b = st.cnt;
+    const tp = root.querySelector("[data-sv-towpay]"); if (tp) tp.onchange = () => { b.towPay = +tp.value || 0; save(true); ghMarkDirty(); };
+    const tw = root.querySelector("[data-sv-tow]"); if (tw) tw.onclick = () => { const pay = b.towPay || SALV.tow; b.tows = (b.tows || 0) + 1; st.earn += pay; st.log.push([Date.now(), 1, pay, 0]);
+      trkStart("salvageyard:tow", SALV.min, LL("Salvage Yard: time for a tow, so the safe keeps paying well", "Salvage Yard: e timpul pentru o remorcare, ca seiful să plătească bine"), "#op-salvage"); redraw(); };
+    const sf = root.querySelector("[data-sv-safe]"); if (sf) sf.onchange = () => { b.safe = +sf.value || 0; redraw(); };
+    const cl = root.querySelector("[data-sv-collect]"); if (cl) cl.onclick = () => { st.earn += b.safe || 0; b.safe = 0; redraw(); };
+  }
+}
+// idea 160, phase 3 (14.11.2026): Auto Shop customers, FIB Files Priority + safe, Fooligan Jobs, MOC / Special Vehicle Work unlock counters
+const AUTOSV = { low: 20000, mid: 25000, high: 30000, staffCut: 0.9 };
+function autoShopHtml() {
+  const st = trkGet("autoshopsv"), b = st.cnt, n = b.cars || 0;
+  const aw = [5, 10, 25, 50].map(k => `<span class="trk-tag" style="color:${n >= k ? "#7fd99b" : "var(--muted)"}">${n >= k ? "✅" : "⬜"} ${k}</span>`).join(" ");
+  return `<section class="adv-card trk-main"><h4>🔧 ${LL("Customer cars (Auto Shop Service)", "Mașinile clienților (Auto Shop Service)")}</h4>
+    <div class="trk-stats"><div><b>${n}</b><small>${LL("cars delivered", "mașini livrate")}</small></div><div><b>${money(st.earn)}</b><small>${LL("profit", "profit")}</small></div></div>
+    <div class="trk-btns">${["low", "mid", "high"].map(k => `<button type="button" class="btn ${k === "high" ? "primary" : ""}" data-as-car="${k}:me">${LL({ low: "Low", mid: "Mid", high: "High" }[k], { low: "Ieftină", mid: "Medie", high: "Scumpă" }[k])} · ${money(AUTOSV[k])}</button>`).join("")}
+      <button type="button" class="btn ghost" data-as-car="mid:staff">${LL("Delivered by the staff", "Livrată de personal")}</button></div>
+    <p class="muted trk-pay">${LL("Two cars on the lifts at a time, at random. Mod them as the client asks (the mod cost comes back on delivery), then deliver yourself, or let the staff do it: slower, a bit less, and the car can get damaged.", "Câte două mașini pe elevatoare, la întâmplare. Le modifici cum cere clientul (costul modificărilor se întoarce la livrare), apoi le livrezi tu sau lași personalul: mai încet, ceva mai puțin, iar mașina se poate avaria.")}</p>
+    <div class="trk-row"><span>${LL("Award Special Delivery", "Premiul Special Delivery")}</span><span>${aw}</span></div></section>`;
+}
+function fibHtml() {
+  const st = trkGet("fibfiles"), b = st.cnt, wk = gtaWeekKey(), done = b.prioWeek === wk;
+  const prio = (OpsWeek.data && OpsWeek.data.fib && OpsWeek.data.fib[0]) || "";
+  return `<section class="adv-card trk-main"><h4>🗂 ${LL("This week", "Săptămâna asta")}</h4>
+    <div class="trk-row"><span>Priority File: <b>${escapeHtml(prio || LL("not in this week's post", "nu e în postarea săptămânii"))}</b> · ${LL("pays double, once a week", "plătește dublu, o dată pe săptămână")}</span>
+      <label class="trk-x"><input type="checkbox" data-fib-prio ${done ? "checked" : ""}> ${LL("done this week", "făcut săptămâna asta")}</label></div>
+    <div class="trk-add"><label class="trk-f">${LL("Garment Factory safe", "Seiful din Garment Factory")} ($)<input type="number" step="500" value="${b.safe || 0}" data-fib-safe></label><button type="button" class="btn small" data-fib-collect>💰 ${LL("Collected", "Colectat")}</button></div></section>`;
+}
+function unlockHtml(id, lbl, steps, need) {
+  const st = trkGet(id), n = st.cnt.n || 0, open = steps.filter((s, i) => need(i) <= n).length;
+  return `<section class="adv-card trk-main"><div class="trk-add"><label class="trk-f">${escapeHtml(lbl)}<span class="trk-step"><button type="button" class="btn ghost small" data-ul="-1">−</button><b>${n}</b><button type="button" class="btn ghost small" data-ul="1">+</button></span></label>
+    <span class="muted">${LL("Open", "Deschise")}: <b>${open} / ${steps.length}</b>${open < steps.length ? ` · ${LL("next", "următoarea")}: <b>${escapeHtml(steps[open][0])}</b> ${LL("at", "la")} ${need(open)}` : ""}</span></div></section>`;
+}
+const FOOL = { min: 48, need: 10 };
+function bindTrk3(root, id) {
+  const redraw = () => { save(true); ghMarkDirty(); const sc = focusEl.scrollTop; focusEl._last = null; renderFocus(); focusEl.scrollTop = sc; };
+  root.querySelectorAll("[data-as-car]").forEach(btn => btn.onclick = () => { const [k, who] = btn.dataset.asCar.split(":"), st = trkSt("autoshopsv"), pay = Math.round(AUTOSV[k] * (who === "staff" ? AUTOSV.staffCut : 1));
+    st.cnt.cars = (st.cnt.cars || 0) + 1; st.earn += pay; st.log.push([Date.now(), 1, pay, 0]); redraw(); toast(LL(`+${money(pay)} logged.`, `+${money(pay)} adăugat.`)); });
+  const fp = root.querySelector("[data-fib-prio]"); if (fp) fp.onchange = () => { trkSt("fibfiles").cnt.prioWeek = fp.checked ? gtaWeekKey() : ""; redraw(); };
+  const fs = root.querySelector("[data-fib-safe]"); if (fs) fs.onchange = () => { trkSt("fibfiles").cnt.safe = +fs.value || 0; redraw(); };
+  const fc = root.querySelector("[data-fib-collect]"); if (fc) fc.onclick = () => { const st = trkSt("fibfiles"); st.earn += st.cnt.safe || 0; st.cnt.safe = 0; redraw(); };
+  root.querySelectorAll("[data-ul]").forEach(b => b.onclick = () => { const st = trkSt(id); st.cnt.n = Math.max(0, (st.cnt.n || 0) + +b.dataset.ul); redraw(); });
+  const fj = root.querySelector("[data-fool-done]"); if (fj) fj.onclick = () => { const st = trkSt("fooligan"), pay = +(root.querySelector("[data-fool-pay]") || {}).value || 0;
+    st.runs++; st.earn += pay; st.cnt.pay = pay; st.log.push([Date.now(), 1, pay, 0]);
+    trkStart("fooligan:cd", FOOL.min, LL("Fooligan Jobs: you can call Dax for a new job", "Fooligan Jobs: îl poți suna pe Dax pentru o misiune nouă"), "#op-fooligan"); redraw(); };
+}
+function foolHtml() {
+  const st = trkGet("fooligan"), n = st.runs;
+  return `<section class="adv-card trk-main">
+    <div class="trk-stats"><div><b>${n}</b><small>${LL("jobs", "misiuni")}</small></div><div><b>${Math.min(n, FOOL.need)} / ${FOOL.need}</b><small>${LL("for the Equipment Upgrade", "pentru Equipment Upgrade")}</small></div><div><b>${money(st.earn)}</b><small>${LL("earned", "câștigat")}</small></div></div>
+    <div class="trk-add"><label class="trk-f">${LL("Paid", "Plătit")} ($)<input type="number" step="1000" value="${st.cnt.pay || ""}" placeholder="0" data-fool-pay></label><button type="button" class="btn primary" data-fool-done>✅ ${LL("Job done", "Misiune făcută")}</button></div>
+    <div class="trk-row"><span>${LL("Next job (call Dax)", "Următoarea (îl suni pe Dax)")}</span>${trkTimerHtml("fooligan:cd", FOOL.min, LL("Fooligan Jobs: you can call Dax for a new job", "Fooligan Jobs: îl poți suna pe Dax pentru o misiune nouă"), "#op-fooligan")}</div>
+    <p class="muted trk-pay">${n >= FOOL.need ? "✅ " + LL("The Acid Lab Equipment Upgrade is unlocked: $250,000 at The Freakshop (Mutt). Full stock $237,600 → $335,200, production 6 h → 4 h.", "Equipment Upgrade-ul pentru Acid Lab e deblocat: 250.000 $ la The Freakshop (Mutt). Stoc plin 237.600 $ → 335.200 $, producție 6 h → 4 h.") : LL("After 10 jobs you can buy the Acid Lab Equipment Upgrade ($250,000): full stock $237,600 → $335,200, production 6 h → 4 h.", "După 10 misiuni poți cumpăra Equipment Upgrade-ul pentru Acid Lab (250.000 $): stoc plin 237.600 $ → 335.200 $, producție 6 h → 4 h.")}</p></section>`;
+}
 function opHtml(id) {
   const o = OPS[id], img = o.img && JOB_IMG[o.img], w = OpsWeek.data;
   const head = `<div class="focus-head">${img ? `<img class="ag-logo" src="${img}" alt="">` : ""}<div><h2>${escapeHtml(o.name)}</h2>
@@ -10273,7 +11345,10 @@ function opHtml(id) {
         ${sv && sv[p.id] ? `<span class="soon-tag on">🚗 ${escapeHtml(sv[p.id])}</span>` : sv && Object.keys(sv).length ? `<span class="soon-tag">${t("opNotThisWeek")}</span>` : ""}
         ${p.pay ? `<span class="op-pay">${money(p.pay)}</span>` : ""}<span class="op-prog">${a} / ${b}</span></summary>${opStepsHtml(id, p, inWeek)}</details>`;
   }).join("");
-  return head + week + (o.parts.length ? `<div class="op-parts">${parts}</div>` : "") + `<p class="muted op-src">${t("opSources")}</p>`;
+  const trk = id === "bounties" ? bailHtml() : ODD[id] ? oddHtml(id) : id === "payphone" ? payphoneHtml() : id === "clientjobs" ? clientJobsHtml() : id === "salvage" ? salvageHtml() : id === "autoshopc" ? autoShopHtml() : id === "fibfiles" ? fibHtml() : id === "fooligan" ? foolHtml()
+    : id === "mobileops" ? unlockHtml("mobileops", LL("Bunker resupplies stolen", "Aprovizionări furate pentru Bunker"), o.parts[0].steps, i => i < 7 ? (i + 1) * 2 : 15)
+    : id === "svw" ? unlockHtml("svw", LL("Vehicle Cargo cars stolen", "Mașini furate pentru Vehicle Cargo"), o.parts[0].steps, i => (i + 1) * 4) : (o.cdFin ? `<section class="adv-card trk-main"><div class="trk-row"><span>⏱ ${LL("Replay wait after the finale", "Pauza după finală")} (${o.cdFin} min)</span>${trkTimerHtml(id + ":fin", o.cdFin, LL(o.name + " can be played again", o.name + " se poate juca din nou"), "#op-" + id)}</div></section>` : "");   // idea 160: the working screen
+  return head + week + trk + (o.parts.length ? `<div class="op-parts">${parts}</div>` : "") + `<p class="muted op-src">${t("opSources")}${trk ? " · " + LL("Bail Office and Odd Jobs: gtabase.com, gta.wiki, gtaboss.gg, gtaboom.com, timesaver.gg (November 2026); the money can change with weekly bonuses.", "Bail Office și Odd Jobs: gtabase.com, gta.wiki, gtaboss.gg, gtaboom.com, timesaver.gg (noiembrie 2026); sumele se pot schimba cu bonusurile săptămânale.") : ""}</p>`;
 }
 function bindOp(root, id) {
   const done = () => { save(true); ghMarkDirty(); syncStatus(); const sc = focusEl.scrollTop; focusEl._last = null; renderFocus(); focusEl.scrollTop = sc; };
@@ -10281,7 +11356,9 @@ function bindOp(root, id) {
   root.querySelectorAll("[data-op-step]").forEach(c => c.onchange = () => { const [pid, i] = c.dataset.opStep.split(":"); opPart(id, pid).d[+i] = c.checked; done(); });
   root.querySelectorAll("[data-op-fin]").forEach(b => b.onclick = () => {
     const pid = b.dataset.opFin, st = opPart(id, pid), before = { d: [...st.d], n: st.n };
-    st.n++; st.d = []; st.last = Date.now(); done();
+    st.n++; st.d = []; st.last = Date.now();
+    if (OPS[id].cdFin) trkStart(id + ":fin", OPS[id].cdFin, LL(OPS[id].name + " can be played again", OPS[id].name + " se poate juca din nou"), "#op-" + id);   // idea 160
+    done();
     toast(t("opFinToast", part(pid).name || OPS[id].name), { label: t("undo"), run: () => { Object.assign(opPart(id, pid), before); done(); } });
   });
   root.querySelectorAll("[data-op-reset]").forEach(b => b.onclick = () => {
@@ -12263,6 +13340,7 @@ function liveNightBits() {
    Clock: only advances while "In game" is on
    ====================================================================== */
 function tick() {
+  trkTick();   // idea 160: the Job Manager timers
   const now = Date.now(), clock = isClock();
   if (clock) {
     if (S.inGame) {
@@ -14123,6 +15201,9 @@ function renderFocus() {
     if (html === focusEl._last) return;
     focusEl.innerHTML = focusEl._last = html;
     bindOp(focusEl, id);
+    bindTrk(focusEl, id);
+    bindTrk2(focusEl, id);
+    bindTrk3(focusEl, id);
     if (OPS[id] && OPS[id].board) bindBoard(focusEl, id);
   } else if (VIEW === "jobs" || VIEW === "fronts" || (VIEW || "").startsWith("jm_")) {
     const html = VIEW === "jobs" ? jobsHtml() : VIEW === "fronts" ? frontsHtml() : jmCatHtml(VIEW.slice(3));
