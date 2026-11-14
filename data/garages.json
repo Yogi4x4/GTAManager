@@ -154,6 +154,11 @@
     ]
   },
   {
+    "name": "Fort Zancudo Hangar 3499",
+    "slots": 20,
+    "kind": "hangar"
+  },
+  {
     "name": "Garment Factory",
     "slots": 10,
     "levels": [
