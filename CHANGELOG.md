@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.50.0 (2026-11-14)
+* Vehicle Manager:
+  * Add: Service vehicles page (idea 145, variant B): the list on the left (Kosatka, Mobile Operations Center, Avenger, Terrorbyte, Acid Lab, Galaxy Super Yacht), the chosen one on the right: owned or not, where it is kept, its upgrades with prices, what it unlocks and where it shows in the app. Open it from the button next to Filters or from the pages menu.
+  * Add: only the upgrades that change something in the game (researched 14.11.2026): Kosatka (Sonar Station, Guided Missiles, Weapon Workshop, Sparrow, Kraken Avisa), MOC (cab, the three bays, rear turrets), Avenger (workshops, Operations Terminal, Thruster, Stealth Module or Missile Lock-on Jammer, turrets, machine guns, missiles), Terrorbyte (four stations and the four Bureau Tech upgrades of the Garment Factory), Acid Lab (Equipment Upgrade, the same tick as in Production Manager), Galaxy Super Yacht (Orion, Pisces or Aquarius). The total shows what the vehicle is worth with its upgrades.
+  * Add: where it is kept: the MOC in the Bunker, the Avenger in a Facility (one of the nine) or the Hangar, the Terrorbyte in the Nightclub or the Garment Factory, the Acid Lab in the Freakshop, the yacht at one of the 12 moorings, the Kosatka wherever you write.
+  * Add: in the car window one tap on a service vehicle (or typing its model) fills brand, class and type; the garage gives way to where it is kept and its upgrades.
+  * Add: service vehicles are cards with a blue frame and the Service tag, their place instead of the garage, and they take no garage space; a new Service filter; the picture opens the service card. Paste (Ctrl+V), file and photo studio work on the service page too.
+* Job Manager:
+  * Change: in “Needs: …” the Kosatka, MOC, Avenger (and its Operations Terminal), Terrorbyte, Acid Lab and Galaxy Super Yacht turn green with ✓ when they are in your Vehicle Manager; on a page they open the service card.
+* Property Manager:
+  * Add: Kosatka and Galaxy Super Yacht cards; they open the service card.
+
 ### v0.49.0 (2026-11-13)
 * Job Manager:
   * Change: the eight hub titles are all the same size; long names go on two lines (variant B).

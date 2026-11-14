@@ -801,7 +801,7 @@ html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.49";
+const APP_VERSION = "0.50";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // idea 156: letters with marks (Ü, é, ö, ñ, ș…) count as the plain letter when searching or typing a first letter; names keep their marks
@@ -1118,6 +1118,58 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.50.0",
+  "date": "2026-11-14",
+  "en": [
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Add: Service vehicles page (idea 145, variant B): the list on the left (Kosatka, Mobile Operations Center, Avenger, Terrorbyte, Acid Lab, Galaxy Super Yacht), the chosen one on the right: owned or not, where it is kept, its upgrades with prices, what it unlocks and where it shows in the app. Open it from the button next to Filters or from the pages menu.",
+     "Add: only the upgrades that change something in the game (researched 14.11.2026): Kosatka (Sonar Station, Guided Missiles, Weapon Workshop, Sparrow, Kraken Avisa), MOC (cab, the three bays, rear turrets), Avenger (workshops, Operations Terminal, Thruster, Stealth Module or Missile Lock-on Jammer, turrets, machine guns, missiles), Terrorbyte (four stations and the four Bureau Tech upgrades of the Garment Factory), Acid Lab (Equipment Upgrade, the same tick as in Production Manager), Galaxy Super Yacht (Orion, Pisces or Aquarius). The total shows what the vehicle is worth with its upgrades.",
+     "Add: where it is kept: the MOC in the Bunker, the Avenger in a Facility (one of the nine) or the Hangar, the Terrorbyte in the Nightclub or the Garment Factory, the Acid Lab in the Freakshop, the yacht at one of the 12 moorings, the Kosatka wherever you write.",
+     "Add: in the car window one tap on a service vehicle (or typing its model) fills brand, class and type; the garage gives way to where it is kept and its upgrades.",
+     "Add: service vehicles are cards with a blue frame and the Service tag, their place instead of the garage, and they take no garage space; a new Service filter; the picture opens the service card. Paste (Ctrl+V), file and photo studio work on the service page too."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Change: in “Needs: …” the Kosatka, MOC, Avenger (and its Operations Terminal), Terrorbyte, Acid Lab and Galaxy Super Yacht turn green with ✓ when they are in your Vehicle Manager; on a page they open the service card."
+    ]
+   },
+   {
+    "area": "Property Manager",
+    "items": [
+     "Add: Kosatka and Galaxy Super Yacht cards; they open the service card."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Vehicle Manager",
+    "items": [
+     "Adăugat: pagina Vehicule de serviciu (ideea 145, varianta B): lista în stânga (Kosatka, Mobile Operations Center, Avenger, Terrorbyte, Acid Lab, Galaxy Super Yacht), cel ales în dreapta: deținut sau nu, unde stă, upgrade-urile cu prețuri, ce deblochează și unde apare în aplicație. Se deschide din butonul de lângă Filtre sau din meniul paginilor.",
+     "Adăugat: doar upgrade-urile care schimbă ceva în joc (verificate pe 14.11.2026): Kosatka (Sonar Station, Guided Missiles, Weapon Workshop, Sparrow, Kraken Avisa), MOC (cabina, cele trei bay-uri, turelele din spate), Avenger (atelierele, Operations Terminal, Thruster, Stealth Module sau Missile Lock-on Jammer, turele, mitraliere, rachete), Terrorbyte (cele patru stații și cele patru upgrade-uri Bureau Tech din Garment Factory), Acid Lab (Equipment Upgrade, aceeași bifă ca în Production Manager), Galaxy Super Yacht (Orion, Pisces sau Aquarius). Totalul arată cât valorează vehiculul cu upgrade-uri.",
+     "Adăugat: unde stă: MOC în Bunker, Avenger într-un Facility (unul din cele nouă) sau în Hangar, Terrorbyte în Nightclub sau Garment Factory, Acid Lab în Freakshop, yacht-ul la unul din cele 12 locuri de ancorare, Kosatka unde scrii tu.",
+     "Adăugat: în fereastra mașinii, o atingere pe un vehicul de serviciu (sau scrierea modelului) completează marca, clasa și tipul; în locul garajului apar locul și upgrade-urile.",
+     "Adăugat: vehiculele de serviciu sunt carduri cu ramă albastră și eticheta Serviciu, cu locul în loc de garaj, și nu ocupă loc în garaje; filtru nou Serviciu; poza deschide cardul de serviciu. Lipește (Ctrl+V), fișier și studio foto merg și pe pagina de serviciu."
+    ]
+   },
+   {
+    "area": "Job Manager",
+    "items": [
+     "Schimbat: în „Cere: …” Kosatka, MOC, Avenger (și Operations Terminal), Terrorbyte, Acid Lab și Galaxy Super Yacht devin verzi cu ✓ când sunt în Vehicle Manager; pe pagină deschid cardul de serviciu."
+    ]
+   },
+   {
+    "area": "Property Manager",
+    "items": [
+     "Adăugat: cardurile Kosatka și Galaxy Super Yacht; deschid cardul de serviciu."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.49.0",
   "date": "2026-11-13",
@@ -3718,6 +3770,7 @@ const ROUTES = {
   "":         { sec: "home",       title: "GTA V Manager" },
   vehicles:   { sec: "vehicles",   title: "Vehicle Manager" },
   mods:       { sec: "mods",       title: "Special upgrades" },
+  service:    { sec: "service",    title: "Service vehicles" },          // idea 145 (one route per vehicle is added by service.html)
   production: { sec: "production", title: "Production Manager" },
   mc:         { sec: "production", title: "MC Business",            view: "mc" },
   night:      { sec: "production", title: "Nightclub",              view: "night" },
@@ -3800,7 +3853,7 @@ const Router = {
       ? `<a class="here" aria-current="page"><span>${label}</span><small>${t("here")}</small></a>`
       : `<a href="#${h}">${label}</a>`;
     const group = (head, subs) => `<div class="pm-group">${head}<div class="pm-sub" role="group">${subs}</div></div>`;
-    $("#pagesList").innerHTML = link("", t("pg_home")) + group(link("vehicles", "Vehicle Manager"), link("mods", t("md.title")))
+    $("#pagesList").innerHTML = link("", t("pg_home")) + group(link("vehicles", "Vehicle Manager"), link("mods", t("md.title")) + link("service", t("sv.title")))
       + group(link("production", "Production Manager"), link("mc", "MC Business") + link("night", "Nightclub") + link("bunker", "Bunker") + link("hangar", "Hangar") + link("acidlab", "Acid Lab") + link("export", "Vehicle Export Tracker"))
       + group(link("jobs", "Job Manager"), link("heists", "Heists") + link("contracts", "Contracts") + link("story-ops", "Story Operations") + link("story", "Story Missions") + link("property-ops", "Property Operations") + link("agency-work", "Agency Work") + link("odd-jobs", "Odd Jobs") + link("arena", "Arena Wars"))
       + group(link("props", "Property Manager"), link("mansions", "Mansions") + link("ceooffice", "CEO Office") + link("richman", "Richman Villa") + link("vinewood", "Vinewood Residence") + link("tongva", "Tongva Estate"));
@@ -5125,6 +5178,16 @@ Section({
 #sec-vehicles .pe-tools { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 #sec-vehicles .pe-tools button { min-width: 42px; font-size: 16px; }
 @media (max-width: 520px) { #sec-vehicles .pe-sliders label { grid-template-columns: 84px 1fr 36px; } }
+/* idea 145: service vehicles in the VM */
+#carDlg.svc-mode [data-nosvc] { display: none !important; }
+#sec-vehicles .svc-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; font-size: 13px; color: var(--muted); }
+#sec-vehicles .svc-pick button { padding: 4px 10px; font-size: 13px; border-radius: 999px; }
+#sec-vehicles .svc-pick button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+#sec-vehicles #svcBox > b { display: block; font-size: 15px; }
+#sec-vehicles .card.svc-card { border: 2px solid color-mix(in srgb, #3fa9f5 70%, transparent); }
+#sec-vehicles .svc-tag { display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; text-decoration: none;
+  background: color-mix(in srgb, #3fa9f5 25%, transparent); color: #9fd3ff; border: 1px solid color-mix(in srgb, #3fa9f5 60%, transparent); }
+#sec-vehicles .card a.svc-pic { display: block; text-decoration: none; color: inherit; }
 </style>
 <section class="sec" id="sec-vehicles" hidden>
 <div class="vm-main">
@@ -5136,7 +5199,8 @@ Section({
   <div id="toolbar">
     <button class="primary edit-only" id="addBtn" data-act="newCar" data-i18n="vm.addBtn"></button>
     <input id="search" data-i18n-ph="vm.searchPh" type="search" autocomplete="off">
-    <a class="ghost vm-mods-link" href="#mods" id="modsLink">✨ <span data-i18n="vm.modsLink"></span></a>   <!-- idea 118: the Special Upgrades page from the VM itself -->
+    <a class="ghost vm-mods-link" href="#mods" id="modsLink">✨ <span data-i18n="vm.modsLink"></span></a>
+    <a class="ghost vm-mods-link" href="#service" id="svcLink">🛠 <span data-i18n="sv.title"></span></a>   <!-- idea 145: the service vehicles page -->   <!-- idea 118: the Special Upgrades page from the VM itself -->
     <button class="ghost filter-toggle" id="filterToggle" data-act="toggleFilters" aria-expanded="false">
       <span data-i18n="vm.filtersBtn"></span><span class="filter-count" id="filterCount"></span><span class="chev">▾</span>
     </button>
@@ -5168,6 +5232,7 @@ Section({
         <label><input type="checkbox" id="fModified" data-f><img class="chip-icon" data-icon="modified" alt=""> <span data-i18n="vm.modified"></span> <span class="chip-count" id="cntModified">0</span></label>
         <label><input type="checkbox" id="fHsw" data-f><img class="chip-icon" data-icon="hsw" alt=""> HSW <span class="chip-count" id="cntHsw">0</span></label>
         <label><input type="checkbox" id="fBennys" data-f><img class="chip-icon" data-icon="bennys" alt=""> Benny's <span class="chip-count" id="cntBennys">0</span></label>
+        <label><input type="checkbox" id="fSvc" data-f>🛠 <span data-i18n="sv.vmTag"></span> <span class="chip-count" id="cntSvc">0</span></label>
       </div>
     </div>
     <input type="file" id="importCarsFile" accept=".json" hidden>
@@ -5183,6 +5248,7 @@ Section({
 <dialog id="carDlg" data-sticky="1" data-guard>
   <div class="dlg-header"><h3 id="carDlgTitle"></h3><button class="ghost" data-close style="padding:4px 10px">✕</button></div>
   <div class="dlg-body">
+    <div class="svc-pick" id="svcPick"></div>   <!-- idea 145: one tap fills a service vehicle -->
     <div class="form-grid">
       <div class="form-group">
         <label data-i18n="vm.manufacturer"></label>
@@ -5214,24 +5280,25 @@ Section({
           <option value="Utility"><option value="Service"><option value="Military">
         </datalist>
       </div>
-      <div class="form-group">
+      <div class="form-group full" id="svcBox" hidden></div>
+      <div class="form-group" data-nosvc>
         <label data-i18n="vm.garage"></label>
         <input id="garage" list="garageList" data-i18n-ph="vm.garageName">
         <datalist id="garageList"></datalist>
         <div id="garageInfo" class="garage-info"></div>
       </div>
-      <div class="form-group full"><label data-i18n="vm.levelSpot"></label><select id="spotLevel" hidden></select><input id="spot" data-i18n-ph="vm.exSpot"></div>
+      <div class="form-group full" data-nosvc><label data-i18n="vm.levelSpot"></label><select id="spotLevel" hidden></select><input id="spot" data-i18n-ph="vm.exSpot"></div>
       <div class="form-group full"><label data-i18n="vm.notesOpt"></label><textarea id="notes" rows="2" data-i18n-ph="vm.notesPh"></textarea></div>
       <div class="form-group full">
         <div class="check-row">
           <label><input type="checkbox" id="modified"> <span data-i18n="vm.modified"></span></label>
           <label><input type="checkbox" id="favorite"> ★ Favorite</label>
-          <label><input type="checkbox" id="hsw"> HSW</label>
-          <label><input type="checkbox" id="bennys"> Benny's</label>
-          <label><input type="checkbox" id="imani"> Imani Tech</label>
+          <label data-nosvc><input type="checkbox" id="hsw"> HSW</label>
+          <label data-nosvc><input type="checkbox" id="bennys"> Benny's</label>
+          <label data-nosvc><input type="checkbox" id="imani"> Imani Tech</label>
         </div>
-        <div id="modHint" class="mod-hint" hidden></div>
-        <select id="imaniType" disabled style="margin-top:8px">
+        <div id="modHint" class="mod-hint" hidden data-nosvc></div>
+        <select id="imaniType" disabled style="margin-top:8px" data-nosvc>
           <option value="" data-i18n="vm.imaniType"></option><option>Lock-On Jammer</option><option>RC Unit</option>
         </select>
       </div>
@@ -6085,7 +6152,8 @@ Section({
       const set = (n, o, f, tt) => { byId("gName").textContent = n; byId("gOcc").textContent = o; byId("gFree").textContent = f; byId("gTotal").textContent = tt; };
       if (!sel) {
         const total = garages.reduce((s, g) => s + (g.slots || 0), 0);
-        set(T("allGarages"), cars.length, total ? Math.max(0, total - cars.length) : "—", total || "—");
+        const inG = cars.filter(c => !svcOf(c)).length;   // idea 145: service vehicles take no garage place
+        set(T("allGarages"), inG, total ? Math.max(0, total - inG) : "—", total || "—");
       } else {
         const occ = cars.filter(c => c.garage === sel).length, g = garages.find(a => a.name === sel);
         set(sel, occ, g ? Math.max(0, g.slots - occ) : "?", g ? g.slots : "?");
@@ -6093,7 +6161,7 @@ Section({
     }
     el.addEventListener("change", e => { if (e.target.matches("[data-f]")) { if (e.target.id === "fGarage") { fillSpots(); updateGarageStats(); } render(); } });
     /* idea 66: the details on a card are filters: a click shows only the cars with that detail, a second click takes it off */
-    const FF_SEL = ["fGarage", "fSpot", "fType", "fClass", "fBrand"], FF_BOX = ["fFav", "fImani", "fModified", "fHsw", "fBennys"];
+    const FF_SEL = ["fGarage", "fSpot", "fType", "fClass", "fBrand"], FF_BOX = ["fFav", "fImani", "fModified", "fHsw", "fBennys", "fSvc"];
     function setFilter(id, val) {
       const box = FF_BOX.includes(id), f = byId(id);
       if (box) f.checked = !f.checked;
@@ -6109,7 +6177,7 @@ Section({
       FF_SEL.forEach(id => { const f = byId(id), v = f.value; if (!v) return;
         const txt = id === "fType" ? f.selectedOptions[0].textContent : id === "fSpot" ? v : v;
         chips.push(`<button type="button" class="af-chip" data-af="${id}" title="${esc(T("ffOff"))}">${lab[id] ? lab[id] + " " : ""}${esc(txt)} <b>✕</b></button>`); });
-      const boxName = { fFav: "Favorite", fImani: "Imani", fModified: T("modified"), fHsw: "HSW", fBennys: "Benny's" };
+      const boxName = { fFav: "Favorite", fImani: "Imani", fModified: T("modified"), fHsw: "HSW", fBennys: "Benny's", fSvc: "🛠 " + t("sv.vmTag") };
       FF_BOX.forEach(id => { if (byId(id).checked) chips.push(`<button type="button" class="af-chip" data-af="${id}" title="${esc(T("ffOff"))}">${esc(boxName[id])} <b>✕</b></button>`); });
       const box = byId("activeF");
       box.hidden = !chips.length;
@@ -6148,10 +6216,17 @@ Section({
       updateGarageInfo();
       updateLevelPicker(c ? c.spot || "" : "");
       fillModels(); showMods(false);
+      // idea 145: a service vehicle opens with its place and upgrades instead of the garage
+      const sd = c ? svcOf(c) : null;
+      if (sd) enterSvc(sd, { loc: c.svcLoc || "", at: c.svcAt || "", up: svcUpOf(sd, c) }); else leaveSvc();
+      drawSvcPick();
       carDlg.showModal();
     }
     async function saveCar() {
-      const gname = byId("garage").value.trim(), old = editCarId != null ? cars.find(c => c.id === editCarId) : null;
+      const old = editCarId != null ? cars.find(c => c.id === editCarId) : null;
+      if (dlgSvc && !old && cars.some(c => svcOf(c) === dlgSvc) && !confirm(t("sv.dupAsk", dlgSvc.name))) return;
+      if (dlgSvc) { byId("garage").value = ""; byId("spot").value = ""; byId("spotLevel").hidden = true; }
+      const gname = byId("garage").value.trim();
       if (gname) {
         const o = occupancy(gname, editCarId);
         if (!(old && old.garage === gname) && o.slots != null && o.occ >= o.slots && !confirm(T("garageFullConfirm", o))) return;
@@ -6172,6 +6247,12 @@ Section({
       if (!byId("spotLevel").hidden) car.spot = byId("spotLevel").value;
       CHECKS.forEach(k => car[k] = byId(k).checked);
       car.imaniType = car.imani ? byId("imaniType").value : "";
+      if (dlgSvc) {   // idea 145: where it is kept and its upgrades; the Acid Lab's equipment goes to the Production Manager
+        const st = svcFormRead(byId("svcBox")) || dlgSvcSt;
+        Object.assign(car, { svc: dlgSvc.id, svcLoc: st.loc, svcAt: st.at, svcUp: { ...st.up }, garage: "", spot: "" });
+        if (!car.model) Object.assign(car, { brand: dlgSvc.brand, model: dlgSvc.model, cls: car.cls || dlgSvc.cls });
+        if (dlgSvc.id === "acid") { const pm = SECTIONS.production; if (pm && pm.setAcidEquip) pm.setAcidEquip(!!car.svcUp.equip); delete car.svcUp.equip; }
+      }
       if (editedImage) img = editedImage;      // the photo as it came out of the editor
       car.image = img !== null ? img : (old?.image || "");
       if (old) cars[cars.indexOf(old)] = car; else cars.push(car);
@@ -6190,23 +6271,68 @@ Section({
     }
     async function toggleFav(id) { const c = cars.find(x => x.id === id); if (!c) return; c.favorite = !c.favorite; await dbPut(CARS, c); render(); }
 
+    /* ---------- idea 145: service vehicles (Kosatka, MOC, Avenger, Terrorbyte, Acid Lab, Galaxy Super Yacht) ----------
+       Picked with one tap at the top of the window, or found by the model typed: brand, class and type fill themselves,
+       the garage gives way to "where it is" and the upgrades that model can have (the same form as on the Service vehicles page). */
+    let dlgSvc = null, dlgSvcSt = { loc: "", at: "", up: {} }, svcBack = null;
+    function renderSvcBox() {
+      const box = byId("svcBox");
+      box.innerHTML = `<b>${dlgSvc.ico} ${esc(dlgSvc.name)} · <a href="#service-${dlgSvc.id}" data-svgo>${esc(t("sv.title"))} →</a></b>` + svcFormHtml(dlgSvc, dlgSvcSt, false);
+      svcFormBind(box, dlgSvc, () => false, st => { dlgSvcSt = st; renderSvcBox(); carDlg.dataset.dirty = "1"; });
+    }
+    function enterSvc(d, st, fill) {
+      dlgSvc = d; dlgSvcSt = { loc: st.loc || svcDefLoc(d, svcPM()), at: st.at || "", up: st.up || svcUpOf(d, null) };
+      if (!fill) { if (!byId("cls").value.trim()) byId("cls").value = d.cls; if (!byId("brand").value.trim() && d.brand) byId("brand").value = d.brand; }
+      if (fill) {
+        byId("brand").value = d.brand; byId("model").value = d.model; byId("cls").value = d.cls;
+        if ([...byId("vtype").options].some(o => o.value === d.type)) byId("vtype").value = d.type;
+        byId("garage").value = ""; byId("spot").value = ""; updateGarageInfo(); updateLevelPicker("");
+      }
+      carDlg.classList.add("svc-mode"); byId("svcBox").hidden = false; renderSvcBox(); drawSvcPick();
+    }
+    function leaveSvc() { dlgSvc = null; carDlg.classList.remove("svc-mode"); byId("svcBox").hidden = true; byId("svcBox").innerHTML = ""; drawSvcPick(); }
+    function drawSvcPick() {
+      const box = byId("svcPick"); box.hidden = editCarId != null && !dlgSvc;
+      box.innerHTML = `<span>🛠 ${esc(t("sv.dlgPick"))}</span>` + SVC.map(d => `<button type="button" class="ghost ${dlgSvc === d ? "on" : ""}" data-act="svcPick" data-svc="${d.id}">${d.ico} ${esc(d.name)}</button>`).join("");
+    }
+    byId("model").addEventListener("input", () => {
+      const d = svcByModel(byId("model").value);
+      if (d && d !== dlgSvc) enterSvc(d, {}, false); else if (!d && dlgSvc && editCarId == null) leaveSvc();
+    });
+    byId("svcBox").addEventListener("click", e => { if (e.target.closest("[data-svgo]")) carDlg.close(); });
+    carDlg.addEventListener("close", () => { if (svcBack) { const b = svcBack; svcBack = null; setTimeout(() => location.hash = "#" + b, 0); } });
+    // for the Service vehicles page
+    sec.canEdit = canEdit; sec.smallCopy = smallCopy;
+    sec.svcAdd = async id => {
+      const d = svcDef(id), pm = svcPM();
+      const car = { id: nextCarId++, type: d.type, brand: d.brand, model: d.model, cls: d.cls, garage: "", spot: "", notes: "", modified: false, favorite: false,
+        imani: false, imaniType: "", hsw: false, bennys: false, image: "", svc: d.id, svcLoc: svcDefLoc(d, pm), svcAt: "", svcUp: {} };
+      cars.push(car); await dbPut(CARS, car); refreshAll(); return car;
+    };
+    sec.svcPatch = async (id, patch) => { const c = cars.find(x => x.id === id); if (!c) return; Object.assign(c, patch); if (!c.svc) { const d = svcOf(c); if (d) c.svc = d.id; } if (c.svc) { c.garage = ""; c.spot = ""; } await dbPut(CARS, c); refreshAll(); };
+    sec.svcDel = async id => { cars = cars.filter(x => x.id !== id); await dbDelete(CARS, id); refreshAll(); };
+    sec.svcEdit = (id, back, studio) => {
+      location.hash = "#vehicles";
+      setTimeout(() => { const c = cars.find(x => x.id === id); if (!c) return; openCar(c); svcBack = back; if (studio) peOpen(); }, 120);
+    };
+
     /* ---------- the grid ---------- */
     const norm = v => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     function render() {
       const n = k => cars.filter(c => c[k]).length;
       byId("cntFav").textContent = n("favorite"); byId("cntImani").textContent = n("imani"); byId("cntModified").textContent = n("modified");
-      byId("cntHsw").textContent = n("hsw"); byId("cntBennys").textContent = n("bennys");
+      byId("cntHsw").textContent = n("hsw"); byId("cntBennys").textContent = n("bennys"); byId("cntSvc").textContent = cars.filter(c => svcOf(c)).length;
       const v = id => byId(id).value, on = id => byId(id).checked;
-      byId("filterCount").textContent = (["fGarage", "fSpot", "fType", "fClass", "fBrand"].filter(v).length + ["fFav", "fImani", "fModified", "fHsw", "fBennys"].filter(on).length + (v("sortBy") !== "default" ? 1 : 0)) || "";
+      byId("filterCount").textContent = (["fGarage", "fSpot", "fType", "fClass", "fBrand"].filter(v).length + ["fFav", "fImani", "fModified", "fHsw", "fBennys", "fSvc"].filter(on).length + (v("sortBy") !== "default" ? 1 : 0)) || "";
       const query = norm(v("search").trim());
       const list = cars.filter(c => {
-        if (query && !norm(`${c.brand || ""} ${c.model || ""} ${c.cls || ""} ${c.spot || ""} ${c.garage || ""} ${c.notes || ""} ${c.imaniType || ""}`).includes(query)) return false;
+        if (query && !norm(`${c.brand || ""} ${c.model || ""} ${c.cls || ""} ${c.spot || ""} ${c.garage || ""} ${c.notes || ""} ${c.imaniType || ""} ${svcOf(c) ? t("sv.vmTag") + " " + svcLocText(svcOf(c), c) : ""}`).includes(query)) return false;
         if (v("fGarage") && c.garage !== v("fGarage")) return false;
         if (v("fSpot") && (c.spot || "") !== v("fSpot")) return false;
         if (v("fClass") && c.cls !== v("fClass")) return false;
         if (v("fType") && vehType(c) !== v("fType")) return false;
         if (v("fBrand") && c.brand !== v("fBrand")) return false;
-        return !(on("fFav") && !c.favorite || on("fImani") && !c.imani || on("fModified") && !c.modified || on("fHsw") && !c.hsw || on("fBennys") && !c.bennys);
+        return !(on("fFav") && !c.favorite || on("fImani") && !c.imani || on("fModified") && !c.modified || on("fHsw") && !c.hsw || on("fBennys") && !c.bennys || on("fSvc") && !svcOf(c));
       });
       const cmp = k => (a, b) => (a[k] || "").localeCompare(b[k] || "", "ro", { sensitivity: "base" });
       const SORT = { "brand-asc": cmp("brand"), "brand-desc": (a, b) => cmp("brand")(b, a), "model-asc": cmp("model"), "cls-asc": cmp("cls"), "garage-asc": cmp("garage"),
@@ -6230,13 +6356,17 @@ Section({
         if (c.imani) badges += ff("fImani", "1", BADGE_ICONS[c.imaniType] ? badgeIcon(BADGE_ICONS[c.imaniType], "Imani: " + c.imaniType) : '<span class="badge imani">Imani</span>', "Imani");
         if (c.hsw) badges += ff("fHsw", "1", badgeIcon(BADGE_ICONS.hsw, "HSW"), "HSW");
         if (c.bennys) badges += ff("fBennys", "1", badgeIcon(BADGE_ICONS.bennys, "Benny's"), "Benny's");
-        const vt = vehType(c);
-        return `<div class="card${c.favorite ? " fav-card" : ""}">
-          ${c.image ? `<img class="car-img" loading="lazy" alt="${esc(`${c.brand || ""} ${c.model || ""}`)}" src="${c.image}">` : `<div class="no-img">${T("noImage")}</div>`}
+        const vt = vehType(c), sd = svcOf(c);
+        // idea 145: a service vehicle: framed, the Service tag, its place instead of the garage; the picture opens its service card
+        const pic = c.image ? `<img class="car-img" loading="lazy" alt="${esc(`${c.brand || ""} ${c.model || ""}`)}" src="${c.image}">` : `<div class="no-img">${sd ? sd.ico + " " : ""}${T("noImage")}</div>`;
+        const where = sd ? `<a class="svc-tag" href="#service-${sd.id}" title="${esc(t("sv.title"))}">🛠 ${t("sv.vmTag")}</a> 📍 ${esc(svcLocText(sd, c))} · ${esc(svcShort(sd, svcUpOf(sd, c)))}`
+          : `${c.garage ? ff("fGarage", c.garage, esc(c.garage), c.garage) : "—"} • ${c.garage && c.spot ? ff("fSpot", JSON.stringify([c.garage, c.spot]), esc(c.spot), c.garage + " · " + c.spot) : esc(c.spot || "—")}`;
+        return `<div class="card${c.favorite ? " fav-card" : ""}${sd ? " svc-card" : ""}">
+          ${sd ? `<a class="svc-pic" href="#service-${sd.id}">${pic}</a>` : pic}
           <div class="info">
             <h3>${c.brand ? ff("fBrand", c.brand, esc(c.brand), c.brand) : ""} ${esc(c.model || "")}</h3>
             <div class="small">${ff("fType", vt, `<span class="vt-ico">${vtIcon(vt)}</span>`, vtLabel(vt))}${c.cls ? ff("fClass", c.cls, esc(c.cls), c.cls) : "—"}</div>
-            <div class="small" style="margin:3px 0">${c.garage ? ff("fGarage", c.garage, esc(c.garage), c.garage) : "—"} • ${c.garage && c.spot ? ff("fSpot", JSON.stringify([c.garage, c.spot]), esc(c.spot), c.garage + " · " + c.spot) : esc(c.spot || "—")}</div>
+            <div class="small" style="margin:3px 0">${where}</div>
             ${c.notes ? `<div class="small" style="margin-top:2px;font-style:italic">${esc(c.notes)}</div>` : ""}
             <div class="badges">${badges}</div>
             <div class="btn-row">
@@ -6342,6 +6472,7 @@ Section({
         const car = { id: nextCarId++, type: raw.type || undefined, brand: raw.brand || "", model: raw.model || "", cls: raw.cls || "", garage: raw.garage || "", spot: raw.spot || "", notes: raw.notes || "",
           modified: !!raw.modified, favorite: !!raw.favorite, imani: !!raw.imani, imaniType: raw.imaniType || "", hsw: !!raw.hsw, bennys: !!raw.bennys, image: raw.image || "" };
         if (!car.type) delete car.type;
+        if (raw.svc) Object.assign(car, { svc: raw.svc, svcLoc: raw.svcLoc || "", svcAt: raw.svcAt || "", svcUp: raw.svcUp || {} });   // idea 145
         cars.push(car); await dbPut(CARS, car);
       }
       refreshAll(); notify(T("carsImported", cars.length), "ok");
@@ -6360,6 +6491,7 @@ Section({
       const id = +b.dataset.id, name = b.closest("tr") && b.closest("tr").dataset.name;
       ({ newCar: () => openCar(null), saveCar, goLocal, toggleFilters: () => { const o = el.classList.toggle("filters-open"); b.setAttribute("aria-expanded", o); },
          fav: () => toggleFav(id), edit: () => openCar(cars.find(c => c.id === id)), del: () => delCar(id),
+         svcPick: () => { const d = svcDef(b.dataset.svc); if (dlgSvc === d && editCarId == null) { leaveSvc(); byId("model").value = ""; byId("brand").value = ""; byId("cls").value = ""; } else enterSvc(d, {}, editCarId == null); },
          photoEdit: peOpen, peApply, pePaste, peCancel: () => photoDlg.close(), peReset: () => { pe = { ...PE0 }; peZoomV = 0; buildBase(); frame(); peShow(); },
          peRotL: () => peTurn(() => pe.rot = (pe.rot + 270) % 360), peRotR: () => peTurn(() => pe.rot = (pe.rot + 90) % 360), peFlip: () => peTurn(() => pe.flip = !pe.flip),
          addLevel: () => { const box = byId("gLevels"); box.insertAdjacentHTML("beforeend", `<div class="lv-row"><input class="lv-name" placeholder="${T("lvName")}"><input class="lv-slots" type="number" min="1" placeholder="${T("lvSlots")}"><button class="danger" type="button" data-act="delLevel">✕</button></div>`); box.lastElementChild.querySelector("input").focus(); sumLevels(); },
@@ -6519,6 +6651,397 @@ Section({
     Bus.on("lang", () => this.render && this.render());
   },
   show() { this.render(); }
+});
+</script>
+
+<style>
+/* ======================== idea 145: Service vehicles (variant B: the list on the left, the chosen one on the right) ======================== */
+#sec-service { max-width: 1240px; margin: 0 auto; padding: 18px 16px 60px; }
+#sec-service .sv-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+#sec-service .sv-head > div { flex: 1; min-width: 220px; }
+#sec-service .sv-head h1 { margin: 0; font: 700 1.7rem 'Barlow Condensed', Barlow, sans-serif; }
+#sec-service .sv-head p { margin: 2px 0 0; color: var(--muted); }
+#sec-service .sv-wrap { display: grid; grid-template-columns: 300px 1fr; gap: 14px; align-items: start; }
+#sec-service .sv-list { display: flex; flex-direction: column; gap: 8px; position: sticky; top: calc(var(--header-h, 56px) + 10px); }
+#sec-service .sv-item { all: unset; box-sizing: border-box; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; padding: 9px 12px; cursor: pointer;
+  border-radius: 12px; border: 1px solid var(--border); background: color-mix(in srgb, var(--bg2) 88%, transparent); transition: border-color .15s, background .15s; }
+#sec-service .sv-item:hover { border-color: color-mix(in srgb, var(--accent) 60%, var(--border)); }
+#sec-service .sv-item.on { border: 2px solid var(--accent); padding: 8px 11px; background: color-mix(in srgb, var(--accent) 10%, var(--bg2)); }
+#sec-service .sv-item b { font: 700 15px Barlow, sans-serif; }
+#sec-service .sv-item small { grid-column: 1; color: var(--muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#sec-service .sv-own { grid-row: 1 / span 2; grid-column: 2; display: grid; place-items: center; min-width: 30px; height: 22px; padding: 0 6px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  background: var(--bg3); color: var(--muted); }
+#sec-service .sv-own.yes { background: var(--ok); color: #fff; }
+#sec-service .sv-det { display: grid; grid-template-columns: minmax(260px, 400px) 1fr; align-items: start; gap: 18px; padding: 14px; border-radius: 14px; border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg2) 90%, transparent); }
+#sec-service .sv-pic { display: flex; flex-direction: column; gap: 8px; }
+#sec-service .sv-pic img, #sec-service .sv-ph { width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; object-fit: cover; background: linear-gradient(135deg, var(--bg3), var(--bg2)); }
+#sec-service .sv-ph { display: grid; place-items: center; color: var(--muted); font: 600 15px Barlow, sans-serif; text-align: center; padding: 10px; box-sizing: border-box; }
+#sec-service .sv-ph span { font-size: 40px; display: block; }
+#sec-service .sv-picbtn { display: flex; flex-wrap: wrap; gap: 6px; }
+#sec-service .sv-picbtn button, #sec-service .sv-picbtn label { padding: 5px 10px; font-size: 13px; }
+#sec-service .sv-tt { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+#sec-service .sv-tt h2 { flex: 1; margin: 0; font: 700 1.5rem 'Barlow Condensed', Barlow, sans-serif; }
+#sec-service .sv-badge { padding: 4px 12px; border-radius: 999px; font: 700 13px Barlow, sans-serif; background: var(--ok); color: #fff; }
+#sec-service .sv-sub { margin: 2px 0 10px; color: var(--muted); font-size: 14px; }
+#sec-service h4, .svf h4 { margin: 14px 0 6px; font: 700 13px Barlow, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+#sec-service .sv-hint, .svf .sv-hint { margin: 6px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+#sec-service .sv-warn, .svf .sv-warn { margin: 6px 0 0; font-size: 13px; color: var(--warn, #e0a92a); }
+#sec-service .sv-links { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+#sec-service .sv-links .ok { color: var(--ok); } #sec-service .sv-links .no { color: var(--muted); }
+#sec-service .sv-links a { color: var(--text); }
+#sec-service .sv-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+#sec-service .sv-none { padding: 30px; text-align: center; color: var(--muted); }
+#sec-service button { display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg2); color: var(--text); font: 600 13px Barlow, sans-serif; cursor: pointer; }
+#sec-service button:hover { background: var(--bg3); }
+#sec-service button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+#sec-service button.ghost { background: transparent; }
+#sec-service button.danger { background: color-mix(in srgb, var(--bad) 22%, var(--bg2)); border-color: color-mix(in srgb, var(--bad) 60%, var(--bg2)); }
+/* the form (also used in the Vehicle Manager's car window) */
+.svf { display: flex; flex-direction: column; gap: 6px; }
+.svf .svf-row { display: grid; grid-template-columns: 22px 1fr auto; gap: 2px 8px; align-items: start; padding: 5px 0; border-bottom: 1px dashed color-mix(in srgb, var(--border) 70%, transparent); cursor: pointer; }
+.svf .svf-row input[type="checkbox"], #sec-vehicles .svf .svf-row input[type="checkbox"] { padding: 0; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--accent); }
+.svf .svf-row b { font-weight: 600; font-size: 14.5px; }
+.svf .svf-row small { grid-column: 2 / span 2; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.svf .svf-row .svf-p { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.svf .svf-row.on .svf-p { color: var(--ok); }
+.svf .svf-sel { display: grid; grid-template-columns: 110px 1fr; gap: 4px 8px; align-items: center; padding: 5px 0; border-bottom: 1px dashed color-mix(in srgb, var(--border) 70%, transparent); }
+.svf .svf-sel span { font-size: 14px; font-weight: 600; }
+.svf .svf-sel small { grid-column: 2; color: var(--muted); font-size: 12px; }
+.svf select, .svf input[type="text"] { width: 100%; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: 14px Barlow, sans-serif; box-sizing: border-box; }
+.svf .svf-h { margin: 8px 0 0; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.svf .svf-loc { display: flex; flex-direction: column; gap: 6px; }
+.svf .svf-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; align-self: flex-start; }
+.svf .svf-seg button, :is(#sec-service, #sec-vehicles) .svf .svf-seg button { padding: 6px 12px; border: 0; border-radius: 0; background: var(--bg3); color: var(--muted); font: 600 13px Barlow, sans-serif; cursor: pointer; box-shadow: none; }
+.svf .svf-seg button.on, :is(#sec-service, #sec-vehicles) .svf .svf-seg button.on { background: var(--accent); color: var(--accent-text, #111); }
+.svf .svf-fixed { font-size: 14px; margin: 0; }
+#sec-vehicles #svcBox .svf h4 { margin: 12px 0 4px; font-size: 12px; }
+#sec-vehicles #svcBox .svf p { margin: 4px 0 0; }
+.svf .svf-sum { margin-top: 8px; font-size: 13.5px; color: var(--muted); }
+.svf .svf-sum b { color: var(--text); }
+.svf.ro .svf-row { cursor: default; }
+@media (max-height: 640px) { #sec-service .sv-list { position: static; } }
+@media (max-width: 900px) { #sec-service .sv-det { grid-template-columns: 1fr; } }
+@media (max-width: 700px) {
+  #sec-service { padding: 12px 10px 60px; }
+  #sec-service .sv-wrap { grid-template-columns: 1fr; }
+  #sec-service .sv-list { position: static; display: grid; grid-template-columns: 1fr 1fr; }
+  #sec-service .sv-item small { white-space: normal; }
+}
+</style>
+<section class="sec" id="sec-service" hidden>
+  <div class="sv-head"><div><h1 data-i18n="sv.title"></h1><p data-i18n="sv.sub"></p></div><a class="btn" href="#vehicles" data-i18n="md.back"></a></div>
+  <div class="sv-wrap"><nav class="sv-list"></nav><div class="sv-main"></div></div>
+  <input type="file" accept="image/*" hidden data-svfile>
+</section>
+<script>
+/* idea 145: the service vehicles (Kosatka, Mobile Operations Center, Avenger, Terrorbyte, Acid Lab, Galaxy Super Yacht).
+   Mihai adds them in the Vehicle Manager like any vehicle; the VM record then has svc (id), svcLoc (where it is kept),
+   svcAt (the detail: which Facility, which mooring, free text for the Kosatka) and svcUp ({ key: true | "option" }).
+   They take no garage place. Only the upgrades that change something in the game (Mihai, 14.11.2026: no looks).
+   Research 14.11.2026: gtabase.com (Kosatka, Galaxy Super Yacht, Terrorbyte, Acid Lab), gtaboss.gg (MOC, Avenger),
+   gta.wiki (Avenger: Charlie upgrades, Operations Terminal; MOC bays), gta.fandom.com (Garment Factory Terrorbyte upgrades),
+   sportskeeda.com (MOC cab / bay prices, Terrorbyte stations, yacht models), dexerto.com / rtrace.io (Kosatka prices).
+   Prices: GTA$ in the game, null = not found for sure. */
+const SVC_FACILITIES = ["Paleto Bay", "Mount Gordo", "Lago Zancudo", "RON Alternates Wind Farm", "Zancudo River", "Route 68", "Grand Senora Desert", "Sandy Shores", "Land Act Reservoir"];
+const SVC_MOORINGS = ["Lago Zancudo", "Pacific Bluffs", "Vespucci Beach", "Los Santos International Airport", "Terminal", "Palomino Highlands", "Tataviam Mountains",
+  "San Chianski Mountain Range", "Mount Gordo", "Procopio Beach", "Paleto Bay", "North Chumash"];
+// u = [key, name, price, [what it does EN, RO]] ; a select: { k, n, opts: [[value, name, price, [EN, RO]]] }
+const SVC = [
+  { id: "kosatka", ico: "🛳️", name: "Kosatka", brand: "RUNE", model: "Kosatka", cls: "Submarine", type: "boat", price: 2200000,
+    kind: ["Submarine HQ", "Submarin (bază)"], match: ["kosatka", "runekosatka"],
+    loc: { free: true }, locHint: ["Called near you from Interaction Menu → Services; fast travel to 12 places on the coast ($10,000, $2,000 after your first Cayo finale). Write where you keep it.",
+      "O chemi lângă tine din Interaction Menu → Services; fast travel în 12 puncte pe coastă ($10,000, $2,000 după prima finală Cayo). Scrie unde o ții."],
+    ups: [
+      ["sonar", "Sonar Station", 1200000, ["Shows Hidden Caches (daily GTA$ and RP) and enemy submarines on the map.", "Arată Hidden Caches (GTA$ și RP zilnic) și submarinele inamice pe hartă."]],
+      ["missiles", "Guided Missiles", 1900000, ["A missile you steer from the sub; 1-minute pause after each.", "O rachetă pe care o conduci din submarin; 1 minut pauză după fiecare."]],
+      ["wws", "Weapon Workshop", 350000, ["Mk II weapons and weapon mods on board.", "Arme Mk II și modificări de arme la bord."]],
+      ["sparrow", "Sparrow (Moon Pool)", 1815000, ["The small helicopter on the sub, called to you from the menu.", "Elicopterul mic de pe submarin, chemat la tine din meniu."]],
+      ["avisa", "Kraken Avisa (Moon Pool)", 1545000, ["The mini-submarine kept in the Moon Pool.", "Mini-submarinul ținut în Moon Pool."]]],
+    unlock: [["op-cayo", "The Cayo Perico Heist", null], ["", ["Hidden Caches (sea treasure)", "Hidden Caches (comori pe fundul mării)"], "sonar"]] },
+  { id: "moc", ico: "🚛", name: "Mobile Operations Center", brand: "", model: "Mobile Operations Center", cls: "Utility", type: "car", price: 1225000,
+    kind: ["Truck and trailer (Bunker)", "Camion cu remorcă (Bunker)"], match: ["mobileoperationscenter", "moc", "phantomcustom", "haulercustom"],
+    loc: { fixed: "bunker" },
+    ups: [
+      { k: "cab", n: "Cab", opts: [["phantom", "Phantom Custom", null, ["comes with the MOC ($1,225,000)", "vine cu MOC-ul ($1,225,000)"]], ["hauler", "Hauler Custom", 1400000, ["better window protection", "geamuri mai bine protejate"]]] },
+      { k: "bay1", n: "Bay 1", opts: [["cc", "Command Center", 320000, ["front turret and the turret seats; Mobile Operations touchscreen", "tureta din față și locurile de tunar; ecranul Mobile Operations"]], ["lq", "Living Quarters", null, ["bed, wardrobe; Mobile Operations touchscreen", "pat, garderobă; ecranul Mobile Operations"]]] },
+      { k: "bay2", n: "Bay 2", opts: [["", "—", null, null], ["wws", "Weapon Workshop", 245000, ["Mk II weapons, gun locker", "arme Mk II, dulap de arme"]], ["wvw", "Weapon & Vehicle Workshop", 955000, ["weapons + weaponized vehicles; takes Bay 3 too", "arme + vehicule armate; ocupă și Bay 3"]], ["lq", "Living Quarters", 145000, null]] },
+      { k: "bay3", n: "Bay 3", opts: [["", "—", null, null], ["pvs", "Personal Vehicle Storage", 195000, ["one personal vehicle inside", "un vehicul personal înăuntru"]], ["lq", "Living Quarters", 145000, null]] },
+      ["turrets", "Front and Rear Turrets", 210000, ["Two more cannons at the back (bought in the Bunker).", "Încă două tunuri în spate (se cumpără în Bunker)."]]],
+    unlock: [["op-mobileops", "Mobile Operations", null], ["", ["Weaponized vehicle workshop", "Atelier de vehicule armate"], "bay2=wvw"]] },
+  { id: "avenger", ico: "✈️", name: "Avenger", brand: "Mammoth", model: "Avenger", cls: "Plane", type: "plane", price: 3450000,
+    kind: ["Flying base", "Bază zburătoare"], match: ["avenger"],
+    loc: { pick: ["facility", "hangar"] },
+    locHint: ["Since San Andreas Mercenaries it can stay in a Hangar too. Charlie's upgrades (Operations Terminal, Thruster, defences, guns) are fitted only in the Hangar workshop.",
+      "Din San Andreas Mercenaries poate sta și în Hangar. Upgrade-urile lui Charlie (Operations Terminal, Thruster, apărări, arme) se montează doar în atelierul din Hangar."],
+    ups: [
+      ["vws", "Vehicle Workshop", null, ["Weaponized vehicles modded on board.", "Vehicule armate modificate la bord."]],
+      ["wws", "Weapon Workshop", null, ["Mk II weapons on board.", "Arme Mk II la bord."]],
+      ["ot", "Operations Terminal", 1450000, ["Starts Project Overthrow and LSA Operations.", "Pornește Project Overthrow și LSA Operations."]],
+      ["thruster", "Avenger Thruster", 1250000, ["A jetpack kept on board: in and out even on autopilot ($750,000 if you own a Thruster).", "Un jetpack la bord: intri și ieși și pe pilot automat ($750,000 dacă ai deja Thruster)."]],
+      { k: "def", n: "Autopilot Defenses", opts: [["", "—", null, null], ["stealth", "Stealth Module", 350000, ["off enemy radar", "invizibil pe radarul inamic"]], ["jammer", "Missile Lock-on Jammer", 350000, ["no missile lock-ons", "fără rachete ghidate pe el"]]] },
+      ["turrets", "Front, Top and Rear Turrets", 240000, ["Three cannons for the gunners in the hold.", "Trei tunuri pentru tunarii din cală."]],
+      ["mg", "Machine Guns", 195000, ["Two miniguns for the pilot.", "Două miniguns pentru pilot."]],
+      ["mis", "Missile Launchers", 240000, ["Homing missiles for the pilot.", "Rachete ghidate pentru pilot."]]],
+    unlock: [["op-overthrow", "Project Overthrow", "ot"], ["op-lsaops", "LSA Operations", "ot"]] },
+  { id: "terrorbyte", ico: "🚚", name: "Terrorbyte", brand: "Benefactor", model: "Terrorbyte", cls: "Commercial", type: "car", price: 1375000,
+    kind: ["Command truck", "Camion de comandă"], match: ["terrorbyte"],
+    loc: { pick: ["nightclub", "garment"] },
+    ups: [
+      ["turret", "Turret Station", 297000, ["The multi-lock missile battery (up to 5 targets).", "Bateria de rachete multi-lock (până la 5 ținte)."]],
+      ["drone", "Drone Station", 815000, ["The drone; needed for 2 Client Jobs (Targeted Data, Diamond Shopping).", "Drona; trebuie la 2 Client Jobs (Targeted Data, Diamond Shopping)."]],
+      ["wws", "Weapon Workshop", 245000, ["Mk II weapons on board.", "Arme Mk II la bord."]],
+      ["spec", "Specialized Workshop", 495000, ["The only place where the Oppressor Mk II is modified.", "Singurul loc unde se modifică Oppressor Mk II."]],
+      { head: ["Bureau Tech (bought in the Garment Factory)", "Bureau Tech (se cumpără în Garment Factory)"] },
+      ["mct", "Master Control Terminal", 1250000, ["Manage your businesses from the back of the truck.", "Îți conduci afacerile din spatele camionului."]],
+      ["scan", "Collectible Scanner", 1290000, ["Nearby collectibles on the map while driving.", "Colecționabilele din apropiere pe hartă când conduci."]],
+      ["silent", "Silent Running", 425000, ["Stopped: hidden from the other players' map.", "Oprit: ascuns de pe harta celorlalți jucători."]],
+      ["jam", "Missile Lock-On Jammer", 425000, ["No missile lock-ons on it.", "Nu se pot ținti rachete pe el."]]],
+    unlock: [["op-clientjobs", "Client Jobs", null], ["", ["Oppressor Mk II upgrades", "Upgrade-uri Oppressor Mk II"], "spec"], ["", ["Businesses from the truck", "Afacerile din camion"], "mct"]] },
+  { id: "acid", ico: "🧪", name: "Acid Lab", brand: "MTL", model: "Brickade 6x6", cls: "Service", type: "car", price: 750000,
+    kind: ["Brickade 6x6 with the lab", "Brickade 6x6 cu laboratorul"], match: ["brickade6x6", "acidlab"],
+    loc: { fixed: "freakshop" },
+    ups: [
+      ["equip", "Equipment Upgrade", 250000, ["Faster, better Acid. Unlocked after 10 Fooligan Jobs. Same tick as in Production Manager.", "Acid mai repede și mai scump. Se deblochează după 10 Fooligan Jobs. Aceeași bifă ca în Production Manager."]],
+      ["ram", "Ram weapons", null, ["Bought on the truck in the Freakshop.", "Se pun pe camion în Freakshop."]],
+      ["mines", "Proximity Mines (EMP)", null, ["Bought on the truck in the Freakshop.", "Se pun pe camion în Freakshop."]]],
+    unlock: [["acidlab", ["Acid Lab (the business)", "Acid Lab (afacerea)"], null], ["op-fooligan", "Fooligan Jobs", null]] },
+  { id: "yacht", ico: "🛥️", name: "Galaxy Super Yacht", brand: "", model: "Galaxy Super Yacht", cls: "Yacht", type: "yacht", price: 6000000,
+    kind: ["Floating home", "Casă pe apă"], match: ["galaxysuperyacht", "superyacht", "yacht"],
+    loc: { moor: true }, locHint: ["Not driven: it stays at one of 12 moorings; the captain moves it for $25,000.", "Nu se conduce: stă la unul din 12 locuri; căpitanul îl mută pentru $25,000."],
+    ups: [
+      { k: "model", n: "Model", opts: [["orion", "The Orion", 6000000, ["1 helipad · Tropic, Seashark", "1 heliport · Tropic, Seashark"]],
+        ["pisces", "The Pisces", 7000000, ["2 helipads, hot tub · Swift Deluxe, Speeder, Dinghy, 2 Seasharks", "2 heliporturi, jacuzzi · Swift Deluxe, Speeder, Dinghy, 2 Seashark"]],
+        ["aquarius", "The Aquarius", 8000000, ["2 helipads, hot tub · SuperVolito Carbon, Dinghy, Toro, 4 Seasharks", "2 heliporturi, jacuzzi · SuperVolito Carbon, Dinghy, Toro, 4 Seashark"]]] }],
+    unlock: [["op-superyacht", "A Superyacht Life", null]] }
+];
+const svcDef = id => SVC.find(d => d.id === id) || null;
+// which service vehicle a VM record is: its own mark, or the model name (old records added before 0.50)
+const svcNrm = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+function svcByModel(model) { const m = svcNrm(model); if (!m) return null; return SVC.find(d => d.match.includes(m)) || null; }
+const svcOf = c => (c && c.svc && svcDef(c.svc)) || (c && svcByModel(c.model)) || null;
+// the upgrades that are ticks (not headers or selects)
+const svcTicks = d => d.ups.filter(u => Array.isArray(u));
+const svcSels = d => d.ups.filter(u => !Array.isArray(u) && u.k);
+// how many functional upgrades are set: ticks + selects with a paid/non-empty choice (the cab and the yacht model don't count)
+function svcUpCount(d, up) {
+  up = up || {};
+  const ticks = svcTicks(d), sels = svcSels(d).filter(s => !["cab", "model"].includes(s.k));
+  const n = ticks.filter(([k]) => up[k]).length + sels.filter(s => up[s.k]).length;
+  return [n, ticks.length + sels.length];
+}
+
+i18n({
+  en: { "sv.title": "Service vehicles", "sv.sub": "Kosatka, Mobile Operations Center, Avenger, Terrorbyte, Acid Lab and Galaxy Super Yacht: where each one is, its upgrades and what it opens.",
+    "sv.owned": "✓ Owned", "sv.notOwned": "Not in the Vehicle Manager", "sv.add": "➕ I have it", "sv.from": p => `from ${p}`,
+    "sv.where": "Where it is", "sv.ups": "Upgrades", "sv.unl": "Unlocks", "sv.app": "Where it shows in the app",
+    "sv.edit": "✏️ Edit in Vehicle Manager", "sv.del": "🗑 I don't have it", "sv.delAsk": n => `Remove ${n} from the Vehicle Manager?`,
+    "sv.paste": "📋 Paste", "sv.file": "📁 File", "sv.studio": "🎨 Photo studio", "sv.noPic": "No picture yet", "sv.pasteHint": "Ctrl+V a screenshot from the game",
+    "sv.pasteNone": "No picture in the clipboard: press Print Screen in the game first.", "sv.pasteBlocked": "The browser didn't allow reading the clipboard: press Ctrl+V instead.",
+    "sv.picSaved": "Picture saved.", "sv.added": n => `${n} added to the Vehicle Manager.`, "sv.ro": "Only the owner (or your own copy) can change this.",
+    "sv.loading": "Loading the Vehicle Manager…", "sv.two": n => `You have ${n} records of it in the Vehicle Manager; this page shows the first.`,
+    "sv.l_bunker": "Bunker", "sv.l_freakshop": "The Freakshop", "sv.l_facility": "Facility", "sv.l_hangar": "Hangar", "sv.l_nightclub": "Nightclub", "sv.l_garment": "Garment Factory",
+    "sv.pickFac": "Which Facility…", "sv.pickMoor": "Which mooring…", "sv.freePh": "e.g. near Vespucci Beach", "sv.noBunker": "Production Manager has no Bunker of yours yet.",
+    "sv.noHangar": "Production Manager has no Hangar of yours yet.", "sv.noNight": "Production Manager has no Nightclub of yours yet.",
+    "sv.sum": (n, m, v) => `Upgrades: <b>${n} / ${m}</b> · worth about <b>${v}</b> with the vehicle`, "sv.need": n => `needs ${n}`, "sv.sum0": v => `Worth about <b>${v}</b>`, "sv.acidPM": "Production Manager says you own the Acid Lab: press “I have it” to add it here too.",
+    "sv.appVM": "Vehicle Manager: a card with the Service tag; the place instead of the garage, no garage space taken",
+    "sv.appJM": "Job Manager: “Needs: …” turns green", "sv.appPRM": "Property Manager: its card", "sv.appPM": "Production Manager: the Equipment Upgrade is the same tick",
+    "sv.vmTag": "Service", "sv.dlgPick": "Service vehicle:", "sv.dupAsk": n => `You already have ${n} in the Vehicle Manager. Add it a second time?` },
+  ro: { "sv.title": "Vehicule de serviciu", "sv.sub": "Kosatka, Mobile Operations Center, Avenger, Terrorbyte, Acid Lab și Galaxy Super Yacht: unde stă fiecare, upgrade-urile și ce deschide.",
+    "sv.owned": "✓ Deținut", "sv.notOwned": "Nu e în Vehicle Manager", "sv.add": "➕ Îl am", "sv.from": p => `de la ${p}`,
+    "sv.where": "Unde stă", "sv.ups": "Upgrade-uri", "sv.unl": "Deblochează", "sv.app": "Unde apare în aplicație",
+    "sv.edit": "✏️ Editează în Vehicle Manager", "sv.del": "🗑 Nu-l mai am", "sv.delAsk": n => `Scoți ${n} din Vehicle Manager?`,
+    "sv.paste": "📋 Lipește", "sv.file": "📁 Fișier", "sv.studio": "🎨 Studio foto", "sv.noPic": "Încă fără poză", "sv.pasteHint": "Ctrl+V o captură din joc",
+    "sv.pasteNone": "Nu e nicio poză în clipboard: apasă întâi Print Screen în joc.", "sv.pasteBlocked": "Browserul n-a permis citirea clipboard-ului: apasă Ctrl+V.",
+    "sv.picSaved": "Poza a fost salvată.", "sv.added": n => `${n} a fost adăugat în Vehicle Manager.`, "sv.ro": "Doar proprietarul (sau copia ta) poate schimba asta.",
+    "sv.loading": "Se încarcă Vehicle Manager…", "sv.two": n => `Îl ai de ${n} ori în Vehicle Manager; pagina îl arată pe primul.`,
+    "sv.l_bunker": "Bunker", "sv.l_freakshop": "The Freakshop", "sv.l_facility": "Facility", "sv.l_hangar": "Hangar", "sv.l_nightclub": "Nightclub", "sv.l_garment": "Garment Factory",
+    "sv.pickFac": "Care Facility…", "sv.pickMoor": "Care loc de ancorare…", "sv.freePh": "ex: lângă plaja Vespucci", "sv.noBunker": "Production Manager nu are încă un Bunker al tău.",
+    "sv.noHangar": "Production Manager nu are încă un Hangar al tău.", "sv.noNight": "Production Manager nu are încă un Nightclub al tău.",
+    "sv.sum": (n, m, v) => `Upgrade-uri: <b>${n} / ${m}</b> · valoare cu tot cu vehiculul ≈ <b>${v}</b>`, "sv.need": n => `cere ${n}`, "sv.sum0": v => `Valoare ≈ <b>${v}</b>`, "sv.acidPM": "În Production Manager ai Acid Lab: apasă „Îl am” ca să-l ai și aici.",
+    "sv.appVM": "Vehicle Manager: card cu eticheta Serviciu; locul în loc de garaj, nu ocupă loc în garaje",
+    "sv.appJM": "Job Manager: „Cere: …” devine verde", "sv.appPRM": "Property Manager: cardul lui", "sv.appPM": "Production Manager: Equipment Upgrade e aceeași bifă",
+    "sv.vmTag": "Serviciu", "sv.dlgPick": "Vehicul de serviciu:", "sv.dupAsk": n => `Ai deja ${n} în Vehicle Manager. Îl adaugi a doua oară?` }
+});
+// one route per vehicle (#service-kosatka ...), so the Vehicle Manager, the Property Manager and the Job Manager can open it straight
+SVC.forEach(d => { ROUTES["service-" + d.id] = { sec: "service", title: "Service vehicles", view: "svc_" + d.id }; });
+const svL = a => Array.isArray(a) ? a[lang === "ro" ? 1 : 0] : a;
+const svMoney = n => "$" + Math.round(n).toLocaleString("en-US");
+// what the Production Manager knows: Nightclub / Bunker / Hangar and their places, the Acid Lab's Equipment Upgrade
+function svcPM() {
+  const pm = SECTIONS.production;
+  if (pm && !pm.ready) { pm.el = document.getElementById("sec-production"); pm.init && pm.init(); pm.ready = true; }
+  try { return (pm && pm.svcInfo && pm.svcInfo()) || {}; } catch (e) { return {}; }
+}
+// the upgrades of a record; the Acid Lab's equipment lives in the Production Manager (one place for it)
+function svcUpOf(d, c, pm) { const up = { ...((c && c.svcUp) || {}) }; if (d.id === "acid") up.equip = !!(pm || svcPM()).acidEquip; return up; }
+function svcDefLoc(d, pm) {
+  if (d.loc.fixed) return d.loc.fixed;
+  if (d.id === "terrorbyte") return pm.night && pm.night.owned ? "nightclub" : "garment";
+  if (d.id === "avenger") return "facility";
+  if (d.loc.moor) return "moor";
+  return "free";
+}
+// "Nightclub · Downtown Vinewood", "Facility · Route 68", the Kosatka's own text ...
+function svcLocText(d, c, pm) {
+  pm = pm || svcPM();
+  const k = (c && c.svcLoc) || svcDefLoc(d, pm), at = (c && c.svcAt) || "";
+  const place = { bunker: pm.bunker && pm.bunker.loc, hangar: pm.hangar && pm.hangar.loc, nightclub: pm.night && pm.night.loc }[k];
+  if (k === "free" || k === "moor") return at || "—";
+  return t("sv.l_" + k) + (k === "facility" ? (at ? " · " + at : "") : place ? " · " + place : "");
+}
+// the name of an upgrade ("ot" → Operations Terminal; "bay2=wvw" → Weapon & Vehicle Workshop)
+function svcUpName(d, need) {
+  const [k, v] = need.split("="), u = d.ups.find(x => Array.isArray(x) ? x[0] === k : x.k === k);
+  if (!u) return need; if (Array.isArray(u)) return u[1];
+  const o = v && u.opts.find(x => x[0] === v); return o ? o[1] : u.n;
+}
+// the short line on a VM card: "Upgrades 2 / 5", or the yacht's model
+function svcShort(d, up) {
+  const [n, m] = svcUpCount(d, up);
+  if (m) return t("sv.ups") + " " + n + " / " + m;
+  const u = svcSels(d)[0], o = u && u.opts.find(x => x[0] === (up[u.k] || u.opts[0][0]));
+  return o ? o[1] : "";
+}
+function svcValue(d, up) {
+  let v = d.price;
+  d.ups.forEach(u => {
+    if (Array.isArray(u)) { if (up[u[0]] && u[2]) v += u[2]; return; }
+    if (!u.k) return;
+    const o = u.opts.find(x => x[0] === (up[u.k] || "")); if (!o || !o[2]) return;
+    if (u.k === "model") v = o[2] + (v - d.price); else if (u.k === "cab") v += o[2] - d.price; else v += o[2];
+  });
+  return v;
+}
+/* the form: where it is + the upgrades. Used here (each change saved at once) and in the Vehicle Manager's car window (saved with Save).
+   st = { loc, at, up }; ro = read only */
+function svcFormHtml(d, st, ro) {
+  const pm = svcPM(), up = st.up || {}, dis = ro ? "disabled" : "";
+  const loc = st.loc || svcDefLoc(d, pm);
+  let L = "";
+  if (d.loc.fixed) {
+    L = `<div class="svf-fixed">📍 ${esc(svcLocText(d, { svcLoc: loc }, pm))}</div>`;
+    if (loc === "bunker" && !(pm.bunker && pm.bunker.owned)) L += `<p class="sv-warn">⚠ ${t("sv.noBunker")}</p>`;
+  } else if (d.loc.pick) {
+    L = `<div class="svf-seg" role="group">${d.loc.pick.map(k => `<button type="button" data-svf-loc="${k}" class="${k === loc ? "on" : ""}" ${dis}>${esc(svcLocText(d, { svcLoc: k, svcAt: k === loc ? st.at : "" }, pm).replace(/ · $/, ""))}</button>`).join("")}</div>`;
+    if (loc === "facility") L += `<select data-svf="at" ${dis}><option value="">${t("sv.pickFac")}</option>${SVC_FACILITIES.map(f => `<option ${f === st.at ? "selected" : ""}>${esc(f)}</option>`).join("")}</select>`;
+    if (loc === "hangar" && !(pm.hangar && pm.hangar.owned)) L += `<p class="sv-warn">⚠ ${t("sv.noHangar")}</p>`;
+    if (loc === "nightclub" && !(pm.night && pm.night.owned)) L += `<p class="sv-warn">⚠ ${t("sv.noNight")}</p>`;
+  } else if (d.loc.moor) {
+    L = `<select data-svf="at" ${dis}><option value="">${t("sv.pickMoor")}</option>${SVC_MOORINGS.map(f => `<option ${f === st.at ? "selected" : ""}>${esc(f)}</option>`).join("")}</select>`;
+  } else {
+    L = `<input type="text" data-svf="at" list="svMoorList" maxlength="60" value="${esc(st.at || "")}" placeholder="${esc(t("sv.freePh"))}" ${dis}>
+      <datalist id="svMoorList">${SVC_MOORINGS.map(f => `<option value="${esc(f)}">`).join("")}</datalist>`;
+  }
+  if (d.locHint) L += `<p class="sv-hint">${esc(svL(d.locHint))}</p>`;
+  const rows = d.ups.map(u => {
+    if (Array.isArray(u)) {
+      const [k, n, p, dsc] = u;
+      return `<label class="svf-row ${up[k] ? "on" : ""}"><input type="checkbox" data-svf-up="${k}" ${up[k] ? "checked" : ""} ${dis}><b>${esc(n)}</b><span class="svf-p">${p ? svMoney(p) : ""}</span>${dsc ? `<small>${esc(svL(dsc))}</small>` : ""}</label>`;
+    }
+    if (u.head) return `<p class="svf-h">${esc(svL(u.head))}</p>`;
+    let val = up[u.k] || "";
+    if (!val && ["cab", "bay1", "model"].includes(u.k)) val = u.opts[0][0];
+    const lock = d.id === "moc" && u.k === "bay3" && up.bay2 === "wvw";   // the Weapon & Vehicle Workshop takes Bay 3 too
+    const o = u.opts.find(x => x[0] === val);
+    return `<div class="svf-sel"><span>${esc(u.n)}</span><select data-svf-up="${u.k}" ${dis || (lock ? "disabled" : "")}>${lock ? `<option>Weapon & Vehicle Workshop</option>` :
+      u.opts.map(([v, n, p]) => `<option value="${v}" ${v === val ? "selected" : ""}>${esc(n)}${p ? " · " + svMoney(p) : ""}</option>`).join("")}</select>${!lock && o && o[3] ? `<small>${esc(svL(o[3]))}</small>` : ""}</div>`;
+  }).join("");
+  const [n, m] = svcUpCount(d, up);
+  return `<div class="svf ${ro ? "ro" : ""}" data-svf-root="${d.id}" data-loc="${loc}"><h4>${t("sv.where")}</h4><div class="svf-loc">${L}</div><h4>${t("sv.ups")}</h4>${rows}
+    <p class="svf-sum">${m ? t("sv.sum", n, m, svMoney(svcValue(d, up))) : t("sv.sum0", svMoney(svcValue(d, up)))}</p></div>`;
+}
+function svcFormRead(root) {
+  const f = root.querySelector("[data-svf-root]"); if (!f) return null;
+  const up = {};
+  f.querySelectorAll("[data-svf-up]").forEach(x => { if (x.type === "checkbox") { if (x.checked) up[x.dataset.svfUp] = true; } else if (!x.disabled && x.value) up[x.dataset.svfUp] = x.value; });
+  const at = f.querySelector('[data-svf="at"]');
+  return { loc: f.dataset.loc, at: at ? at.value.trim() : "", up };
+}
+/* wires a form: every change reads it, draws it again (so the Facility list, Bay 3 ... follow) and calls onChange(state) */
+function svcFormBind(box, d, getRo, onChange) {
+  box.onchange = e => { if (!e.target.closest("[data-svf-root]")) return; onChange(svcFormRead(box)); };
+  box.onclick = e => { const b = e.target.closest("[data-svf-loc]"); if (!b || getRo()) return; const st = svcFormRead(box); st.loc = b.dataset.svfLoc; if (st.loc !== "facility") st.at = ""; onChange(st); };
+}
+Section({
+  id: "service",
+  init() {
+    const el = this.el, sec = this;
+    const vm = () => { const s = SECTIONS.vehicles; if (s && !s.ready) { s.el = document.getElementById("sec-vehicles"); s.init && s.init(); s.ready = true; } return s; };
+    const cars = () => { const s = vm(); return (s && s.getCars && s.getCars()) || []; };
+    const recs = d => cars().filter(c => svcOf(c) === d);
+    const ro = () => { const s = vm(); return !(s && s.canEdit && s.canEdit()); };
+    let cur = LS.raw("gtaSvcCur") || "kosatka";
+    const list = el.querySelector(".sv-list"), main = el.querySelector(".sv-main"), file = el.querySelector("[data-svfile]");
+    this.pick = id => { if (svcDef(id)) { cur = id; LS.set("gtaSvcCur", id); } };
+    function drawList() {
+      const pm = svcPM();
+      list.innerHTML = SVC.map(d => { const c = recs(d)[0];
+        return `<a class="sv-item ${d.id === cur ? "on" : ""}" href="#service-${d.id}"><b>${d.ico} ${esc(d.name)}</b><small>${c ? esc(svcLocText(d, c, pm)) : esc(t("sv.notOwned"))}</small><span class="sv-own ${c ? "yes" : ""}">${c ? "✓" : "—"}</span></a>`; }).join("");
+    }
+    function drawMain() {
+      const d = svcDef(cur), all = recs(d), c = all[0], pm = svcPM(), s = vm();
+      if (s && !s.loaded && !cars().length) { main.innerHTML = `<p class="sv-none">${t("sv.loading")}</p>`; return; }
+      const st = c ? { loc: c.svcLoc || svcDefLoc(d, pm), at: c.svcAt || "", up: svcUpOf(d, c, pm) } : { loc: svcDefLoc(d, pm), at: "", up: svcUpOf(d, null, pm) };
+      const up = st.up, R = ro();
+      const pic = c && c.image ? `<img src="${c.image}" alt="${esc(d.name)}">` : `<div class="sv-ph"><div><span>${d.ico}</span>${c ? t("sv.noPic") : esc(d.name)}</div></div>`;
+      const picBtns = c && !R ? `<div class="sv-picbtn"><button type="button" class="ghost" data-sv="paste">${t("sv.paste")}</button><button type="button" class="ghost" data-sv="file">${t("sv.file")}</button>${c.image ? `<button type="button" class="ghost" data-sv="studio">${t("sv.studio")}</button>` : ""}</div><p class="sv-hint">${t("sv.pasteHint")}</p>` : "";
+      const met = need => { if (!c) return false; if (!need) return true; const [k, v] = need.split("="); return v ? up[k] === v : !!up[k]; };
+      const unl = d.unlock.map(([href, name, need]) => { const ok = met(need), nm = esc(svL(name));
+        return `<span class="${ok ? "ok" : "no"}">${ok ? "✓" : "○"} ${href ? `<a href="#${href}">${nm}</a>` : nm}${need && !ok ? ` <small>(${esc(t("sv.need", svcUpName(d, need)))})</small>` : ""}</span>`; }).join("");
+      const app = [t("sv.appVM"), t("sv.appJM")];
+      if (["kosatka", "yacht"].includes(d.id)) app.push(t("sv.appPRM"));
+      if (d.id === "acid") app.push(t("sv.appPM"));
+      main.innerHTML = `<div class="sv-det"><div class="sv-pic">${pic}${picBtns}</div><div class="sv-info">
+        <div class="sv-tt"><h2>${esc(d.name)}</h2>${c ? `<span class="sv-badge">${t("sv.owned")}</span>` : R ? "" : `<button type="button" class="primary" data-sv="add">${t("sv.add")}</button>`}</div>
+        <p class="sv-sub">${esc(svL(d.kind))} · ${t("sv.from", svMoney(d.price))}${!c ? " · " + t("sv.notOwned") : ""}</p>
+        ${!c && d.id === "acid" && pm.acidOwned ? `<p class="sv-warn">ℹ ${t("sv.acidPM")}</p>` : ""}
+        ${all.length > 1 ? `<p class="sv-warn">⚠ ${t("sv.two", all.length)}</p>` : ""}
+        <div data-svform>${svcFormHtml(d, st, R || !c)}</div>
+        <h4>${t("sv.unl")}</h4><div class="sv-links">${unl}</div>
+        <h4>${t("sv.app")}</h4><div class="sv-links">${app.map(x => `<span class="no">• ${esc(x)}</span>`).join("")}</div>
+        ${c && !R ? `<div class="sv-acts"><button type="button" class="ghost" data-sv="edit">${t("sv.edit")}</button><button type="button" class="danger" data-sv="del">${t("sv.del")}</button></div>` : ""}
+        ${R ? `<p class="sv-hint">${t("sv.ro")}</p>` : ""}</div></div>`;
+      const box = main.querySelector("[data-svform]");
+      if (c && !R) svcFormBind(box, d, ro, st2 => {
+        if (d.id === "acid") { const pmS = SECTIONS.production; if (pmS && pmS.setAcidEquip && !!st2.up.equip !== !!pmS.svcInfo().acidEquip) pmS.setAcidEquip(!!st2.up.equip); delete st2.up.equip; }
+        s.svcPatch(c.id, { svcLoc: st2.loc, svcAt: st2.at, svcUp: st2.up });
+      });
+    }
+    this.render = () => { applyI18n(el); drawList(); drawMain(); };
+    const curCar = () => recs(svcDef(cur))[0];
+    async function setPic(blob) {
+      const c = curCar(), s = vm(); if (!c || ro()) return;
+      const src = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob); });
+      await s.svcPatch(c.id, { image: await s.smallCopy(src) });
+      notify(t("sv.picSaved"), "ok", { quiet: true, ms: 2000 });
+    }
+    el.addEventListener("click", async e => {
+      const b = e.target.closest("[data-sv]"); if (!b) return;
+      const d = svcDef(cur), c = curCar(), s = vm();
+      if (b.dataset.sv === "add") { await s.svcAdd(d.id); notify(t("sv.added", d.name), "ok", { quiet: true, ms: 2500 }); }
+      if (b.dataset.sv === "del" && c && confirm(t("sv.delAsk", d.name))) await s.svcDel(c.id);
+      if (b.dataset.sv === "edit" && c) s.svcEdit(c.id, "service-" + d.id, false);
+      if (b.dataset.sv === "studio" && c) s.svcEdit(c.id, "service-" + d.id, true);
+      if (b.dataset.sv === "file") file.click();
+      if (b.dataset.sv === "paste") {
+        try { const items = await navigator.clipboard.read();
+          for (const it of items) { const ty = it.types.find(x => x.startsWith("image/")); if (ty) return setPic(await it.getType(ty)); }
+          notify(t("sv.pasteNone"), "warn", { quiet: true });
+        } catch (err) { notify(t("sv.pasteBlocked"), "warn", { quiet: true }); }
+      }
+    });
+    file.onchange = () => { const f = file.files[0]; file.value = ""; if (f) setPic(f); };
+    document.addEventListener("paste", e => {
+      if (el.hidden || document.querySelector("dialog[open]")) return;
+      const item = [...(e.clipboardData && e.clipboardData.items || [])].find(i => i.kind === "file" && i.type.startsWith("image/"));
+      if (!item || !curCar()) return;
+      e.preventDefault(); setPic(item.getAsFile());
+    });
+    Bus.on("vm:data", () => { if (!el.hidden) this.render(); });
+    Bus.on("lang", () => { if (!el.hidden) this.render(); });
+  },
+  show(r) { if (r.view && r.view.startsWith("svc_")) this.pick(r.view.slice(4)); this.render(); }
 });
 </script>
 
@@ -7941,6 +8464,10 @@ html[data-anim="off"] #sec-production .pin.spot .pin-disc, html[data-anim="off"]
   #topbar .ingame .lbl { white-space: nowrap; font-size: 14px; }
   #topbar .ingame .sub { display: none; }
 }
+/* idea 145: the service vehicles in "Needs: …" */
+.op-need.ok { color: var(--ok); font-weight: 700; }
+a.op-need { color: inherit; text-decoration: underline dotted; text-underline-offset: 3px; }
+a.op-need.ok { color: var(--ok); }
 </style>
 <section class="sec" id="sec-production" hidden>
 <aside id="sidebar" data-i18n-aria="pm.categories" aria-label="Business categories">
@@ -10873,7 +11400,7 @@ function opCardHtml(k) {
   if (art) return `<a class="job-card open jm-art ${jmTxt(k) ? "jm-txt" : ""}" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<img src="${prImg(art)}" alt="${escapeHtml(o.name)}" loading="lazy">${jmTxt(k) ? jmTitleHtml(o.name, o.cat) : ""}${bar}</a>`;
   if (img) return `<a class="job-card open" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<img src="${prImg(img)}" alt="${escapeHtml(o.name)}" loading="lazy">${bar}</a>`;
   // no emblem yet: the name on the card (idea 113)
-  return `<a class="job-card open op-txt ${o.group === "classic" ? "classic" : ""}" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<b>${escapeHtml(o.name)}</b><small>${o.needs === "—" ? t("opNoNeed") : escapeHtml(t("opNeeds")) + ": " + escapeHtml(o.needs)}</small>${bar}</a>`;
+  return `<a class="job-card open op-txt ${o.group === "classic" ? "classic" : ""}" href="#op-${k}" title="${escapeHtml(o.name)}">${tg}<b>${escapeHtml(o.name)}</b><small>${o.needs === "—" ? t("opNoNeed") : escapeHtml(t("opNeeds")) + ": " + opNeedsHtml(o.needs, false)}</small>${bar}</a>`;
 }
 function opStepsHtml(id, part, live) {
   const st = opGet(id, part.id), [a, b] = opProg(id, part);
@@ -11320,10 +11847,10 @@ function foolHtml() {
 function opHtml(id) {
   const o = OPS[id], img = o.img && JOB_IMG[o.img], w = OpsWeek.data;
   const head = `<div class="focus-head">${img ? `<img class="ag-logo" src="${img}" alt="">` : ""}<div><h2>${escapeHtml(o.name)}</h2>
-      <p class="muted">${t(OP_KIND[o.cat] || "opContract")} · ${o.needs === "—" ? t("opNoNeed") : t("opNeeds") + ": <b>" + escapeHtml(o.needs) + "</b>"} · ${t("opPlayers")}: ${escapeHtml(o.players)}</p></div>${jmBack(jmCatOfOp(o))}</div>
+      <p class="muted">${t(OP_KIND[o.cat] || "opContract")} · ${o.needs === "—" ? t("opNoNeed") : t("opNeeds") + ": <b>" + opNeedsHtml(o.needs, true) + "</b>"} · ${t("opPlayers")}: ${escapeHtml(o.players)}</p></div>${jmBack(jmCatOfOp(o))}</div>
     ${o.about ? `<p class="op-about">${escapeHtml(o.about[lang === "ro" ? 1 : 0])}</p>` : ""}
     ${o.note ? `<p class="hint op-note">${t(o.note)}</p>` : ""}`;
-  if (o.board && BOARDS[o.board]) return `<div class="focus-head bd-head">${img ? `<img class="ag-logo" src="${img}" alt="">` : ""}<div><h2 title="${o.about ? escapeHtml(o.about[lang === "ro" ? 1 : 0]) : ""}">${escapeHtml(o.name)}</h2><p class="muted">${t("opHeist")} · ${t("opNeeds")}: <b>${escapeHtml(o.needs)}</b> · ${t("opPlayers")}: ${escapeHtml(o.players)}</p></div>${jmBack(jmCatOfOp(o))}</div>` + (o.board === "kortz" && !kortzReady() ? `<p class="hint">⚠ ${t("kortzNeed")} <a href="#mansions">Mansions →</a></p>` : "") + boardHtml(o.board) + `<p class="muted op-src">${lang === "ro" ? "Surse: GTA Wiki, gtaboss.gg, beebom.com, gtaboom.com, gamerant.com; ținta săptămânii: postarea săptămânală r/gtaonline." : "Sources: GTA Wiki, gtaboss.gg, beebom.com, gtaboom.com, gamerant.com; this week's target: the r/gtaonline weekly post."}</p>`;
+  if (o.board && BOARDS[o.board]) return `<div class="focus-head bd-head">${img ? `<img class="ag-logo" src="${img}" alt="">` : ""}<div><h2 title="${o.about ? escapeHtml(o.about[lang === "ro" ? 1 : 0]) : ""}">${escapeHtml(o.name)}</h2><p class="muted">${t("opHeist")} · ${t("opNeeds")}: <b>${opNeedsHtml(o.needs, true)}</b> · ${t("opPlayers")}: ${escapeHtml(o.players)}</p></div>${jmBack(jmCatOfOp(o))}</div>` + (o.board === "kortz" && !kortzReady() ? `<p class="hint">⚠ ${t("kortzNeed")} <a href="#mansions">Mansions →</a></p>` : "") + boardHtml(o.board) + `<p class="muted op-src">${lang === "ro" ? "Surse: GTA Wiki, gtaboss.gg, beebom.com, gtaboom.com, gamerant.com; ținta săptămânii: postarea săptămânală r/gtaonline." : "Sources: GTA Wiki, gtaboss.gg, beebom.com, gtaboom.com, gamerant.com; this week's target: the r/gtaonline weekly post."}</p>`;
   let week = "";
   if (o.weekly === "salvage") {
     const sv = (w && w.salvage) || {};
@@ -11438,6 +11965,21 @@ function pr() {
   const c = p.ceo || (p.ceo = {}); if (c.owned === undefined) c.owned = false; if (c.loc === undefined) c.loc = ""; if (c.pin === undefined) c.pin = null;
   return p;
 }
+/* idea 145: in "Needs: …" the service vehicles you have in the Vehicle Manager turn green (✓); on a page they link to their service card */
+const OP_NEED_SVC = [["Mobile Operations Center", "moc"], ["Galaxy Super Yacht", "yacht"], ["Operations Terminal", "avenger", "ot"], ["Kosatka", "kosatka"], ["Avenger", "avenger"], ["Terrorbyte", "terrorbyte"], ["Acid Lab", "acid"]];
+function opNeedsHtml(needs, link) {
+  let h = escapeHtml(needs);
+  if (typeof SVC === "undefined") return h;
+  const cars = vmCars();
+  OP_NEED_SVC.forEach(([n, id, up]) => {
+    h = h.replace(new RegExp("\\b" + n + "\\b"), m => {
+      const c = cars.find(x => { const d = svcOf(x); return d && d.id === id; }), ok = !!c && (!up || !!(c.svcUp || {})[up]);
+      const tip = escapeHtml(ok ? LL("You have it", "Îl ai") : LL("Not in your Vehicle Manager", "Nu e în Vehicle Manager"));
+      return link ? `<a class="op-need ${ok ? "ok" : "no"}" href="#service-${id}" title="${tip}">${ok ? "✓ " : ""}${m}</a>` : `<span class="op-need ${ok ? "ok" : "no"}" title="${tip}">${ok ? "✓ " : ""}${m}</span>`;
+    });
+  });
+  return h;
+}
 const mDef = id => MANSIONS.find(m => m[0] === id);
 const mOwned = () => MANSIONS.filter(([id]) => pr().m[id].owned);
 const propView = () => ["props", "mansions", "ceooffice", "garages"].includes(VIEW) || String(VIEW).startsWith("mansion_");
@@ -11538,6 +12080,9 @@ function propCards() {
     ["apartment", (window.PRM_IMG || {}).apt, "Apartment", "", false, "soon"],
     ["facility", (window.PRM_IMG || {}).fac, "Facility", "", false, "soon"],
     ["garage", (window.PRM_IMG || {}).garage, "Garages", "#garages", garList().length > 0, garList().length ? t("garN", garList().length) : ""],
+    // idea 145: the Kosatka and the Galaxy Super Yacht are properties too; their card opens the service vehicle (it lives in the Vehicle Manager)
+    ...["kosatka", "yacht"].map(id => { const d = svcDef(id), c = vmCars().find(x => svcOf(x) === d);
+      return ["svc_" + id, null, d.name, "#service-" + id, !!c, c ? svcLocText(d, c) : ""]; }),
     ["mckenzie", (window.PRM_IMG || {}).mckenzie, "McKenzie Field Hangar", "", false, "soon"]];
 }
 /* idea 125: the arrangement of this page stays on this device (browser key gtaPrLayout), it is not saved to GitHub;
@@ -15512,6 +16057,10 @@ sec.leaveChar = () => {
 };
 // idea 108: the Property Manager arrangement from the Settings window
 sec.prArrange = () => { prEdit = true; if (VIEW === "props") { focusEl._last = null; renderFocus(); } };
+// idea 145: what the Service vehicles page needs from here (where the Nightclub, Bunker and Hangar are; the Acid Lab's equipment)
+sec.svcInfo = () => { const b = id => ({ owned: !!(S.biz[id] && S.biz[id].owned), loc: (S.biz[id] && S.biz[id].loc) || "" });
+  return { night: b("night"), bunker: b("bunker"), hangar: b("hangar"), acidOwned: !!(S.biz.acid && S.biz.acid.owned), acidEquip: !!(S.biz.acid && S.biz.acid.equip) }; };
+sec.setAcidEquip = v => { if (!S.biz.acid) return; S.biz.acid.equip = !!v; save(true); ghMarkDirty(); try { renderAll(); } catch (e) {} };
 sec.prResetLayout = () => { const L = prLayout(); L.order = []; L.size = {}; L.hgt = {}; L.mode = "free"; prLayout(); save(true); ghMarkDirty(); if (VIEW === "props") { focusEl._last = null; renderFocus(); } };
 // time passed while the page was closed: only count it if the player says so
 if (S.inGame && !charIn) {
@@ -15522,7 +16071,7 @@ boot();
 syncStatus();
 tick();
 Bus.on("lang", applyLang);
-Bus.on("vm:data", () => { if (propView()) { focusEl._last = null; renderFocus(); } if (mPickRedraw) mPickRedraw(); });
+Bus.on("vm:data", () => { if (propView() || jobPage()) { focusEl._last = null; renderFocus(); } if (mPickRedraw) mPickRedraw(); });
 Bus.on("warehouse", () => { renderAll(); liveWin(); liveQuick(); });
 Bus.on("note", n => { if (n.biz && !VIEW && defOf(n.biz)) openWin(n.biz); });
 ghPullPM();
