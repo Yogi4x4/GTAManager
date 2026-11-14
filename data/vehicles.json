@@ -1594,5 +1594,28 @@
       "avisa": true
     },
     "image": ""
+  },
+  {
+    "type": "car",
+    "brand": "",
+    "model": "Mobile Operations Center",
+    "cls": "Utility",
+    "garage": "",
+    "spot": "",
+    "notes": "",
+    "modified": false,
+    "favorite": false,
+    "imani": false,
+    "hsw": false,
+    "bennys": false,
+    "imaniType": "",
+    "svc": "moc",
+    "svcLoc": "bunker",
+    "svcAt": "",
+    "svcUp": {
+      "cab": "phantom",
+      "bay1": "cc"
+    },
+    "image": ""
   }
 ]
