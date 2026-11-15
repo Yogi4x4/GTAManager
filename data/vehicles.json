@@ -1657,6 +1657,9 @@
     "svc": "acid",
     "svcLoc": "freakshop",
     "svcAt": "",
-    "svcUp": {}
+    "svcUp": {
+      "ram": true,
+      "mines": true
+    }
   }
 ]
