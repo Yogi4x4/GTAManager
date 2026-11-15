@@ -1686,7 +1686,8 @@
       "wws": true,
       "spec": true,
       "mct": true,
-      "scan": true
+      "scan": true,
+      "silent": true
     }
   }
 ]
