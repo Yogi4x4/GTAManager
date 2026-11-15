@@ -1680,6 +1680,12 @@
     "svc": "terrorbyte",
     "svcLoc": "garment",
     "svcAt": "",
-    "svcUp": {}
+    "svcUp": {
+      "turret": true,
+      "drone": true,
+      "wws": true,
+      "spec": true,
+      "mct": true
+    }
   }
 ]
