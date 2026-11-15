@@ -1614,7 +1614,8 @@
     "svcAt": "",
     "svcUp": {
       "cab": "phantom",
-      "bay1": "cc"
+      "bay1": "cc",
+      "turrets": true
     },
     "image": ""
   }
