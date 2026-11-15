@@ -2,6 +2,11 @@
 
 * * *
 
+### v0.51.1 (2026-11-15)
+* Job Manager:
+  * Fix: on phones the Casino boards were wider than the screen and cut off on the right; now everything fits one column.
+  * Change: the Setup board looks like the game's: the 6 access points (Main Door, Side Doors, Sewer Tunnel, Roof Terrace, Security Tunnel, Roof) with ‹ › for the ones that have several, the target with ‹ ›, the 10 P.O.I. scoped, the extras with PURCHASED and the price, the approaches with their picture and description. Pictures from your screenshots, including Sewer Tunnel, Security Tunnel and Vault Door.
+
 ### v0.51.0 (2026-11-15)
 * Job Manager:
   * Add: The Diamond Casino Heist is a planning screen like in the Arcade basement (idea 158, variant A): three tabs, 1 Setup · 2 Prep · 3 Finale, the right one opens by itself; the pictures come from your screenshots.
