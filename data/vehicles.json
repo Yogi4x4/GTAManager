@@ -1661,5 +1661,25 @@
       "ram": true,
       "mines": true
     }
+  },
+  {
+    "type": "car",
+    "brand": "Benefactor",
+    "model": "Terrorbyte",
+    "cls": "Commercial",
+    "garage": "",
+    "spot": "",
+    "notes": "",
+    "modified": false,
+    "favorite": false,
+    "imani": false,
+    "imaniType": "",
+    "hsw": false,
+    "bennys": false,
+    "image": "",
+    "svc": "terrorbyte",
+    "svcLoc": "garment",
+    "svcAt": "",
+    "svcUp": {}
   }
 ]
