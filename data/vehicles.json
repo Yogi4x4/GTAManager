@@ -1685,7 +1685,8 @@
       "drone": true,
       "wws": true,
       "spec": true,
-      "mct": true
+      "mct": true,
+      "scan": true
     }
   }
 ]
