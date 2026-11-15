@@ -1687,7 +1687,8 @@
       "spec": true,
       "mct": true,
       "scan": true,
-      "silent": true
+      "silent": true,
+      "jam": true
     }
   }
 ]
