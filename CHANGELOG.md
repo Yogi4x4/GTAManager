@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.51.0 (2026-11-15)
+* Job Manager:
+  * Add: The Diamond Casino Heist is a planning screen like in the Arcade basement (idea 158, variant A): three tabs, 1 Setup · 2 Prep · 3 Finale, the right one opens by itself; the pictures come from your screenshots.
+  * Add: Setup: Scope Out Casino and Vault Contents, the 11 access points (tick the ones you photographed), the target (Cash, Artwork, Gold, Diamonds), the extras with prices and the approach (the one played last time is marked: the game doesn't allow it twice in a row).
+  * Add: Prep: the support crew with ‹ › like in the game (all 15, cut, skill, how to unlock them; Chester can't be both gunman and driver), each gunman's two loadouts for the chosen approach, each driver's four cars, each hacker's vault time; the mandatory and optional prep work of the approach (Big Con: the entry disguise), the general prep work, Security Pass level 1 / 2, Masks.
+  * Add: Finale: entrance, exit and buyer with ‹ ›, Gunman Decoy and Clean Vehicle; type the Potential Heist Take from the board and the screen works out the buyer, the crew + Lester cut and every player's money (min. 15 %). START → Done records the finale and starts the next one (undo in the message).
+  * Add: the heist in progress shows at the top of the Job Manager.
+
 ### v0.50.0 (2026-11-14)
 * Vehicle Manager:
   * Add: Service vehicles page (idea 145, variant B): the list on the left (Kosatka, Mobile Operations Center, Avenger, Terrorbyte, Acid Lab, Galaxy Super Yacht), the chosen one on the right: owned or not, where it is kept, its upgrades with prices, what it unlocks and where it shows in the app. Open it from the button next to Filters or from the pages menu.
