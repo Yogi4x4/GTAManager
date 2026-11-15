@@ -1670,13 +1670,12 @@
     "garage": "",
     "spot": "",
     "notes": "",
-    "modified": false,
+    "modified": true,
     "favorite": false,
     "imani": false,
-    "imaniType": "",
     "hsw": false,
     "bennys": false,
-    "image": "",
+    "imaniType": "",
     "svc": "terrorbyte",
     "svcLoc": "garment",
     "svcAt": "",
@@ -1689,6 +1688,7 @@
       "scan": true,
       "silent": true,
       "jam": true
-    }
+    },
+    "image": ""
   }
 ]
