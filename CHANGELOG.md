@@ -2,6 +2,11 @@
 
 * * *
 
+### v0.52.0 (2026-11-16)
+* Job Manager:
+  * Change: The Diamond Casino Heist boards redone (idea 158, mockup 1 of 5): no game pictures, the same look on all three boards — a white board with boxes per category. Setup: Scope Out and the target, the approach (the one played last time crossed out), the access points found by group, P.O.I. 1–10, the extras with prices. Prep: gunman, driver and hacker as tap-to-pick pills with cut, skill, how to unlock, the gunman's weapons and the driver's car; mandatory and optional prep work with what each one gives (Big Con: the entry disguise). Finale: entrance, exit (only the access points found are full), buyer, optional, the money and every player's cut.
+  * Change: the boards keep their normal size on PC and scroll; on phones the boxes stack in one column.
+
 ### v0.51.1 (2026-11-15)
 * Job Manager:
   * Fix: on phones the Casino boards were wider than the screen and cut off on the right; now everything fits one column.
