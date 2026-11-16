@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.53.0 (2026-11-16)
+* Job Manager:
+  * Add: Casino: when a board is done you stay on it and the next board's tab blinks until you open it (Prep after Setup, Finale after Prep).
+  * Add: Casino: after Done the 48-minute heist cooldown starts: the Setup board shows the minutes left and the time it ends, the Job Manager chip too, and the bell rings when it's over.
+  * Add: Casino: a note under Player Take about the host's first finale of the week paying ×1.86 (since July 2026).
+  * Fix: every tick and every pill on the three Casino boards can be undone with another tap (checked on all of them).
+  * Change: the Casino boards use Black Ops One for the titles and the app's plain font for everything else (no more handwriting).
+
 ### v0.52.0 (2026-11-16)
 * Job Manager:
   * Change: The Diamond Casino Heist boards redone (idea 158, mockup 1 of 5): no game pictures, the same look on all three boards — a white board with boxes per category. Setup: Scope Out and the target, the approach (the one played last time crossed out), the access points found by group, P.O.I. 1–10, the extras with prices. Prep: gunman, driver and hacker as tap-to-pick pills with cut, skill, how to unlock, the gunman's weapons and the driver's car; mandatory and optional prep work with what each one gives (Big Con: the entry disguise). Finale: entrance, exit (only the access points found are full), buyer, optional, the money and every player's cut.
