@@ -1126,7 +1126,8 @@ const CHANGELOG = [
     "area": "Job Manager",
     "items": [
      "Fix: on phones the Casino boards were wider than the screen and cut off on the right; now everything fits one column.",
-     "Change: the Setup board looks like the game's: the 6 access points (Main Door, Side Doors, Sewer Tunnel, Roof Terrace, Security Tunnel, Roof) with ‹ › for the ones that have several, the target with ‹ ›, the 10 P.O.I. scoped, the extras with PURCHASED and the price, the approaches with their picture and description. Pictures from your screenshots, including Sewer Tunnel, Security Tunnel and Vault Door."
+     "Change: the Setup board looks like the game's: the 6 access points (Main Door, Side Doors, Sewer Tunnel, Roof Terrace, Security Tunnel, Roof) with ‹ › for the ones that have several, the target with ‹ ›, the 10 P.O.I. scoped, the extras with PURCHASED and the price, the approaches with their picture and description. Pictures from your screenshots, including Sewer Tunnel, Security Tunnel and Vault Door.",
+     "Fix: on PC the Casino boards no longer shrink to fit the screen height (the Big Con prep board was unreadable); they fill the width and the page scrolls."
     ]
    }
   ],
@@ -1135,7 +1136,8 @@ const CHANGELOG = [
     "area": "Job Manager",
     "items": [
      "Reparat: pe telefon tablele Casino erau mai late decât ecranul și se tăiau în dreapta; acum totul încape pe o coloană.",
-     "Schimbat: tabla Setup arată ca în joc: cele 6 intrări (Main Door, Side Doors, Sewer Tunnel, Roof Terrace, Security Tunnel, Roof) cu ‹ › la cele care au mai multe, ținta cu ‹ ›, cele 10 P.O.I. scoped, extrasele cu PURCHASED și prețul, abordările cu poză și descriere. Pozele sunt din capturile tale, inclusiv Sewer Tunnel, Security Tunnel și Vault Door."
+     "Schimbat: tabla Setup arată ca în joc: cele 6 intrări (Main Door, Side Doors, Sewer Tunnel, Roof Terrace, Security Tunnel, Roof) cu ‹ › la cele care au mai multe, ținta cu ‹ ›, cele 10 P.O.I. scoped, extrasele cu PURCHASED și prețul, abordările cu poză și descriere. Pozele sunt din capturile tale, inclusiv Sewer Tunnel, Security Tunnel și Vault Door.",
+     "Reparat: pe PC tablele Casino nu se mai micșorează ca să încapă pe înălțime (tabla Prep la Big Con era ilizibilă); ocupă lățimea, iar pagina se derulează."
     ]
    }
   ]
@@ -12079,7 +12081,9 @@ function czFit() {
   a.style.zoom = 1;
   if (innerWidth <= 760) return;
   const W = a.parentElement.clientWidth, h = a.offsetHeight, top = a.getBoundingClientRect().top + (focusEl.scrollTop || 0);
-  const z = Math.max(.6, Math.min(W / 1450, (innerHeight - top - 12) / h, 1.4));
+  // fit the width; fit the height too only when that costs little (a tall board — Big Con prep — scrolls instead of shrinking to unreadable)
+  const zw = Math.min(W / 1450, 1.1), zh = (innerHeight - top - 12) / h;
+  const z = Math.max(.6, zh >= zw * .85 ? Math.min(zw, zh) : zw);
   a.style.zoom = z.toFixed(3);
 }
 addEventListener("resize", () => requestAnimationFrame(czFit));

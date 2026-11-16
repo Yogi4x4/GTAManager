@@ -6,6 +6,7 @@
 * Job Manager:
   * Fix: on phones the Casino boards were wider than the screen and cut off on the right; now everything fits one column.
   * Change: the Setup board looks like the game's: the 6 access points (Main Door, Side Doors, Sewer Tunnel, Roof Terrace, Security Tunnel, Roof) with ‹ › for the ones that have several, the target with ‹ ›, the 10 P.O.I. scoped, the extras with PURCHASED and the price, the approaches with their picture and description. Pictures from your screenshots, including Sewer Tunnel, Security Tunnel and Vault Door.
+  * Fix: on PC the Casino boards no longer shrink to fit the screen height (the Big Con prep board was unreadable); they fill the width and the page scrolls.
 
 ### v0.51.0 (2026-11-15)
 * Job Manager:
