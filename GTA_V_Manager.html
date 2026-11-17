@@ -803,7 +803,7 @@ html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.54";
+const APP_VERSION = "0.55";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // idea 156: letters with marks (Ü, é, ö, ñ, ș…) count as the plain letter when searching or typing a first letter; names keep their marks
@@ -1120,6 +1120,26 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.55.0",
+  "date": "2026-11-17",
+  "en": [
+   {
+    "area": "Production Manager",
+    "items": [
+     "Add: automatic In game / Off on your PC: a small helper (gta_detector.ps1, started with Windows) sees whether GTA is running and has an Online session open (only Windows' list of processes and connections, nothing from the game). When you enter a private or public session the switch turns on by itself; when you leave or get the AFK kick it turns off and the time stops at the moment you left, not when it noticed. The switch shows “auto” and 🌐 public / 🔒 private; a click still works; without the helper (or on the phone) everything stays manual."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Production Manager",
+    "items": [
+     "Adăugat: In game / Off automat pe PC: un mic ajutor (gta_detector.ps1, pornit cu Windows) vede dacă rulează GTA și dacă are o sesiune Online deschisă (doar lista de procese și conexiuni a Windows-ului, nimic din joc). Când intri într-o sesiune privată sau publică, comutatorul pornește singur; când ieși sau te scoate pentru AFK, se oprește, iar timpul se oprește în momentul ieșirii, nu când a observat. Comutatorul arată „auto” și 🌐 publică / 🔒 privată; un clic merge în continuare; fără ajutor (sau pe telefon) totul rămâne manual."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.54.0",
   "date": "2026-11-17",
@@ -9354,11 +9374,15 @@ i18n({ en: { "pm.mhCars": "cars on show", "pm.mhBoost": "boost on", "pm.mhUps": 
 i18n({ en: { "pm.ncB_dj": "Rebook a DJ ($10,000): +10% popularity", "pm.ncB_tm": "Troublemaker thrown out (the blue dot in the club): +25% popularity", "pm.ncB_vip": "VIP taken home or to hospital (the blue figure): +25% popularity", "pm.ncB_promo": "Promote Club done (laptop → Nightclub Management, or call Tony → Request Club Management): +25% popularity",
   "pm.ncP2x": "Bonus week ×2", "pm.ncP2xT": "This week Rockstar doubles the popularity from Promote Club: the button gives +50% until Thursday's weekly reset", "pm.ncPopAt": "Bell under", "pm.ncPopAtOff": "never",
   "pm.ncCdT": m => `cooldown: ${m} min left`, "pm.ncCdAsk": m => `This one is still on cooldown in the game (${m} min left). Add the popularity anyway?`,
-  "pm.ncCdPromo": "Nightclub: you can start another Promote Club", "pm.ncCdTv": "Nightclub: a Troublemaker or a VIP can show up again (48 min passed)" },
+  "pm.ncCdPromo": "Nightclub: you can start another Promote Club",
+  "pm.autoTag": "auto", "pm.autoPub": "public session", "pm.autoPriv": "private session", "pm.autoTitle": "Switched automatically by the detector on this PC (gta_detector.ps1); a click still works",
+  "pm.autoOn": k => `In game: you are in a ${k}; the timers run`, "pm.autoOff": h => `You left the session at ${h} (AFK kick or exit); the timers stopped then`, "pm.ncCdTv": "Nightclub: a Troublemaker or a VIP can show up again (48 min passed)" },
   ro: { "pm.ncB_dj": "DJ rechemat ($10,000): +10% popularitate", "pm.ncB_tm": "Troublemaker dat afară (punctul albastru din club): +25% popularitate", "pm.ncB_vip": "VIP dus acasă sau la spital (silueta albastră): +25% popularitate", "pm.ncB_promo": "Promote Club făcut (laptop → Nightclub Management, sau Tony → Request Club Management): +25% popularitate",
   "pm.ncP2x": "Săptămână bonus ×2", "pm.ncP2xT": "Săptămâna asta Rockstar dublează popularitatea de la Promote Club: butonul dă +50% până la resetarea de joi", "pm.ncPopAt": "Clopoțel sub", "pm.ncPopAtOff": "niciodată",
   "pm.ncCdT": m => `cooldown: mai sunt ${m} min`, "pm.ncCdAsk": m => `În joc e încă în cooldown (mai sunt ${m} min). Adaugi totuși popularitatea?`,
-  "pm.ncCdPromo": "Nightclub: poți porni alt Promote Club", "pm.ncCdTv": "Nightclub: poate apărea iar un Troublemaker sau un VIP (au trecut 48 min)" } });
+  "pm.ncCdPromo": "Nightclub: poți porni alt Promote Club",
+  "pm.autoTag": "auto", "pm.autoPub": "sesiune publică", "pm.autoPriv": "sesiune privată", "pm.autoTitle": "Comutat automat de detectorul de pe acest PC (gta_detector.ps1); un clic merge în continuare",
+  "pm.autoOn": k => `În joc: ești într-o ${k}; timerele merg`, "pm.autoOff": h => `Ai ieșit din sesiune la ${h} (kick AFK sau ieșire); timerele s-au oprit atunci`, "pm.ncCdTv": "Nightclub: poate apărea iar un Troublemaker sau un VIP (au trecut 48 min)" } });
 // 0.38 (the photo studio for the cars on show)
 i18n({
   en: { "pm.msTitle": "Edit the screenshot", "pm.msEdit": "Edit the screenshot", "pm.msApply": "Apply", "pm.msReset": "Start over",
@@ -14365,12 +14389,13 @@ function tick() {
   const now = Date.now(), clock = isClock();
   if (clock) {
     if (S.inGame) {
-      const dt = (now - S.lastTick) / 60000;
+      const upTo = AUTO.hold ? Math.max(S.lastTick, Math.min(now, AUTO.hold)) : now;   // idea 167: no time counted after the last moment seen in the session
+      const dt = (upTo - S.lastTick) / 60000;
       PROD.forEach(d => advance(d.id, dt));
       advanceNight(dt);
       advanceAgency(dt);
-    }
-    S.lastTick = now;
+      S.lastTick = upTo;
+    } else S.lastTick = now;
   }
   checkAlerts(S.inGame && clock);
   renderLive();
@@ -15706,7 +15731,8 @@ function renderHead() {
   const ig = ingameEl;
   ig.classList.toggle("on", S.inGame);
   ig.setAttribute("aria-checked", S.inGame);
-  ingameSub.textContent = S.inGame ? t("ingameOn") : t("ingameOff");
+  ingameSub.textContent = (S.inGame ? t("ingameOn") : t("ingameOff")) + (AUTO.ok ? " · " + t("autoTag") + (S.inGame && AUTO.kind ? " " + (AUTO.kind === "public" ? "🌐" : "🔒") : "") : "");
+  ig.title = AUTO.ok ? t("autoTitle") : "";
   let total = 0, next = null;
   PROD.forEach(d => {
     const b = S.biz[d.id];
@@ -15779,6 +15805,33 @@ function toggleInGame() {
   renderLive();
   renderWin();
 }
+/* ---------- idea 167 (Mihai, 17.11.2026): automatic In game / Off from a small helper on the PC (gta_detector.ps1).
+   The helper answers at http://127.0.0.1:47123/status: run (GTA is running), sess (in an Online session = GTA has an open TCP connection),
+   leaving (the first check without connections), lastSeen (last check in the session), kind (public / private by the network traffic).
+   Rule from Mihai's log (17.11.2026): in a session the game always had 2–4 TCP connections; after the AFK kick 0 at once.
+   The app follows the helper's changes (edge-triggered), so a manual click is not fought every 10 seconds; no helper = manual as before. */
+const AUTO = { ok: false, sess: null, kind: "", hold: 0, last: 0, fails: 0 };
+async function autoPoll() {
+  let r = null;
+  try { const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 2500); const res = await fetch("http://127.0.0.1:47123/status", { cache: "no-store", signal: ctl.signal }); clearTimeout(to); r = await res.json(); } catch (e) {}
+  if (!r || !r.ok) { AUTO.fails++; if (AUTO.ok && AUTO.fails >= 3) { AUTO.ok = false; AUTO.hold = 0; AUTO.sess = null; renderLive(); } return; }
+  const wasOk = AUTO.ok; AUTO.ok = true; AUTO.fails = 0; AUTO.kind = r.kind || "";
+  const skew = Date.now() - r.now, seen = r.lastSeen ? r.lastSeen + skew : 0;
+  // the first check without connections: stop counting time from the last moment seen, until it is confirmed or the session comes back
+  AUTO.hold = S.inGame && r.sess && r.leaving && seen ? seen : 0;
+  if (r.sess && (!wasOk || AUTO.sess === false || AUTO.sess === null) && !S.inGame) {
+    tick(); S.inGame = true; S.lastTick = Date.now(); save(true); ghMarkDirty(); renderWin();
+    notify(t("autoOn", r.kind === "public" ? t("autoPub") : t("autoPriv")), "ok");
+  } else if (!r.sess && S.inGame && (AUTO.sess === true || !wasOk)) {
+    const end = seen && seen < Date.now() ? Math.max(S.lastTick, seen) : Date.now();
+    AUTO.hold = end; tick(); AUTO.hold = 0;            // count up to the moment you left, not up to now
+    S.inGame = false; S.lastTick = Date.now(); save(true); ghMarkDirty(); renderWin();
+    notify(t("autoOff", new Date(end).toLocaleTimeString(lang === "ro" ? "ro-RO" : "en-GB", { hour: "2-digit", minute: "2-digit" })), "warn");
+  }
+  AUTO.sess = !!r.sess;
+  renderLive();
+}
+setInterval(autoPoll, 10000); setTimeout(autoPoll, 1500);
 ingameEl.onclick = toggleInGame;
 ingameEl.onkeydown = e => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleInGame(); } };
 document.addEventListener("keydown", e => {

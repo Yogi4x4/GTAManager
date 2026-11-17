@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.55.0 (2026-11-17)
+* Production Manager:
+  * Add: automatic In game / Off on your PC: a small helper (gta_detector.ps1, started with Windows) sees whether GTA is running and has an Online session open (only Windows' list of processes and connections, nothing from the game). When you enter a private or public session the switch turns on by itself; when you leave or get the AFK kick it turns off and the time stops at the moment you left, not when it noticed. The switch shows “auto” and 🌐 public / 🔒 private; a click still works; without the helper (or on the phone) everything stays manual.
+
 ### v0.54.0 (2026-11-17)
 * Production Manager:
   * Add: Nightclub: a fourth popularity button, Promote Club +25% (the Nightclub Management mission from the laptop or from Tony), next to DJ, Troublemaker and VIP, on the Nightclub page and in the quick window.
