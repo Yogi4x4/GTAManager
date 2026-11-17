@@ -1127,7 +1127,8 @@ const CHANGELOG = [
    {
     "area": "Production Manager",
     "items": [
-     "Add: automatic In game / Off on your PC: a small helper (gta_detector.ps1, started with Windows) sees whether GTA is running and has an Online session open (only Windows' list of processes and connections, nothing from the game). When you enter a private or public session the switch turns on by itself; when you leave or get the AFK kick it turns off and the time stops at the moment you left, not when it noticed. The switch shows “auto” and 🌐 public / 🔒 private; a click still works; without the helper (or on the phone) everything stays manual."
+     "Add: automatic In game / Off on your PC: a small helper (gta_detector.ps1, started with Windows) sees whether GTA is running and has an Online session open (only Windows' list of processes and connections, nothing from the game). When you enter a private or public session the switch turns on by itself; when you leave or get the AFK kick it turns off and the time stops at the moment you left, not when it noticed. The switch shows “auto” and 🌐 public / 🔒 private; a click still works; without the helper (or on the phone) everything stays manual.",
+     "Add: CEO warehouse special items: you can type the number and the total value exactly as the game shows them; they win over the per-type list (which stays for those who know the types)."
     ]
    }
   ],
@@ -1135,7 +1136,8 @@ const CHANGELOG = [
    {
     "area": "Production Manager",
     "items": [
-     "Adăugat: In game / Off automat pe PC: un mic ajutor (gta_detector.ps1, pornit cu Windows) vede dacă rulează GTA și dacă are o sesiune Online deschisă (doar lista de procese și conexiuni a Windows-ului, nimic din joc). Când intri într-o sesiune privată sau publică, comutatorul pornește singur; când ieși sau te scoate pentru AFK, se oprește, iar timpul se oprește în momentul ieșirii, nu când a observat. Comutatorul arată „auto” și 🌐 publică / 🔒 privată; un clic merge în continuare; fără ajutor (sau pe telefon) totul rămâne manual."
+     "Adăugat: In game / Off automat pe PC: un mic ajutor (gta_detector.ps1, pornit cu Windows) vede dacă rulează GTA și dacă are o sesiune Online deschisă (doar lista de procese și conexiuni a Windows-ului, nimic din joc). Când intri într-o sesiune privată sau publică, comutatorul pornește singur; când ieși sau te scoate pentru AFK, se oprește, iar timpul se oprește în momentul ieșirii, nu când a observat. Comutatorul arată „auto” și 🌐 publică / 🔒 privată; un clic merge în continuare; fără ajutor (sau pe telefon) totul rămâne manual.",
+     "Adăugat: obiectele speciale din depozitul CEO: poți scrie numărul și valoarea totală exact cum le arată jocul; au prioritate față de lista pe tipuri (care rămâne pentru cine știe tipurile)."
     ]
    }
   ]
@@ -8586,6 +8588,7 @@ Section({
 #sec-production .nc-promo-ctl select {font: inherit; padding: 2px 6px;}
 #sec-production .nc-blip.cd svg {filter: grayscale(1) brightness(.75); opacity: .7;}
 #sec-production .nc-blip.cd b {background: #59606b !important; color: #fff;}
+#sec-production .ceo-sp-tot input[data-spt] {width: 120px;}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -8782,7 +8785,7 @@ i18n({
     "pm.ceoStaff": "Warehouse staff", "pm.ceoStaffSend": "Sent staff ($7,500)", "pm.ceoStaffSent": "Staff sent: back in 48 minutes.",
     "pm.ceoStaffIdle": "Not sent out", "pm.ceoStaffIn": m => `Back in ${m}`, "pm.ceoStaffReady": "Back: add the crates they brought",
     "pm.ceoStaffBack": n => `${n}: the staff is back with cargo`, "pm.ceoFull": n => `${n} is full (it can be raided)`, "pm.ceoRemind": "Reminder on / off",
-    "pm.ceoSpecial": "Special items", "pm.ceoSpecialHint": "Sold separately from the crates, without the lobby bonus. In the game the buyer is Amir Group Investments.", "pm.ceoSpQ": o => `Special items: <b>${o.n}</b> · ${o.v}`, "pm.ceoSpEdit": "Edit", "pm.ceoSpLine": o => `+ special items (${o.n}): ${o.v}, sold separately`,
+    "pm.ceoSpecial": "Special items", "pm.ceoSpecialHint": "Sold separately from the crates, without the lobby bonus. In the game the buyer is Amir Group Investments.", "pm.ceoSpQ": o => `Special items: <b>${o.n}</b> · ${o.v}`, "pm.ceoSpEdit": "Edit", "pm.ceoSpCount": "How many (from the game)", "pm.ceoSpTotal": "Total value (from the game)", "pm.ceoSpTotHint": "Type the number and the total value the game shows; they win over the list below (leave empty to use the list).", "pm.ceoSpLine": o => `+ special items (${o.n}): ${o.v}, sold separately`,
     "pm.saleInv": "Invite only", "pm.salePub": "Public 20+ (+50%)", "pm.saleNear": v => `Sell nearby, no bonus: ${v}`,
     "pm.sp_reel": "Film Reel", "pm.sp_hide": "Rare Hide", "pm.sp_minigun": "Golden Minigun", "pm.sp_egg": "Ornamental Egg", "pm.sp_diamond": "Large Diamond", "pm.sp_watch": "Rare Pocket Watch",
     "pm.ceoVehUp": "Delivery vehicle upgrades", "pm.ceoVehHint": "Bought once, they work for all your warehouses (ticked here, ticked everywhere). They make deliveries safer; the value stays the same.",
@@ -8978,7 +8981,7 @@ i18n({
     "pm.ceoStaff": "Angajatul depozitului", "pm.ceoStaffSend": "Am trimis angajatul ($7,500)", "pm.ceoStaffSent": "Angajat trimis: se întoarce în 48 de minute.",
     "pm.ceoStaffIdle": "Netrimis", "pm.ceoStaffIn": m => `Se întoarce în ${m}`, "pm.ceoStaffReady": "S-a întors: adaugă lăzile aduse",
     "pm.ceoStaffBack": n => `${n}: angajatul s-a întors cu marfă`, "pm.ceoFull": n => `${n} e plin (poate fi atacat)`, "pm.ceoRemind": "Memento pornit / oprit",
-    "pm.ceoSpecial": "Obiecte speciale", "pm.ceoSpecialHint": "Se vând separat de lăzi, fără bonusul de lobby. În joc cumpărătorul e Amir Group Investments.", "pm.ceoSpQ": o => `Obiecte speciale: <b>${o.n}</b> · ${o.v}`, "pm.ceoSpEdit": "Modifică", "pm.ceoSpLine": o => `+ obiecte speciale (${o.n}): ${o.v}, se vând separat`,
+    "pm.ceoSpecial": "Obiecte speciale", "pm.ceoSpecialHint": "Se vând separat de lăzi, fără bonusul de lobby. În joc cumpărătorul e Amir Group Investments.", "pm.ceoSpQ": o => `Obiecte speciale: <b>${o.n}</b> · ${o.v}`, "pm.ceoSpEdit": "Modifică", "pm.ceoSpCount": "Câte sunt (din joc)", "pm.ceoSpTotal": "Valoarea totală (din joc)", "pm.ceoSpTotHint": "Scrie numărul și valoarea totală din joc; au prioritate față de lista de mai jos (lasă gol ca să folosești lista).", "pm.ceoSpLine": o => `+ obiecte speciale (${o.n}): ${o.v}, se vând separat`,
     "pm.saleInv": "Invite only", "pm.salePub": "Public 20+ (+50%)", "pm.saleNear": v => `Vânzare aproape, fără bonus: ${v}`,
     "pm.sp_reel": "Film Reel", "pm.sp_hide": "Rare Hide", "pm.sp_minigun": "Golden Minigun", "pm.sp_egg": "Ornamental Egg", "pm.sp_diamond": "Large Diamond", "pm.sp_watch": "Rare Pocket Watch",
     "pm.ceoVehUp": "Upgrade-uri vehicule de livrare", "pm.ceoVehHint": "Se cumpără o dată și merg la toate depozitele tale (bifat aici, bifat peste tot). Fac livrarea mai sigură; valoarea rămâne aceeași.",
@@ -11249,8 +11252,9 @@ const ceoCap = id => (ceoWh(id) || { s: 16 }).s;
 function crateValue(n) { let v = 0; CEO_TIERS.forEach(([k, p]) => { if (n >= k) v = p; }); return v; }
 function ceoSale(id) {
   const b = S.biz[id], n = Math.floor(b.crates || 0), per = crateValue(n), base = n * per;
-  const sp = CEO_SPECIAL.reduce((s, [k, v]) => s + (b.special[k] || 0) * v, 0);
-  const spN = CEO_SPECIAL.reduce((s, [k]) => s + (b.special[k] || 0), 0);
+  // idea 168 (Mihai, 17.11.2026): the total and the count as the game shows them win over the per-type list (his 6 items = $663,000, which no mix of the list's prices gives)
+  const sp = b.spTotal > 0 ? b.spTotal : CEO_SPECIAL.reduce((s, [k, v]) => s + (b.special[k] || 0) * v, 0);
+  const spN = b.spTotal > 0 && b.spCount > 0 ? b.spCount : CEO_SPECIAL.reduce((s, [k]) => s + (b.special[k] || 0), 0);
   return { n, per, base, pub: base * FAR_BONUS, sp, spN, cap: ceoCap(id) };
 }
 const ceoVehicles = n => n < 1 ? "—" : n < 10 ? t("ceoVeh1") : n < 30 ? t("ceoVeh2") : t("ceoVeh3");
@@ -13799,7 +13803,10 @@ function ceoWinHtml(id) {
     <div class="sect">${ceoCratesHtml(id)}</div>
     ${ceoStaffHtml(id)}
     <div class="sect" id="ceoSpSect"><h4>${t("ceoSpecial")} <span class="muted">${money(s.sp)}</span></h4>
-      <div class="ceo-sp">${CEO_SPECIAL.map(([k, v]) => `<label><span>${t("sp_" + k)} <small class="muted">${money(v)}</small></span><input type="number" class="num-input" min="0" max="9" value="${b.special[k] || 0}" data-sp="${k}"></label>`).join("")}</div>
+      <div class="ceo-sp ceo-sp-tot"><label><span>${t("ceoSpCount")}</span><input type="number" class="num-input" min="0" max="99" value="${b.spCount || ""}" placeholder="—" data-spc></label>
+        <label><span>${t("ceoSpTotal")}</span><input type="number" class="num-input wide" min="0" step="1000" value="${b.spTotal || ""}" placeholder="—" data-spt></label></div>
+      <p class="hint">${t("ceoSpTotHint")}</p>
+      <div class="ceo-sp" ${b.spTotal > 0 ? 'style="opacity:.5"' : ""}>${CEO_SPECIAL.map(([k, v]) => `<label><span>${t("sp_" + k)} <small class="muted">${money(v)}</small></span><input type="number" class="num-input" min="0" max="9" value="${b.special[k] || 0}" data-sp="${k}"></label>`).join("")}</div>
       <p class="hint">${t("ceoSpecialHint")}</p></div>
     <div class="sect"><h4>${t("ceoVehUp")}</h4>${CEO_VEH.map(k => `<label class="mini-check"><input type="checkbox" data-cv="${k}" ${b.veh[k] ? "checked" : ""}> ${t("cv_" + k)}</label>`).join("<br>")}
       <p class="hint">${t("ceoVehHint")}</p></div>
@@ -13832,6 +13839,8 @@ function bindCeo(root, id, rerender) {
     };
   });
   root.querySelectorAll("[data-sp]").forEach(el => el.onchange = () => { b.special[el.dataset.sp] = Math.max(0, Math.round(+el.value || 0)); done(); });
+  root.querySelectorAll("[data-spt]").forEach(el => el.onchange = () => { b.spTotal = Math.max(0, Math.round(+el.value || 0)); done(); });
+  root.querySelectorAll("[data-spc]").forEach(el => el.onchange = () => { b.spCount = Math.max(0, Math.round(+el.value || 0)); done(); });
   // idea 50: delivery vehicle upgrades are bought once for all Special Cargo warehouses
   root.querySelectorAll("[data-cv]").forEach(el => el.onchange = () => { CEO_SLOTS.forEach(d => S.biz[d.id].veh[el.dataset.cv] = el.checked); done(); });
 }
