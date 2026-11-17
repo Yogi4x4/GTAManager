@@ -803,7 +803,7 @@ html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.53";
+const APP_VERSION = "0.54";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // idea 156: letters with marks (Ü, é, ö, ñ, ș…) count as the plain letter when searching or typing a first letter; names keep their marks
@@ -1120,6 +1120,32 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.54.0",
+  "date": "2026-11-17",
+  "en": [
+   {
+    "area": "Production Manager",
+    "items": [
+     "Add: Nightclub: a fourth popularity button, Promote Club +25% (the Nightclub Management mission from the laptop or from Tony), next to DJ, Troublemaker and VIP, on the Nightclub page and in the quick window.",
+     "Add: Nightclub: the “Bonus week ×2” switch: while on, Promote Club gives +50%; it turns itself off at the next weekly reset (Thursday).",
+     "Add: Nightclub: you choose under which popularity the bell rings (95 %, 90 %, 80 %, 70 %, 50 % or never); the message reminds you of Promote Club.",
+     "Add: Nightclub cooldowns: after Promote Club the button is grey for 5 minutes, after a Troublemaker or a VIP both are grey for 48 minutes (one in-game day), counting down; still pressable after a question; the bell rings when they are free again. The DJ has no cooldown."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Production Manager",
+    "items": [
+     "Adăugat: Nightclub: al patrulea buton de popularitate, Promote Club +25% (misiunea Nightclub Management de pe laptop sau de la Tony), lângă DJ, Troublemaker și VIP, pe pagina Nightclub și în fereastra rapidă.",
+     "Adăugat: Nightclub: comutatorul „Săptămână bonus ×2”: cât e pornit, Promote Club dă +50%; se oprește singur la resetarea săptămânală (joi).",
+     "Adăugat: Nightclub: alegi sub ce popularitate sună clopoțelul (95 %, 90 %, 80 %, 70 %, 50 % sau niciodată); mesajul îți amintește de Promote Club.",
+     "Adăugat: cooldown la Nightclub: după Promote Club butonul e gri 5 minute, după un Troublemaker sau un VIP amândouă sunt gri 48 de minute (o zi de joc), cu minutele rămase; se pot apăsa totuși, după o întrebare; clopoțelul sună când sunt din nou libere. DJ-ul nu are cooldown."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.53.0",
   "date": "2026-11-16",
@@ -8535,6 +8561,11 @@ Section({
 #sec-production .cz-ph b, #sec-production .cz-box h5, #sec-production .cz-big span, #sec-production .cz-start {font-family: "Black Ops One", Barlow, sans-serif; font-weight: 400; letter-spacing: .02em;}
 #sec-production .cz-box h5 small {font-family: Barlow, "Segoe UI", sans-serif;}
 #sec-production .cz-ph span {font-family: Barlow, "Segoe UI", sans-serif; font-weight: 700;}
+#sec-production .nc-promo-ctl {display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 8px;}
+#sec-production .nc-promo-ctl .hint {margin: 0; display: inline-flex; align-items: center; gap: 6px;}
+#sec-production .nc-promo-ctl select {font: inherit; padding: 2px 6px;}
+#sec-production .nc-blip.cd svg {filter: grayscale(1) brightness(.75); opacity: .7;}
+#sec-production .nc-blip.cd b {background: #59606b !important; color: #fff;}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -8856,7 +8887,7 @@ i18n({
     "pm.ncUpgrades": "Upgrades and extras", "pm.ncBed": "Living quarters (spawn)", "pm.ncFloors": "Warehouse floors", "pm.ncTechs": "Technicians hired",
     "pm.ncAssign": "What they work on", "pm.ncNeeds": v => `needs ${v}`,
     "pm.ncIdle": g => `${g} is full: its technician is idle`, "pm.ncFirstFull": o => `${o.g} fills first, in ${o.m} of play`, "pm.ncNoTech": "No technician is working right now",
-    "pm.ncAlPop": v => `Nightclub popularity dropped to ${v}%`, "pm.ncAlSafeNear": v => `Nightclub safe full in ${v}`, "pm.ncAlSafeFull": "Nightclub safe is full",
+    "pm.ncAlPop": v => `Nightclub popularity dropped to ${v}%: time for a Promote Club (laptop or Tony)`, "pm.ncAlSafeNear": v => `Nightclub safe full in ${v}`, "pm.ncAlSafeFull": "Nightclub safe is full",
     "pm.ncAlGoodsNear": o => `Nightclub: ${o.g} full in ${o.m}`, "pm.ncAlIdle": g => `Nightclub: ${g} is full, a technician is idle`,
     "pm.g_cargo": "Cargo & Shipments", "pm.g_sport": "Sporting Goods", "pm.g_coke": "South American Imports", "pm.g_meth": "Pharmaceutical Research",
     "pm.g_cash": "Cash Creation", "pm.g_weed": "Organic Produce", "pm.g_docs": "Printing & Copying", "pm.g_src_cargo": "CEO Warehouse / Hangar", "pm.g_src_sport": "Bunker",
@@ -9052,7 +9083,7 @@ i18n({
     "pm.ncUpgrades": "Upgrade-uri și dotări", "pm.ncBed": "Spațiu de locuit (spawn)", "pm.ncFloors": "Etaje depozit", "pm.ncTechs": "Tehnicieni angajați",
     "pm.ncAssign": "Pe ce lucrează", "pm.ncNeeds": v => `necesită ${v}`,
     "pm.ncIdle": g => `${g} e plin: tehnicianul stă degeaba`, "pm.ncFirstFull": o => `${o.g} se umple primul, în ${o.m} de joc`, "pm.ncNoTech": "Niciun tehnician nu lucrează acum",
-    "pm.ncAlPop": v => `Popularitatea Nightclub a scăzut la ${v}%`, "pm.ncAlSafeNear": v => `Seiful Nightclub se umple în ${v}`, "pm.ncAlSafeFull": "Seiful Nightclub e plin",
+    "pm.ncAlPop": v => `Popularitatea Nightclub a scăzut la ${v}%: e timpul pentru un Promote Club (laptop sau Tony)`, "pm.ncAlSafeNear": v => `Seiful Nightclub se umple în ${v}`, "pm.ncAlSafeFull": "Seiful Nightclub e plin",
     "pm.ncAlGoodsNear": o => `Nightclub: ${o.g} se umple în ${o.m}`, "pm.ncAlIdle": g => `Nightclub: ${g} e plin, un tehnician stă degeaba`,
     "pm.g_cargo": "Cargo & Shipments", "pm.g_sport": "Sporting Goods", "pm.g_coke": "South American Imports", "pm.g_meth": "Pharmaceutical Research",
     "pm.g_cash": "Cash Creation", "pm.g_weed": "Organic Produce", "pm.g_docs": "Printing & Copying", "pm.g_src_cargo": "CEO Warehouse / Hangar", "pm.g_src_sport": "Bunker",
@@ -9320,8 +9351,14 @@ i18n({
 i18n({ en: { "pm.mhCars": "cars on show", "pm.mhBoost": "boost on", "pm.mhUps": "upgrades" },
   ro: { "pm.mhCars": "mașini expuse", "pm.mhBoost": "boost activ", "pm.mhUps": "upgrade-uri" } });
 // 0.37 (idea 129: Nightclub popularity boosts as icons)
-i18n({ en: { "pm.ncB_dj": "Rebook a DJ ($10,000): +10% popularity", "pm.ncB_tm": "Troublemaker thrown out (the blue dot in the club): +25% popularity", "pm.ncB_vip": "VIP taken home or to hospital (the blue figure): +25% popularity" },
-  ro: { "pm.ncB_dj": "DJ rechemat ($10,000): +10% popularitate", "pm.ncB_tm": "Troublemaker dat afară (punctul albastru din club): +25% popularitate", "pm.ncB_vip": "VIP dus acasă sau la spital (silueta albastră): +25% popularitate" } });
+i18n({ en: { "pm.ncB_dj": "Rebook a DJ ($10,000): +10% popularity", "pm.ncB_tm": "Troublemaker thrown out (the blue dot in the club): +25% popularity", "pm.ncB_vip": "VIP taken home or to hospital (the blue figure): +25% popularity", "pm.ncB_promo": "Promote Club done (laptop → Nightclub Management, or call Tony → Request Club Management): +25% popularity",
+  "pm.ncP2x": "Bonus week ×2", "pm.ncP2xT": "This week Rockstar doubles the popularity from Promote Club: the button gives +50% until Thursday's weekly reset", "pm.ncPopAt": "Bell under", "pm.ncPopAtOff": "never",
+  "pm.ncCdT": m => `cooldown: ${m} min left`, "pm.ncCdAsk": m => `This one is still on cooldown in the game (${m} min left). Add the popularity anyway?`,
+  "pm.ncCdPromo": "Nightclub: you can start another Promote Club", "pm.ncCdTv": "Nightclub: a Troublemaker or a VIP can show up again (48 min passed)" },
+  ro: { "pm.ncB_dj": "DJ rechemat ($10,000): +10% popularitate", "pm.ncB_tm": "Troublemaker dat afară (punctul albastru din club): +25% popularitate", "pm.ncB_vip": "VIP dus acasă sau la spital (silueta albastră): +25% popularitate", "pm.ncB_promo": "Promote Club făcut (laptop → Nightclub Management, sau Tony → Request Club Management): +25% popularitate",
+  "pm.ncP2x": "Săptămână bonus ×2", "pm.ncP2xT": "Săptămâna asta Rockstar dublează popularitatea de la Promote Club: butonul dă +50% până la resetarea de joi", "pm.ncPopAt": "Clopoțel sub", "pm.ncPopAtOff": "niciodată",
+  "pm.ncCdT": m => `cooldown: mai sunt ${m} min`, "pm.ncCdAsk": m => `În joc e încă în cooldown (mai sunt ${m} min). Adaugi totuși popularitatea?`,
+  "pm.ncCdPromo": "Nightclub: poți porni alt Promote Club", "pm.ncCdTv": "Nightclub: poate apărea iar un Troublemaker sau un VIP (au trecut 48 min)" } });
 // 0.38 (the photo studio for the cars on show)
 i18n({
   en: { "pm.msTitle": "Edit the screenshot", "pm.msEdit": "Edit the screenshot", "pm.msApply": "Apply", "pm.msReset": "Start over",
@@ -11131,7 +11168,7 @@ function checkNight(fromProduction) {
   if (!n.owned) return;
   const f = ncForecast(), tot = ncTotals(), fr = n.fired;
   const states = {
-    popLow: n.pop < 95,
+    popLow: ncAlertAt(n) > 0 && n.pop < ncAlertAt(n),
     safeNear: n.safe < NC_SAFE_CAP && f.safeLeft <= 30,
     safeFull: n.safe >= NC_SAFE_CAP - 1,
     goodsNear: !f.idle && f.firstFull <= 30,
@@ -11153,6 +11190,11 @@ function checkNight(fromProduction) {
     notify(msg, k === "popLow" ? "warn" : k.startsWith("safe") ? "ok" : "full", "night");
   }
   if (tot.total <= 0) fr.goodsNear = fr.goodsIdle = false;
+  // idea 166: the bell when Promote Club / Troublemaker-VIP are free again
+  [["promo", 5, "ncCdPromo"], ["tv", 48, "ncCdTv"]].forEach(([id, min, key]) => {
+    const ts = n.bcd && n.bcd[id]; if (!ts || fr["cd_" + id]) return;
+    if (minsLeft(ts, min) === 0) { fr["cd_" + id] = true; if (fromProduction) notify(t(key), "ok", "night"); }
+  });
 }
 
 /* Vehicle Warehouse: read the Export Tracker's list (same site, same browser storage) */
@@ -14047,19 +14089,48 @@ addEventListener("focus", () => { renderAll(); liveWin(); liveQuick(); });
 
 /* idea 129: the Nightclub popularity boosts as icons, like the blips in the game (all blue): rebook a DJ +10%,
    throw out a troublemaker (the blue dot) +25%, take a VIP home / to hospital (the blue figure) +25% */
-const NC_BOOSTS = [["dj", 10], ["tm", 25], ["vip", 25]];
+const NC_BOOSTS = [["dj", 10], ["tm", 25], ["vip", 25], ["promo", 25]];   // idea 165 (Mihai, 17.11.2026): Promote Club (Nightclub Management mission, laptop or Tony) +25%
+/* idea 165: a bonus week doubles the popularity from Nightclub Management missions (Promote Club): on until the next weekly reset (Thursday 10:00 UTC) */
+const ncWeekEnd = ts => { const d = new Date(ts); const e = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 10)); let add = (4 - e.getUTCDay() + 7) % 7; if (add === 0 && d >= e) add = 7; e.setUTCDate(e.getUTCDate() + add); return e.getTime(); };
+const ncPromo2x = n => !!(n.promo2x && Date.now() < ncWeekEnd(n.promo2x));
+const ncBoostVal = (n, k, v) => k === "promo" && ncPromo2x(n) ? v * 2 : v;
 const NC_BOOST_ICO = {
   dj: `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="17" r="8.5" fill="#1d4f8f"/><circle cx="16" cy="17" r="5.8" fill="none" stroke="#9fd0ff" stroke-width="1" opacity=".7"/><circle cx="16" cy="17" r="2.6" fill="#4aa3ff"/><path d="M5.5 16a10.5 10.5 0 0 1 21 0" fill="none" stroke="#4aa3ff" stroke-width="2.6" stroke-linecap="round"/><rect x="3.2" y="15" width="5" height="9" rx="2" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1"/><rect x="23.8" y="15" width="5" height="9" rx="2" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1"/></svg>`,
   tm: `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1.6"/></svg>`,
+  promo: `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 13h4l11-6v18l-11-6H6z" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1.2" stroke-linejoin="round"/><path d="M10 19l2 7h3l-1.6-6.2" fill="#1d4f8f" stroke="#cfe6ff" stroke-width="1"/><path d="M24 12.5c1.6 1 1.6 6 0 7M26.6 10.5c2.8 2 2.8 9 0 11" fill="none" stroke="#9fd0ff" stroke-width="1.5" stroke-linecap="round"/></svg>`,
   vip: `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="10" r="5.4" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1.2"/><path d="M5.5 28c0-6.2 4.7-10.4 10.5-10.4S26.5 21.8 26.5 28z" fill="#4aa3ff" stroke="#cfe6ff" stroke-width="1.2"/></svg>`
 };
-const ncBoostsHtml = () => `<span class="nc-boosts">${NC_BOOSTS.map(([k, v]) => `<button type="button" class="nc-blip" data-ncb="${k}" title="${escapeHtml(t("ncB_" + k))}" aria-label="${escapeHtml(t("ncB_" + k))}">${NC_BOOST_ICO[k]}<b>+${v}%</b></button>`).join("")}</span>`;
-const ncBoostApply = (n, k) => { const b = NC_BOOSTS.find(x => x[0] === k); if (b) n.pop = Math.min(100, n.pop + b[1]); };
+/* idea 166 (Mihai, 17.11.2026): cooldowns — Promote Club 5 min; Troublemaker and VIP share 48 min (one in-game day, separate from Promote Club);
+   the DJ has none. The button turns grey with the minutes left; still pressable after a question; the bell rings when it is free again.
+   Sources: beebom (Promote Club 5-minute cooldown), timesaver.gg / GTA Wiki (troublemaker / VIP 48 minutes). */
+const NC_CD = { promo: ["promo", 5], tm: ["tv", 48], vip: ["tv", 48] };
+const ncCdLeft = (n, k) => { const c = NC_CD[k]; if (!c || !n.bcd || !n.bcd[c[0]]) return 0; return minsLeft(n.bcd[c[0]], c[1]) || 0; };
+const ncBlipHtml = (k, v) => { const n = S.biz.night, left = ncCdLeft(n, k);
+  const tip = t("ncB_" + k) + (k === "promo" && ncPromo2x(n) ? " · ×2" : "") + (left > 0 ? " · " + t("ncCdT", Math.ceil(left)) : "");
+  return `<button type="button" class="nc-blip ${left > 0 ? "cd" : ""}" data-ncb="${k}" title="${escapeHtml(tip)}" aria-label="${escapeHtml(tip)}">${NC_BOOST_ICO[k]}<b>${left > 0 ? Math.ceil(left) + " min" : "+" + ncBoostVal(n, k, v) + "%"}</b></button>`; };
+const ncBoostsHtml = () => `<span class="nc-boosts">${NC_BOOSTS.map(([k, v]) => ncBlipHtml(k, v)).join("")}</span>`;
+// the grey buttons count down on their own
+setInterval(() => { document.querySelectorAll(".nc-boosts").forEach(sp => { const h = NC_BOOSTS.map(([k, v]) => ncBlipHtml(k, v)).join(""); if (sp.innerHTML !== h) { const fresh = document.createElement("span"); fresh.innerHTML = h;
+  sp.querySelectorAll("[data-ncb]").forEach((b, i) => { const f = fresh.children[i]; b.className = f.className; b.title = f.title; b.setAttribute("aria-label", f.getAttribute("aria-label")); b.querySelector("b").textContent = f.querySelector("b").textContent; }); } }); }, 15000);
+const ncBoostApply = (n, k) => { const b = NC_BOOSTS.find(x => x[0] === k); if (!b) return false;
+  const left = ncCdLeft(n, k);
+  if (left > 0 && !confirm(t("ncCdAsk", Math.ceil(left)))) return false;
+  n.pop = Math.min(100, n.pop + ncBoostVal(n, k, b[1]));
+  const c = NC_CD[k]; if (c) { n.bcd = n.bcd || {}; n.bcd[c[0]] = Date.now(); n.fired["cd_" + c[0]] = false; }
+  return true; };
+// idea 165: the bonus-week switch and the popularity alert level (the bell rings when the popularity drops under it)
+const NC_ALERT_LEVELS = [95, 90, 80, 70, 50, 0];
+const ncAlertAt = n => n.popAt === undefined ? 95 : n.popAt;
+const ncPromoCtlHtml = () => { const n = S.biz.night, on = ncPromo2x(n);
+  return `<div class="nc-promo-ctl"><button type="button" class="btn small ${on ? "primary" : "ghost"}" data-ncp2x title="${escapeHtml(t("ncP2xT"))}">${on ? "✓ " : ""}${t("ncP2x")}</button>
+    <label class="hint">${t("ncPopAt")} <select data-ncpopat>${NC_ALERT_LEVELS.map(v => `<option value="${v}" ${ncAlertAt(n) === v ? "selected" : ""}>${v ? v + "%" : t("ncPopAtOff")}</option>`).join("")}</select></label></div>`; };
 document.addEventListener("click", e => {
+  if (e.target.closest("[data-ncp2x]")) { const n = S.biz.night; n.promo2x = ncPromo2x(n) ? 0 : Date.now(); afterEdit(); if (VIEW) { focusEl._last = null; renderFocus(); } if (openId) renderWin(); return; }
   const dj = e.target.closest("[data-dj]");
   if (dj) { const n = S.biz.night; n.djs = n.djs || {}; n.djs[dj.dataset.dj] = !n.djs[dj.dataset.dj]; afterEdit(); if (VIEW) { focusEl._last = null; renderFocus(); } if (openId) renderWin(); return; }
 });
 document.addEventListener("change", e => {
+  if (e.target.matches && e.target.matches("[data-ncpopat]")) { const n = S.biz.night; n.popAt = +e.target.value; n.fired.popLow = false; afterEdit(); return; }
   if (e.target.matches && e.target.matches("[data-clgun]")) { S.biz.club.gun = e.target.checked; afterEdit(); }
   if (e.target.matches && e.target.matches("[data-cogun]")) { pr().ceo.gun = e.target.checked; save(true); ghMarkDirty(); }
 });
@@ -14218,6 +14289,7 @@ function nightWinHtml() {
       ${segBarHtml("pop", "night")}
       <div class="row" style="margin-top:8px"><span class="grow hint" style="margin:0" data-live="ncpophint">${n.pop >= 95 ? t("ncPopMax") : t("ncPopLess", money(ncPay(n.pop)))}</span>
       ${ncBoostsHtml()}</div>
+      ${ncPromoCtlHtml()}
       ${ncExtraHtml()}
     </div>
     <div class="sect"><h4>${t("ncGoods")} <span class="muted" data-live="ncpct">${Math.round(tt.frac * 100)}%</span></h4>
@@ -14238,7 +14310,7 @@ function bindNightWin(rerender) {
   const n = S.biz.night, $ = sel => win.querySelector(sel);
   const done = () => { checkNight(false); save(true); ghMarkDirty(); rerender(); renderAll(); };
   if (S.ncAdvanced && !isPhone()) { bindNightAdvanced(win, rerender); bindNightSettings(win, rerender); return; }
-  win.querySelectorAll("[data-ncb]").forEach(b => b.onclick = () => { ncBoostApply(n, b.dataset.ncb); n.alert = null; done(); });
+  win.querySelectorAll("[data-ncb]").forEach(b => b.onclick = () => { if (!ncBoostApply(n, b.dataset.ncb)) return; n.alert = null; done(); });
   $("#ncSold").onclick = () => { NC_GOODS.forEach(g => n.crates[g.id] = 0); n.alert = null; done(); toast(t("ncSoldToast")); };
   $("#ncCollect").onclick = () => { const had = n.safe; n.safe = 0; n.alert = null; done();
     toast(t("bagCollected", money(had)), { label: t("undo"), run: () => { n.safe = had; done(); } }); };
@@ -15963,6 +16035,7 @@ function nightAdvancedHtml() {
       ${segBarHtml("pop", "night", "big")}
       <p class="hint" data-live="ncpophint">${n.pop >= 95 ? t("ncPopMax") : t("ncPopLess", money(ncPay(n.pop)))}</p>
       <div class="btn-row">${ncBoostsHtml()}</div>
+      ${ncPromoCtlHtml()}
       ${ncExtraHtml()}
       <h4 style="margin-top:16px">${t("ncSafe")}</h4>
       <div class="bag-line"><b class="bag-sum ${n.safe >= NC_SAFE_CAP - 1 ? "full" : ""}">${money(n.safe)} / ${money(NC_SAFE_CAP)}</b><button class="btn small" data-a="collect">${t("bagCollect")}</button></div>
@@ -15999,7 +16072,7 @@ function bindNightAdvanced(root, rerender) {
   const n = S.biz.night;
   const done = () => { checkNight(false); save(true); ghMarkDirty(); rerender(); renderAll(); };
   bindSafeInput(root, done);
-  root.querySelectorAll("[data-ncb]").forEach(b => b.onclick = () => { ncBoostApply(n, b.dataset.ncb); n.alert = null; done(); });
+  root.querySelectorAll("[data-ncb]").forEach(b => b.onclick = () => { if (!ncBoostApply(n, b.dataset.ncb)) return; n.alert = null; done(); });
   root.querySelectorAll("[data-a]").forEach(el => {
     const a = el.dataset.a;
     if (a === "lobby") { el.oninput = () => { n.lobby = +el.value; el.nextElementSibling.textContent = el.value; }; el.onchange = done; return; }

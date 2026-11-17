@@ -2,6 +2,13 @@
 
 * * *
 
+### v0.54.0 (2026-11-17)
+* Production Manager:
+  * Add: Nightclub: a fourth popularity button, Promote Club +25% (the Nightclub Management mission from the laptop or from Tony), next to DJ, Troublemaker and VIP, on the Nightclub page and in the quick window.
+  * Add: Nightclub: the “Bonus week ×2” switch: while on, Promote Club gives +50%; it turns itself off at the next weekly reset (Thursday).
+  * Add: Nightclub: you choose under which popularity the bell rings (95 %, 90 %, 80 %, 70 %, 50 % or never); the message reminds you of Promote Club.
+  * Add: Nightclub cooldowns: after Promote Club the button is grey for 5 minutes, after a Troublemaker or a VIP both are grey for 48 minutes (one in-game day), counting down; still pressable after a question; the bell rings when they are free again. The DJ has no cooldown.
+
 ### v0.53.0 (2026-11-16)
 * Job Manager:
   * Add: Casino: when a board is done you stay on it and the next board's tab blinks until you open it (Prep after Setup, Finale after Prep).
