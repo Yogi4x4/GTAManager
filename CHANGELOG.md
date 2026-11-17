@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.55.1 (2026-11-17)
+* Production Manager:
+  * Change: CEO warehouse special items are counted from the per-type list again (as before 0.55); the fields for the game's number and total value are gone. The game's sell screen jumps between values (a game bug: it showed $470,000, it paid $410,000, which is exactly the list's Ornamental Egg + Large Diamond + Rare Pocket Watch).
+
 ### v0.55.0 (2026-11-17)
 * Production Manager:
   * Add: automatic In game / Off on your PC: a small helper (gta_detector.ps1, started with Windows) sees whether GTA is running and has an Online session open (only Windows' list of processes and connections, nothing from the game). When you enter a private or public session the switch turns on by itself; when you leave or get the AFK kick it turns off and the time stops at the moment you left, not when it noticed. The switch shows “auto” and 🌐 public / 🔒 private; a click still works; without the helper (or on the phone) everything stays manual.
