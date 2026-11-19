@@ -15,7 +15,7 @@
   {
    "title": "GTA Online Weekly Update – November 12, 2026",
    "items": [
-    "Week of November 12 to November 18, 2026",
+    "Week of November 12 to November 18, 2026 (ended)",
     "Updated Nov 11, 2026",
     "This GTA Online weekly update brings 4X GTA$ & RP on Freemode Challenges, the Everon on the podium and 10 vehicles on sale.",
     "Follow @gtabossgg on X for weekly updates and guides.",
@@ -84,14 +84,14 @@
   {
    "title": "Gun Van",
    "items": [
-    "Combat Shotgun −10% $295,000 $265,500 −40% · $174,050",
+    "Combat Shotgun −40% $295,000 $177,000",
     "Knife FREE",
     "Tactical SMG −40% $325,000 $195,000",
-    "Stun Gun −10% $375,000 $337,500 −20% · $296,250",
-    "Up-n-Atomizer −10% $399,000 $359,100 −20% · $315,210",
-    "Molotov Cocktail −10% $200 $180 −20% · $158",
-    "Sticky Bombs −10% $600 $540 −20% · $474",
-    "Proximity Mine −10% $1,000 $900 −20% · $790",
+    "Stun Gun",
+    "Up-n-Atomizer",
+    "Molotovs",
+    "Sticky Bombs",
+    "Proximity Mines",
     "Baseball Bat",
     "Armor"
    ]
@@ -150,5 +150,5 @@
    ]
   }
  ],
- "fetched": "2026-11-17T18:44Z"
+ "fetched": "2026-11-19T18:38Z"
 }
