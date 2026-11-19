@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.56.0 (2026-11-17)
+* Production Manager:
+  * Change: automatic In game / Off waits before switching on: in the loading screen the game already has connections open, so it used to switch on too early. Now the switch turns yellow, “Connecting…” (the time does not run), and turns on about 1½ minutes after you joined; leaving or a click cancels it. The first time the detector is found, a short note explains this and that a very long or stuck loading screen needs a click to Off.
+  * Add: Nightclub: the DJ, Troublemaker, VIP and Promote Club buttons are in the small window from the left menu too, with the same cooldowns and bell.
+  * Change: the In game / Off switch shows on every page, the Job Manager pages included.
+
 ### v0.55.1 (2026-11-17)
 * Production Manager:
   * Change: CEO warehouse special items are counted from the per-type list again (as before 0.55); the fields for the game's number and total value are gone. The game's sell screen jumps between values (a game bug: it showed $470,000, it paid $410,000, which is exactly the list's Ornamental Egg + Large Diamond + Rare Pocket Watch).

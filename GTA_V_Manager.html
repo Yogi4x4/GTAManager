@@ -803,7 +803,7 @@ html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.55.1";
+const APP_VERSION = "0.56";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // idea 156: letters with marks (Ü, é, ö, ñ, ș…) count as the plain letter when searching or typing a first letter; names keep their marks
@@ -1120,6 +1120,30 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.56.0",
+  "date": "2026-11-17",
+  "en": [
+   {
+    "area": "Production Manager",
+    "items": [
+     "Change: automatic In game / Off waits before switching on: in the loading screen the game already has connections open, so it used to switch on too early. Now the switch turns yellow, “Connecting…” (the time does not run), and turns on about 1½ minutes after you joined; leaving or a click cancels it. The first time the detector is found, a short note explains this and that a very long or stuck loading screen needs a click to Off.",
+     "Add: Nightclub: the DJ, Troublemaker, VIP and Promote Club buttons are in the small window from the left menu too, with the same cooldowns and bell.",
+     "Change: the In game / Off switch shows on every page, the Job Manager pages included."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Production Manager",
+    "items": [
+     "Schimbat: In game / Off automat așteaptă înainte să pornească: în loading screen jocul are deja conexiuni deschise, așa că pornea prea devreme. Acum comutatorul devine galben, „Se conectează…” (timpul nu merge), și pornește la circa un minut și jumătate după ce ai intrat; ieșirea sau un clic anulează așteptarea. Prima dată când găsește detectorul, o notă scurtă explică asta și că un loading foarte lung sau blocat cere un clic pe Off.",
+     "Adăugat: Nightclub: butoanele DJ, Troublemaker, VIP și Promote Club sunt și în fereastra mică din meniul din stânga, cu aceleași cooldown-uri și același clopoțel.",
+     "Schimbat: comutatorul In game / Off apare pe toate paginile, inclusiv paginile Job Manager."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.55.1",
   "date": "2026-11-17",
@@ -8608,6 +8632,8 @@ Section({
 #sec-production .nc-promo-ctl select {font: inherit; padding: 2px 6px;}
 #sec-production .nc-blip.cd svg {filter: grayscale(1) brightness(.75); opacity: .7;}
 #sec-production .nc-blip.cd b {background: #59606b !important; color: #fff;}
+#sec-production .nc-qboosts {display: flex; justify-content: center; margin: 6px 0 4px;}
+#sec-production .nc-qboosts .nc-boosts {gap: 12px;}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -8641,6 +8667,11 @@ body[data-sec="production"] { overflow: hidden; }
 #topbar .ingame .lbl {font: 600 15px/1.1 'Barlow Condensed', 'Arial Narrow', sans-serif; letter-spacing: .02em;}
 #topbar .ingame .sub {display: block; font: 400 12px/1.1 Barlow, 'Segoe UI', system-ui, sans-serif; color: var(--muted);}
 #topbar .ingame.on .sub {color: var(--ok);}
+#topbar .ingame.wait {border-color: color-mix(in srgb, #e8b43a 60%, var(--line));}   /* idea 169: connecting */
+#topbar .ingame.wait .track {background: #e8b43a; animation: igWait 1.4s ease-in-out infinite;}
+#topbar .ingame.wait .track::after {transform: translateX(10px);}
+#topbar .ingame.wait .sub {color: #e8b43a;}
+@keyframes igWait {50% {opacity: .55;}}
 .pm-tb .head-stat {text-align: right; line-height: 1.15;}
 .pm-tb .head-stat b {display: block; font: 700 18px/1.1 'Barlow Condensed', 'Arial Narrow', sans-serif;}
 .pm-tb .head-stat small {color: var(--muted); font-size: 12px;}
@@ -9397,13 +9428,13 @@ i18n({ en: { "pm.ncB_dj": "Rebook a DJ ($10,000): +10% popularity", "pm.ncB_tm":
   "pm.ncP2x": "Bonus week ×2", "pm.ncP2xT": "This week Rockstar doubles the popularity from Promote Club: the button gives +50% until Thursday's weekly reset", "pm.ncPopAt": "Bell under", "pm.ncPopAtOff": "never",
   "pm.ncCdT": m => `cooldown: ${m} min left`, "pm.ncCdAsk": m => `This one is still on cooldown in the game (${m} min left). Add the popularity anyway?`,
   "pm.ncCdPromo": "Nightclub: you can start another Promote Club",
-  "pm.autoTag": "auto", "pm.autoPub": "public session", "pm.autoPriv": "private session", "pm.autoTitle": "Switched automatically by the detector on this PC (gta_detector.ps1); a click still works",
+  "pm.autoTag": "auto", "pm.autoWait": "Connecting…", "pm.autoTipH": "Automatic In game / Off", "pm.autoTipOk": "Got it", "pm.autoTip": "The detector on this PC switches In game on by itself about 1½ minutes after you join a session (while it connects the switch is yellow and the time does not run). If a loading screen takes very long or gets stuck, switch to Off with a click.", "pm.autoPub": "public session", "pm.autoPriv": "private session", "pm.autoTitle": "Switched automatically by the detector on this PC (gta_detector.ps1); a click still works",
   "pm.autoOn": k => `In game: you are in a ${k}; the timers run`, "pm.autoOff": h => `You left the session at ${h} (AFK kick or exit); the timers stopped then`, "pm.ncCdTv": "Nightclub: a Troublemaker or a VIP can show up again (48 min passed)" },
   ro: { "pm.ncB_dj": "DJ rechemat ($10,000): +10% popularitate", "pm.ncB_tm": "Troublemaker dat afară (punctul albastru din club): +25% popularitate", "pm.ncB_vip": "VIP dus acasă sau la spital (silueta albastră): +25% popularitate", "pm.ncB_promo": "Promote Club făcut (laptop → Nightclub Management, sau Tony → Request Club Management): +25% popularitate",
   "pm.ncP2x": "Săptămână bonus ×2", "pm.ncP2xT": "Săptămâna asta Rockstar dublează popularitatea de la Promote Club: butonul dă +50% până la resetarea de joi", "pm.ncPopAt": "Clopoțel sub", "pm.ncPopAtOff": "niciodată",
   "pm.ncCdT": m => `cooldown: mai sunt ${m} min`, "pm.ncCdAsk": m => `În joc e încă în cooldown (mai sunt ${m} min). Adaugi totuși popularitatea?`,
   "pm.ncCdPromo": "Nightclub: poți porni alt Promote Club",
-  "pm.autoTag": "auto", "pm.autoPub": "sesiune publică", "pm.autoPriv": "sesiune privată", "pm.autoTitle": "Comutat automat de detectorul de pe acest PC (gta_detector.ps1); un clic merge în continuare",
+  "pm.autoTag": "auto", "pm.autoWait": "Se conectează…", "pm.autoTipH": "In game / Off automat", "pm.autoTipOk": "Am înțeles", "pm.autoTip": "Detectorul de pe acest PC pornește singur In game la circa un minut și jumătate după ce intri într-o sesiune (cât se conectează, comutatorul e galben și timpul nu merge). Dacă un loading durează foarte mult sau se blochează, treci pe Off cu un clic.", "pm.autoPub": "sesiune publică", "pm.autoPriv": "sesiune privată", "pm.autoTitle": "Comutat automat de detectorul de pe acest PC (gta_detector.ps1); un clic merge în continuare",
   "pm.autoOn": k => `În joc: ești într-o ${k}; timerele merg`, "pm.autoOff": h => `Ai ieșit din sesiune la ${h} (kick AFK sau ieșire); timerele s-au oprit atunci`, "pm.ncCdTv": "Nightclub: poate apărea iar un Troublemaker sau un VIP (au trecut 48 min)" } });
 // 0.38 (the photo studio for the cars on show)
 i18n({
@@ -14286,6 +14317,7 @@ function nightQuickHtml() {
   return `
     <div class="q-label">${t("ncPop")} · <b data-live="ncpop" style="color:${popColor(n.pop)}">${popTxt(n.pop)}%</b></div>
     ${segBarHtml("pop", "night", "small")}
+    <div class="nc-qboosts">${ncBoostsHtml()}</div>
     ${ncExtraHtml()}
     <div class="q-label">${t("ncGoods")} · <span class="muted" data-live="ncpct">${Math.round(tt.frac * 100)}%</span></div>
     ${segBarHtml("ncgoods", "night", "small")}
@@ -15324,6 +15356,9 @@ function renderQuickBody() {
     const own = quick.querySelector("#qOwn");
     if (own) own.onclick = () => { b.owned = true; save(true); renderPins(); renderAll(); renderQuick(); };
     if (kd === "night" && b.owned) bindValueInputs(quick, () => { checkNight(false); save(true); ghMarkDirty(); renderQuick(); renderAll(); });
+    // idea 171 (Mihai, 17.11.2026): DJ, Troublemaker, VIP and Promote Club in the quick window too, same cooldowns and bell
+    if (kd === "night" && b.owned) quick.querySelectorAll("[data-ncb]").forEach(el => el.onclick = () => { if (!ncBoostApply(b, el.dataset.ncb)) return;
+      b.alert = null; checkNight(false); save(true); ghMarkDirty(); quick._last = null; renderQuick(); renderAll(); if (openId === "night") renderWin(); });
     if (kd === "veh" && b.owned) bindVehAdd(quick, renderQuick);
     if (kd === "ceo" && b.owned) bindCeo(quick, id, () => { quick._last = null; renderQuick(); });
     if (kd === "hangar" && b.owned) bindHangar(quick, () => { quick._last = null; renderQuick(); });
@@ -15753,9 +15788,11 @@ function liveWin() {
 
 function renderHead() {
   const ig = ingameEl;
+  const waiting = !S.inGame && AUTO.ok && !!AUTO.wait;
   ig.classList.toggle("on", S.inGame);
+  ig.classList.toggle("wait", waiting);
   ig.setAttribute("aria-checked", S.inGame);
-  ingameSub.textContent = (S.inGame ? t("ingameOn") : t("ingameOff")) + (AUTO.ok ? " · " + t("autoTag") + (S.inGame && AUTO.kind ? " " + (AUTO.kind === "public" ? "🌐" : "🔒") : "") : "");
+  ingameSub.textContent = (S.inGame ? t("ingameOn") : waiting ? t("autoWait") : t("ingameOff")) + (AUTO.ok ? " · " + t("autoTag") + (S.inGame && AUTO.kind ? " " + (AUTO.kind === "public" ? "🌐" : "🔒") : "") : "");
   ig.title = AUTO.ok ? t("autoTitle") : "";
   let total = 0, next = null;
   PROD.forEach(d => {
@@ -15821,6 +15858,7 @@ function setSide(open) {
 }
 sideBtn.onclick = () => setSide(!S.sideOpen);
 function toggleInGame() {
+  AUTO.wait = 0;   // a click wins over a waiting automatic switch
   tick();                    // settle time up to now with the old setting
   S.inGame = !S.inGame;
   S.lastTick = Date.now();
@@ -15834,16 +15872,35 @@ function toggleInGame() {
    leaving (the first check without connections), lastSeen (last check in the session), kind (public / private by the network traffic).
    Rule from Mihai's log (17.11.2026): in a session the game always had 2–4 TCP connections; after the AFK kick 0 at once.
    The app follows the helper's changes (edge-triggered), so a manual click is not fought every 10 seconds; no helper = manual as before. */
-const AUTO = { ok: false, sess: null, kind: "", hold: 0, last: 0, fails: 0 };
+const AUTO = { ok: false, sess: null, kind: "", hold: 0, last: 0, fails: 0, wait: 0 };
+/* idea 169 (Mihai, 17.11.2026): in the loading screen GTA already has connections open, so the helper said "in session" too early
+   (and the heavy loading traffic looked like a public session). Now the app waits: the switch turns yellow, "connecting…", the time
+   does not run, and it turns on only when the session has lasted AUTO_WAIT; a stuck loading screen is left to a click (the tip below). */
+const AUTO_WAIT = 90 * 1000;
+function autoTip() {
+  try { if (localStorage.getItem("gtaAutoTip")) return; } catch (e) { return; }
+  if (document.querySelector("dialog[open]")) { setTimeout(autoTip, 15000); return; }   // never on top of a tour or another window
+  try { localStorage.setItem("gtaAutoTip", "1"); } catch (e) {}
+  const d = document.createElement("dialog"); d.className = "dlg"; d.id = "autoTipDlg";
+  d.innerHTML = `<div class="dlg-head"><h2>${t("autoTipH")}</h2><button class="tb-btn icon" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-body"><p>${t("autoTip")}</p><div class="upd-btns"><button class="btn primary" data-close>${t("autoTipOk")}</button></div></div>`;
+  d.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { d.close(); d.remove(); });
+  document.body.appendChild(d); d.showModal();
+}
 async function autoPoll() {
   let r = null;
   try { const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 2500); const res = await fetch("http://127.0.0.1:47123/status", { cache: "no-store", signal: ctl.signal }); clearTimeout(to); r = await res.json(); } catch (e) {}
   if (!r || !r.ok) { AUTO.fails++; if (AUTO.ok && AUTO.fails >= 3) { AUTO.ok = false; AUTO.hold = 0; AUTO.sess = null; renderLive(); } return; }
   const wasOk = AUTO.ok; AUTO.ok = true; AUTO.fails = 0; AUTO.kind = r.kind || "";
+  if (!wasOk) autoTip();
   const skew = Date.now() - r.now, seen = r.lastSeen ? r.lastSeen + skew : 0;
   // the first check without connections: stop counting time from the last moment seen, until it is confirmed or the session comes back
   AUTO.hold = S.inGame && r.sess && r.leaving && seen ? seen : 0;
-  if (r.sess && (!wasOk || AUTO.sess === false || AUTO.sess === null) && !S.inGame) {
+  // a new session (or the app opened during one): wait until it has lasted AUTO_WAIT (from the helper's own start time)
+  if (r.sess && (!wasOk || AUTO.sess === false || AUTO.sess === null) && !S.inGame) AUTO.wait = r.since ? r.since + skew : Date.now();
+  if (!r.sess || S.inGame) AUTO.wait = 0;
+  if (AUTO.wait && Date.now() - AUTO.wait >= AUTO_WAIT) {
+    AUTO.wait = 0;
     tick(); S.inGame = true; S.lastTick = Date.now(); save(true); ghMarkDirty(); renderWin();
     notify(t("autoOn", r.kind === "public" ? t("autoPub") : t("autoPriv")), "ok");
   } else if (!r.sess && S.inGame && (AUTO.sess === true || !wasOk)) {
@@ -16583,10 +16640,9 @@ function setView(v) {
     setTimeout(() => { if (S.biz[id]) openWin(id); }, 60);
     return;
   }
-  if (v === VIEW) { tbRight.style.display = jobView() ? "none" : ""; return; }   // opened straight on a Job Manager page: no "In game" there either
+  if (v === VIEW) return;   // idea 172 (Mihai, 17.11.2026): "In game" shows on the Job Manager pages too (the automatic detector makes it useful everywhere)
   if (prEdit && v !== "props") { prEdit = false; save(true); ghMarkDirty(); }
   VIEW = v;
-  tbRight.style.display = jobView() ? "none" : "";
   jmShow(jobPage() || propView());
   if (propView()) vmCars();   // idea 87: the Vehicle Manager starts reading its cars right away, so they are there when a picker opens
   focusEl._last = null;
