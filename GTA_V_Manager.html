@@ -803,7 +803,7 @@ html:is([data-jmsize="2"], [data-jmsize="3"]) #sec-production .jm-grid.jm-big > 
 /* ======================================================================
    CORE — written once, used by every section
    ====================================================================== */
-const APP_VERSION = "0.57";
+const APP_VERSION = "0.57.1";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // idea 156: letters with marks (Ü, é, ö, ñ, ș…) count as the plain letter when searching or typing a first letter; names keep their marks
@@ -1120,6 +1120,30 @@ function openText(title, html) {
 }
 // one history for the whole of GTA V Manager, newest first (changelog.json, also published as CHANGELOG.md)
 const CHANGELOG = [
+ {
+  "v": "0.57.1",
+  "date": "2026-11-20",
+  "en": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Change: Money Fronts after Mihai's safe screen: you type the game's „Total daily income” (at the safe, Q); the app keeps the part from your other businesses and adds the three fronts live ($750, $1,500 after 15 missions, $0 at max Heat). Each front at max Heat, the Car Wash included, only takes out its own part.",
+     "Change: Heat shows as 5 boxes, like the HEAT bar in the game (a laundering mission is half a box); tap a box to set it.",
+     "Change: Heat rising on its own (about 8% a game day) is on by default: Smoke on the Water and Higgins Helitours reached max Heat without laundering."
+    ]
+   }
+  ],
+  "ro": [
+   {
+    "area": "Job Manager",
+    "items": [
+     "Schimbat: Money Fronts după ecranul seifului trimis de Mihai: scrii „Total daily income” din joc (la seif, Q); aplicația păstrează partea de la celelalte afaceri și adaugă singură cele trei afaceri (750 $, 1.500 $ după 15 misiuni, 0 $ la Heat maxim). Fiecare afacere cu Heat maxim, inclusiv Car Wash, își scoate doar partea ei.",
+     "Schimbat: Heat-ul are 5 căsuțe, ca bara HEAT din joc (o spălare e o jumătate de căsuță); atingi o căsuță ca s-o pui.",
+     "Schimbat: Heat care urcă singur (cam 8% pe zi din joc) e pornit: Smoke on the Water și Higgins Helitours au ajuns la Heat maxim fără spălări."
+    ]
+   }
+  ]
+ },
  {
   "v": "0.57.0",
   "date": "2026-11-20",
@@ -8718,6 +8742,9 @@ Section({
 #sec-production .mf-mis.two {grid-template-columns: 1fr;}
 }
 #sec-production .mf-card .btn:disabled, #sec-production .mf-safe .btn:disabled {opacity: .45; cursor: not-allowed;}
+#sec-production .heat.five {grid-template-columns: repeat(5, 1fr); gap: 4px;}
+#sec-production .heat.five i {height: 16px;}
+#sec-production .heat.five.is-hot i[style] {background: linear-gradient(90deg, var(--bad) var(--f), var(--asphalt) var(--f));}
 
 #sec-production { min-height: 0; }
 body[data-sec="production"] { overflow: hidden; }
@@ -9628,6 +9655,27 @@ i18n({
     "pm.mfFrom": "Pornită din", "pm.mfToday": "azi", "pm.mfRhTip": "10 pungi pe zi, 7.500 $ fiecare; toate 10: +25.000 $ (Smoke on the Water)",
     "pm.mfRhAll": "Red Harvest: toate 10 pungile azi, +25.000 $",
     "pm.frontsNote": "Bonusurile +35% / +10% contează doar la vânzările MC și Hangar, nu și la Nightclub; Production Manager le adaugă deja. Mr. Faber Work și Red Harvest sunt sus pe pagină."
+  }
+});
+/* 0.57.1 (20.11.2026): Mihai's safe screen */
+i18n({
+  en: {
+    "pm.mfFromGame": "Total daily income, from the game", "pm.mfTapSet": "5 boxes like in the game; tap one to set it",
+    "pm.mfPdCalc": "Now only the three fronts ($750 / $1,500 each). At the safe press Q (View daily income) and type the „Total daily income” here: the other businesses are added too.",
+    "pm.mfPdTyped": n => `From your other businesses: ${n} a day (from what you typed). The fronts are added live: $750, $1,500 after 15 missions, $0 while at max Heat.`,
+    "pm.mfAuto": "Heat also rises on its own, about 8% a game day (on by default: Smoke on the Water and Higgins reached max Heat with no laundering)",
+    "pm.mfFullTxt": "Max Heat: it pays $0 into the safe and you can't launder here. Do the legal job.",
+    "pm.mfLeftTxt": n => `${n} more laundering missions to max Heat (half a box each). One legal job brings it to 0.`,
+    "pm.mfSafeFull": "Money Fronts: the Car Wash safe is full ($100,000). Nothing more goes in until you collect it"
+  },
+  ro: {
+    "pm.mfFromGame": "Total pe zi, din joc", "pm.mfTapSet": "5 căsuțe ca în joc; atinge una ca s-o pui",
+    "pm.mfPdCalc": "Acum doar cele trei afaceri (750 / 1.500 $ fiecare). La seif apasă Q (View daily income) și scrie aici „Total daily income”: se adaugă și celelalte afaceri.",
+    "pm.mfPdTyped": n => `De la celelalte afaceri: ${n} pe zi (din ce ai scris). Cele trei se adaugă singure: 750 $, 1.500 $ după 15 misiuni, 0 $ cât au Heat maxim.`,
+    "pm.mfAuto": "Heat urcă și singur, cam 8% pe zi din joc (pornit: Smoke on the Water și Higgins au ajuns la maxim fără spălări)",
+    "pm.mfFullTxt": "Heat maxim: pune 0 $ în seif și nu mai poți spăla aici. Fă jobul legal.",
+    "pm.mfLeftTxt": n => `Încă ${n} spălări până la Heat maxim (o jumătate de căsuță fiecare). Un job legal îl aduce la 0.`,
+    "pm.mfSafeFull": "Money Fronts: seiful de la Car Wash e plin (100.000 $). Nu mai intră nimic până nu-l colectezi"
   }
 });
 
@@ -11038,7 +11086,8 @@ function mergeState(data) {
   out.fronts = {}; Object.keys(df).forEach(k => out.fronts[k] = { ...df[k], ...(sf[k] || {}), fired: { ...((sf[k] || {}).fired || {}) } });
   // idea 173: Heat is now kept in % (0..100); before it was in tenths (0..10)
   if (!(data.mf && data.mf.v >= 2)) Object.values(out.fronts).forEach(f => f.heat = Math.min(100, (+f.heat || 0) * 10));
-  out.mf = { ...defaultMf(), ...(data.mf || {}), v: 2 };
+  out.mf = { ...defaultMf(), ...(data.mf || {}), v: 3 };
+  if (!(data.mf && data.mf.v >= 3)) out.mf.auto = true;   // 0.57.1: Heat does rise on its own (Smoke and Higgins hit max with no laundering)
   const bk = out.biz.bunker;
   // 51 without "all research is done" came from the old counter that had no limit
   if (bk) { bk.done = Math.min(bk.resAll ? RES_TOTAL : RES_TOTAL - 1, bk.done || 0); if (bk.resAll) bk.mode = "manu"; }
@@ -13890,15 +13939,18 @@ const MF_MIS = {
 const MF_LEGAL = { wash: "Car Wash", heli: "Helicopter Tour", smoke: "Weed Delivery" };
 const MF_LOC = { wash: "Strawberry", heli: "Vespucci Helipad", smoke: "Vespucci Beach" };
 const MF_FABER = ["Liquid Market", "ROI", "Compound Interest", "Mutual Funds", "Current Liabilities", "The Monopoly"];
-function defaultMf() { return { v: 2, safe: 0, perDay: null, alert: null, auto: false, faber: {}, from: "wash", rh: { d: "", n: 0 }, undo: null, open: "" }; }
+function defaultMf() { return { v: 3, safe: 0, perDay: null, net: null, alert: null, auto: true, faber: {}, from: "wash", rh: { d: "", n: 0 }, undo: null, open: "" }; }
 const mfSt = () => S.mf || (S.mf = defaultMf());
 const mfFront = k => { const f = S.fronts[k]; if (!f.runs) f.runs = {}; if (!f.fired) f.fired = {}; return f; };
 const mfPart = k => frontOwned(k) ? (S.fronts[k].laund >= 15 ? 1500 : 750) : 0;
-const mfCalc = () => FRONTS.reduce((a, [k]) => a + mfPart(k), 0);
+const mfCalc = () => mfLive();
+/* 0.57.1 (Mihai's safe screen, 20.11.2026): the game lists 21 businesses; each front at max Heat pays $0 and drops out of "Total daily income"
+   (33,250 with Smoke and Higgins hot → 34,750 after their legal jobs). So: what he types = the game's total now; the part from the other
+   businesses (m.net) = that total minus the fronts that pay right now. Later the fronts are added live (750 / 1,500, 0 when hot). */
+const mfLive = () => FRONTS.reduce((a, [k]) => a + (frontOwned(k) && S.fronts[k].heat < 100 ? mfPart(k) : 0), 0);
 function mfRate() {
-  if (!frontOwned("wash") || S.fronts.wash.heat >= 100) return 0;
-  const m = mfSt(), base = m.perDay != null ? m.perDay : mfCalc();
-  return Math.max(0, base - ["heli", "smoke"].filter(k => frontOwned(k) && S.fronts[k].heat >= 100).reduce((a, k) => a + mfPart(k), 0));
+  if (!frontOwned("wash")) return 0;
+  return Math.max(0, (mfSt().net || 0) + mfLive());
 }
 const mfLeft = () => { const m = mfSt(), r = mfRate(); return m.safe >= MF_CAP ? 0 : r > 0 ? (MF_CAP - m.safe) / r * 48 : Infinity; };
 const mfDay = () => new Date().toISOString().slice(0, 10);
@@ -13923,10 +13975,11 @@ function checkFronts() {
   const st = m.safe >= MF_CAP - 1 ? "full" : S.inGame && mfLeft() <= 30 ? "near" : null;
   if (st !== m.alert) { if (st === "full") go(t("mfSafeFull"), "full"); else if (st === "near") go(t("mfSafeNear"), "warn"); m.alert = st; save(); }
 }
+// 0.57.1: 5 boxes of 20%, like the HEAT bar in the game (a laundering mission fills half a box)
 function heatBoxes(h, k) {
   const hot = h >= 80;
-  return `<div class="heat ${k ? "set" : ""}" role="img" aria-label="Heat ${Math.round(h)}%">${Array.from({ length: 10 }, (_, i) => { const fill = Math.max(0, Math.min(1, (h - i * 10) / 10));
-    return `<i class="${fill >= 1 ? (hot ? "hot" : "on") : ""}" ${fill > 0 && fill < 1 ? `style="--f:${fill * 100}%"` : ""} ${k ? `data-mf-heat="${k}" data-v="${(i + 1) * 10}" title="${(i + 1) * 10}%"` : ""}></i>`; }).join("")}</div>`;
+  return `<div class="heat five ${hot ? "is-hot" : ""} ${k ? "set" : ""}" role="img" aria-label="Heat ${Math.round(h)}%">${Array.from({ length: 5 }, (_, i) => { const fill = Math.max(0, Math.min(1, (h - i * 20) / 20));
+    return `<i class="${fill >= 1 ? (hot ? "hot" : "on") : ""}" ${fill > 0 && fill < 1 ? `style="--f:${fill * 100}%"` : ""} ${k ? `data-mf-heat="${k}" data-v="${(i + 1) * 20}" title="${(i + 1) * 20}%"` : ""}></i>`; }).join("")}</div>`;
 }
 const mfHeatTag = h => `<span class="mf-tag ${h >= 100 ? "bad" : h >= 70 ? "warn" : "ok"}">${h >= 100 ? t("mfStopped") : "Heat " + Math.round(h) + "%"}</span>`;
 function mfSafeHtml() {
@@ -13937,9 +13990,9 @@ function mfSafeHtml() {
       <div class="kv"><span>${t("mfFullIn")}</span><b>${m.safe >= MF_CAP - 1 ? t("mfFullNow") : left === Infinity ? "—" : fmtLeft(left * 60000)}</b></div>
       ${S.fronts.wash.heat >= 100 ? `<p class="hint bad">${t("mfWashHot")}</p>` : ""}
       <div class="btn-row"><button class="btn primary small" data-mf="collect" ${m.safe < 1 ? "disabled" : ""}>✓ ${t("mfCollected")}</button>
-        <label class="val-in mf-pd"><span>${t("mfFromGame")}</span><span class="dollar">$</span><input type="number" min="0" max="100000" step="100" inputmode="numeric" data-mf-pd value="${m.perDay != null ? m.perDay : ""}" placeholder="${calc}"></label>
-        ${m.perDay != null ? `<button class="btn ghost small" data-mf="pdReset">${t("agPdReset", money(calc))}</button>` : ""}</div>
-      <p class="hint">${m.perDay != null ? t("mfPdTyped") : t("mfPdCalc")}</p>
+        <label class="val-in mf-pd"><span>${t("mfFromGame")}</span><span class="dollar">$</span><input type="number" min="0" max="100000" step="100" inputmode="numeric" data-mf-pd value="${m.net != null ? r : ""}" placeholder="${calc}"></label>
+        ${m.net != null ? `<button class="btn ghost small" data-mf="pdReset">✕</button>` : ""}</div>
+      <p class="hint">${m.net != null ? t("mfPdTyped", money(m.net)) : t("mfPdCalc")}</p>
       <label class="toggle row mf-auto"><input type="checkbox" data-mf-auto ${m.auto ? "checked" : ""}> <span>${t("mfAuto")}</span></label></div></section>`;
 }
 function mfCashHtml() {
@@ -14007,10 +14060,10 @@ function bindFronts(root) {
   });
   root.querySelectorAll("[data-mf-heat]").forEach(el => el.onclick = () => {
     const f = mfFront(el.dataset.mfHeat), v = +el.dataset.v; snap("heat");
-    f.heat = Math.round(f.heat) === v ? v - 10 : v; checkFronts(); done();
+    f.heat = Math.round(f.heat) === v ? v - 20 : v; checkFronts(); done();
   });
   const pd = root.querySelector("[data-mf-pd]");
-  if (pd) pd.onchange = e => { m.perDay = e.target.value === "" ? null : Math.max(0, Math.min(MF_CAP, Math.round(parseFloat(e.target.value) || 0))); done(); };
+  if (pd) pd.onchange = e => { const v = e.target.value === "" ? null : Math.max(0, Math.min(MF_CAP, Math.round(parseFloat(e.target.value) || 0))); m.perDay = v; m.net = v == null ? null : Math.max(0, v - mfLive()); done(); };
   const au = root.querySelector("[data-mf-auto]");
   if (au) au.onchange = e => { m.auto = e.target.checked; done(); };
   const fr = root.querySelector("[data-mf-from]");
@@ -14033,7 +14086,7 @@ function bindFronts(root) {
     if (a === "legal") { snap("legal"); mfFront(k).heat = 0; toast(t("mfLegalToast", nameOf(k))); checkFronts(); }
     if (a === "aband") { const f = mfFront(k); snap("aband"); f.heat = Math.min(100, f.heat + 5); checkFronts(); }
     if (a === "collect") { snap("collect"); toast(t("mfCollectToast", money(m.safe))); m.safe = 0; m.alert = null; }
-    if (a === "pdReset") m.perDay = null;
+    if (a === "pdReset") { m.perDay = null; m.net = null; }
     if (a === "cashGot") trkStop("fronts:cash");
     if (a === "faberOpen") m.open = m.open === "faber" ? "" : "faber";
     if (a === "faberClose") m.open = "";
@@ -14044,7 +14097,7 @@ function bindFronts(root) {
     if (a === "undo" && m.undo) {
       const u = JSON.parse(m.undo.s);
       Object.keys(S.fronts).forEach(x => Object.assign(S.fronts[x], u.f[x]));
-      Object.assign(m, u.m, { undo: null, rh: m.rh, open: m.open, from: m.from, perDay: m.perDay, auto: m.auto });   // only the counters go back
+      Object.assign(m, u.m, { undo: null, rh: m.rh, open: m.open, from: m.from, perDay: m.perDay, net: m.net, auto: m.auto });   // only the counters go back
       if (u.c) trkT()["fronts:cash"] = u.c; else delete trkT()["fronts:cash"];
       toast(t("mfUndone"));
     }

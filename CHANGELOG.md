@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.57.1 (2026-11-20)
+* Job Manager:
+  * Change: Money Fronts after Mihai's safe screen: you type the game's „Total daily income” (at the safe, Q); the app keeps the part from your other businesses and adds the three fronts live ($750, $1,500 after 15 missions, $0 at max Heat). Each front at max Heat, the Car Wash included, only takes out its own part.
+  * Change: Heat shows as 5 boxes, like the HEAT bar in the game (a laundering mission is half a box); tap a box to set it.
+  * Change: Heat rising on its own (about 8% a game day) is on by default: Smoke on the Water and Higgins Helitours reached max Heat without laundering.
+
 ### v0.57.0 (2026-11-20)
 * Job Manager:
   * Change: Money Fronts is a working screen. On top the shared Car Wash safe (fills while In game, $100,000 cap, “full in”, bell when almost full and full, Collected, and the daily amount from the game) and the clean money by the bed (a 10-minute timer that starts by itself after a laundering mission, with the bell).
