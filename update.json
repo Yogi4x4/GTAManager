@@ -1,5 +1,5 @@
 {
- "version": "0.56",
+ "version": "0.57",
  "files": [
   {
    "path": "CHANGELOG.md"
@@ -74,6 +74,9 @@
    "path": "jm/card_client_jobs.webp"
   },
   {
+   "path": "jm/card_clubhouse_contracts.webp"
+  },
+  {
    "path": "jm/card_cluckin_bell_raid.webp"
   },
   {
@@ -107,7 +110,13 @@
    "path": "jm/card_lowriders.webp"
   },
   {
+   "path": "jm/card_lsa_operations.webp"
+  },
+  {
    "path": "jm/card_mobile_operations.webp"
+  },
+  {
+   "path": "jm/card_money_fronts.webp"
   },
   {
    "path": "jm/card_oscar_guzman.webp"

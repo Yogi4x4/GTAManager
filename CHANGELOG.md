@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.57.0 (2026-11-20)
+* Job Manager:
+  * Change: Money Fronts is a working screen. On top the shared Car Wash safe (fills while In game, $100,000 cap, “full in”, bell when almost full and full, Collected, and the daily amount from the game) and the clean money by the bed (a 10-minute timer that starts by itself after a laundering mission, with the bell).
+  * Change: every front has its own Heat in %: +10% per laundering mission and per Mr. Faber Work, +5% for one left unfinished, one legal job (Car Wash, Helicopter Tour, Weed Delivery) brings it back to 0; tap a box to set it as in the game. At 100% the front stops paying into the safe (not a raid, as it said before) and can't launder.
+  * Add: the 4 laundering missions of each front by name, with how many times you did them; the count to 15 for the double safe ($750 → $1,500 a day), where Mr. Faber Work counts for all three fronts; Mr. Faber Work (the 6 missions, picked from the front you start it from); Red Harvest today (0–10 bags, resets every day); Undo the last one.
+  * Add: an optional switch for Heat rising on its own (8% a game day), until it is checked in the game.
+  * Change: the Money Fronts card shows the safe and the highest Heat, or how many fronts are stopped; the Property Manager cards and the map show each front's Heat.
+  * Add: new pictures for LSA Operations, Clubhouse Contracts, Money Fronts, the Casino story missions and the Agency Work page.
+
 ### v0.56.0 (2026-11-17)
 * Production Manager:
   * Change: automatic In game / Off waits before switching on: in the loading screen the game already has connections open, so it used to switch on too early. Now the switch turns yellow, “Connecting…” (the time does not run), and turns on about 1½ minutes after you joined; leaving or a click cancels it. The first time the detector is found, a short note explains this and that a very long or stuck loading screen needs a click to Off.
